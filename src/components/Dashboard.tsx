@@ -5,18 +5,20 @@ export default async function Dashboard() {
   const user = await currentUser();
 
   return (
-    <div className="flex-1 p-8">
-      <h1 className="text-3xl font-bold mb-4">Welcome to your Dashboard, {user?.firstName}!</h1>
-      <div className="space-y-4">
-        <Link href="/create-story" className="block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Create New Story
-        </Link>
-        <Link href="/my-stories" className="block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-          My Stories
-        </Link>
-        <Link href="/explore" className="block bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
-          Explore Stories
-        </Link>
+    <div className="flex-1 flex items-center justify-center bg-gray-100 p-8">
+      <div className="text-center max-w-md">
+        <h1 className="text-4xl font-bold mb-6 text-gray-800">Welcome to your Dashboard, {user?.firstName}!</h1>
+        <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+          <Link href="/create-story" className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center justify-center">
+            Create New Story
+          </Link>
+          <Link href="/my-stories" className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition inline-flex items-center justify-center">
+            My Stories
+          </Link>
+          <Link href="/explore" className="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition inline-flex items-center justify-center">
+            Explore Stories
+          </Link>
+        </div>
       </div>
     </div>
   );
