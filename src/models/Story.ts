@@ -10,6 +10,7 @@ const StorySchema = new mongoose.Schema({
     order: Number,
   }],
   published: { type: Boolean, default: false },
+  likes: [{ type: String }], // array of userIds
   createdAt: { type: Date, default: Date.now },
 });
 
