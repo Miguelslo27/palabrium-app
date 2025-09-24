@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import LikeButton from '@/components/LikeButton';
 import Comments from '@/components/Comments';
+import Navbar from '@/components/Navbar';
 
 interface Story {
   _id: string;
@@ -22,17 +23,20 @@ export default async function StoryPage({ params }: { params: Promise<{ id: stri
   if (!story) notFound();
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-4">{story.title}</h1>
-      <p className="text-lg mb-8">{story.description}</p>
-      <LikeButton storyId={story._id} initialLikes={story.likes.length} userLikes={story.likes} />
-      {story.chapters.map((chapter, index) => (
-        <div key={index} className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">{chapter.title}</h2>
-          <p className="whitespace-pre-wrap">{chapter.content}</p>
-        </div>
-      ))}
-      <Comments storyId={story._id} />
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex-1 max-w-4xl mx-auto p-8">
+        <h1 className="text-4xl font-bold mb-4">{story.title}</h1>
+        <p className="text-lg mb-8">{story.description}</p>
+        <LikeButton storyId={story._id} initialLikes={story.likes.length} userLikes={story.likes} />
+        {story.chapters.map((chapter, index) => (
+          <div key={index} className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">{chapter.title}</h2>
+            <p className="whitespace-pre-wrap">{chapter.content}</p>
+          </div>
+        ))}
+        <Comments storyId={story._id} />
+      </div>
     </div>
   );
 }
