@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StoryShare",
+  title: "Palabrium",
   description: "A platform to write and share stories",
 };
 

@@ -4,11 +4,15 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <header className="w-full flex justify-between items-center p-4 bg-white shadow">
-        <h1 className="text-2xl font-bold">StoryShare</h1>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+      <header className="w-full flex justify-between items-center p-4 bg-gray-800 text-white shadow">
+        <h1 className="text-2xl font-bold">Palabrium</h1>
+        <nav className="flex space-x-4">
+          <SignedIn>
+            <Link href="/my-stories" className="hover:underline">Mis Historias</Link>
+            <Link href="/explore" className="hover:underline">Explorar</Link>
+            <UserButton />
+          </SignedIn>
+        </nav>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center text-center p-8">
         <h2 className="text-4xl font-bold mb-4">Write and Share Your Stories</h2>
