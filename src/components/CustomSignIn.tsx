@@ -10,15 +10,15 @@ export default function CustomSignIn() {
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = () => {
-    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_google', redirectUrl: '/dashboard', redirectUrlComplete: '/dashboard' });
+    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_google', redirectUrl: '/', redirectUrlComplete: '/' });
   };
 
   const handleFacebook = () => {
-    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_facebook', redirectUrl: '/dashboard', redirectUrlComplete: '/dashboard' });
+    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_facebook', redirectUrl: '/', redirectUrlComplete: '/' });
   };
 
   const handleMicrosoft = () => {
-    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_microsoft', redirectUrl: '/dashboard', redirectUrlComplete: '/dashboard' });
+    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_microsoft', redirectUrl: '/', redirectUrlComplete: '/' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
