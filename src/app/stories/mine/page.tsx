@@ -4,13 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import StoryList from '@/components/StoryList';
-
-interface Story {
-  _id: string;
-  title: string;
-  description: string;
-  authorId: string;
-}
+import type { Story } from '@/types/story';
 
 export default function MyStories() {
   const [stories, setStories] = useState<Story[]>([]);

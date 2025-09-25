@@ -2,13 +2,7 @@
 
 import StoryCard from '@/components/StoryCard';
 import { useUser } from '@clerk/nextjs';
-
-interface Story {
-  _id: string;
-  title: string;
-  description: string;
-  authorId: string;
-}
+import type { Story } from '@/types/story';
 
 interface StoryListProps {
   stories: Story[];

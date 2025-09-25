@@ -22,7 +22,7 @@ export default function CreateStory() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('Submitting form');
+    if (process.env.NODE_ENV !== 'production') console.log('Submitting form');
     if (!title.trim()) {
       alert('Title is required');
       return;
@@ -40,10 +40,10 @@ export default function CreateStory() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, description, chapters }),
     });
-    console.log('Response:', response.ok);
+    if (process.env.NODE_ENV !== 'production') console.log('Response:', response.ok);
     if (response.ok) {
       const data = await response.json();
-      console.log('Data:', data);
+      if (process.env.NODE_ENV !== 'production') console.log('Data:', data);
       router.push(`/story/${data.id}`);
     } else {
       alert('Error creating story');

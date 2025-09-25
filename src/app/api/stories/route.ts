@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   try {
     await story.save();
-    console.log('Story saved:', story._id);
+    if (process.env.NODE_ENV !== 'production') console.log('Story saved:', story._id);
     return Response.json({ message: 'Story created', id: story._id });
   } catch (error) {
     console.error('Error saving story:', error);

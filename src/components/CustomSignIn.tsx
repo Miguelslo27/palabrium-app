@@ -8,6 +8,7 @@ export default function CustomSignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleGoogle = () => {
     if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_google', redirectUrl: '/', redirectUrlComplete: '/' });
@@ -18,13 +19,19 @@ export default function CustomSignIn() {
   };
 
   const handleMicrosoft = () => {
-    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_microsoft', redirectUrl: '/', redirectUrlComplete: '/' });
+    try {
+      if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_microsoft', redirectUrl: '/', redirectUrlComplete: '/' });
+    } catch (err) {
+      console.error(err);
+      setError('Microsoft sign in failed');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signIn) return;
     setLoading(true);
+    setError('');
     try {
       const result = await signIn.create({
         identifier: email,
@@ -33,8 +40,9 @@ export default function CustomSignIn() {
       if (result.status === 'complete' && setActive) {
         await setActive({ session: result.createdSessionId });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err.errors?.[0]?.message || 'Sign in failed');
     } finally {
       setLoading(false);
     }
@@ -69,23 +77,24 @@ export default function CustomSignIn() {
         <hr className="flex-1 border-gray-300" />
       </div>
       <form onSubmit={handleSubmit} className="flex-none space-y-6">
+        {error && <p className="text-red-500 text-center">{error}</p>}
         <div>
-          <label className="block text-lg font-medium text-gray-700 mb-2">Email</label>
+          <label className="block text-lg font-medium text-gray-900 mb-2">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             required
           />
         </div>
         <div>
-          <label className="block text-lg font-medium text-gray-700 mb-2">Password</label>
+          <label className="block text-lg font-medium text-gray-900 mb-2">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
             required
           />
         </div>
