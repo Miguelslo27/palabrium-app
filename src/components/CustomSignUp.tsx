@@ -1,6 +1,8 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
+import getClerkClient from '../lib/clerk-client';
+import { useRouter } from 'next/navigation';
 
 export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }) {
   const [email, setEmail] = useState('');
@@ -12,6 +14,7 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
   const [debugResult, setDebugResult] = useState<any>(null);
   const [debugError, setDebugError] = useState<any>(null);
   const [resendStatus, setResendStatus] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleGoogle = () => {
     setError('Social sign-up removed (no auth provider)');
@@ -28,7 +31,54 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('Login not implemented yet');
+    setError('');
+    setDebugError(null);
+    setDebugResult(null);
+    try {
+      // Prefer client-side Clerk sign-up flow: create SignUp -> attemptFirstFactor -> setActive
+      try {
+        const clerk: any = getClerkClient();
+        await clerk.load();
+
+        // Create a signUp instance (password strategy)
+        const signUp = await clerk.signUp.create({ strategy: 'password', identifier: email });
+
+        // Attempt first factor (password)
+        const attempt = await signUp.attemptFirstFactor({ strategy: 'password', password });
+
+        if (attempt.status === 'complete' && attempt.createdSessionId) {
+          await clerk.setActive({ session: attempt.createdSessionId });
+          setDebugResult({ message: 'Signup complete', sessionId: attempt.createdSessionId });
+          setResendStatus('Signup successful — you are signed in');
+          router.push('/');
+          return;
+        }
+
+        // If not complete, fall through to server fallback
+        setDebugResult({ message: 'Signup requires additional verification', attempt });
+      } catch (clientErr) {
+        // Client-side flow failed; fallback to server endpoint
+        console.warn('Client-side Clerk sign-up failed, falling back to server endpoint', clientErr);
+        const res = await fetch('/api/local-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, firstName, lastName }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data?.message || 'Signup failed');
+          setDebugError(data);
+        } else {
+          setDebugResult(data);
+          setResendStatus('Signup successful — check your email if verification is required');
+        }
+      }
+    } catch (err) {
+      setError('Network error');
+      setDebugError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,6 +159,13 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
       </form>
+      {resendStatus && <p className="mt-4 text-green-600">{resendStatus}</p>}
+      {debugResult && (
+        <pre className="mt-4 text-xs text-gray-700 bg-white p-2 rounded">{JSON.stringify(debugResult, null, 2)}</pre>
+      )}
+      {debugError && (
+        <pre className="mt-4 text-xs text-red-700 bg-white p-2 rounded">{JSON.stringify(debugError, null, 2)}</pre>
+      )}
       <p className="mt-6 text-blue-600 hover:text-blue-800">
         <a href="/sign-in">Already have an account? Sign in</a>
       </p>

@@ -1,5 +1,7 @@
+import { NextResponse } from 'next/server';
+
 export default function middleware(req: Request) {
-  return new Response(null);
+  return NextResponse.next();
 }
 
 export const config = {
