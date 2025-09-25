@@ -1,55 +1,34 @@
 'use client';
 
-import { useSignUp } from '@clerk/nextjs';
 import { useState } from 'react';
 
-export default function CustomSignUp() {
-  const { isLoaded, signUp, setActive } = useSignUp();
+export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [debugResult, setDebugResult] = useState<any>(null);
+  const [debugError, setDebugError] = useState<any>(null);
+  const [resendStatus, setResendStatus] = useState<string | null>(null);
 
   const handleGoogle = () => {
-    if (signUp) signUp.authenticateWithRedirect({ strategy: 'oauth_google', redirectUrl: '/', redirectUrlComplete: '/' });
+    setError('Social sign-up removed (no auth provider)');
   };
 
   const handleFacebook = () => {
-    if (signUp) signUp.authenticateWithRedirect({ strategy: 'oauth_facebook', redirectUrl: '/', redirectUrlComplete: '/' });
+    setError('Social sign-up removed (no auth provider)');
   };
 
   const handleMicrosoft = () => {
-    try {
-      if (signUp) signUp.authenticateWithRedirect({ strategy: 'oauth_microsoft', redirectUrl: '/', redirectUrlComplete: '/' });
-    } catch (err) {
-      console.error(err);
-      setError('Microsoft sign up failed');
-    }
+    setError('Social sign-up removed (no auth provider)');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signUp) return;
     setLoading(true);
-    setError('');
-    try {
-      const result = await signUp.create({
-        emailAddress: email,
-        password,
-        firstName,
-        lastName,
-      });
-      if (result.status === 'complete' && setActive) {
-        await setActive({ session: result.createdSessionId });
-      }
-    } catch (err: any) {
-      console.error(err);
-      setError(err.errors?.[0]?.message || 'Sign up failed');
-    } finally {
-      setLoading(false);
-    }
+    setError('Login not implemented yet');
   };
 
   return (
@@ -122,11 +101,10 @@ export default function CustomSignUp() {
             required
           />
         </div>
-        <div id="clerk-captcha"></div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition disabled:opacity-50"
         >
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
@@ -134,6 +112,7 @@ export default function CustomSignUp() {
       <p className="mt-6 text-blue-600 hover:text-blue-800">
         <a href="/sign-in">Already have an account? Sign in</a>
       </p>
+      {/* Debug panel removed from component; debug is shown in the left column of the sign-up page (dev only) */}
     </div>
   );
 }

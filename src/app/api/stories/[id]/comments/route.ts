@@ -1,4 +1,3 @@
-import { currentUser } from '@clerk/nextjs/server';
 import dbConnect from '@/lib/mongodb';
 import Comment from '@/models/Comment';
 
@@ -11,14 +10,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
-  const user = await currentUser();
-  if (!user) return new Response('Unauthorized', { status: 401 });
+  const userId = req.headers.get('x-user-id');
+  if (!userId) return new Response('Unauthorized', { status: 401 });
 
   const { id } = await params;
   const { content } = await req.json();
   const comment = new Comment({
     storyId: id,
-    authorId: user.id,
+    authorId: userId,
     content,
   });
 

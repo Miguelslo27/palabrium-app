@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 
 interface LikeButtonProps {
   storyId: string;
@@ -10,12 +9,16 @@ interface LikeButtonProps {
 }
 
 export default function LikeButton({ storyId, initialLikes, userLikes }: LikeButtonProps) {
-  const { user } = useUser();
   const [likes, setLikes] = useState(initialLikes);
-  const [liked, setLiked] = useState(userLikes.includes(user?.id || ''));
+  // We don't have a real user system here; try to detect an injected user id (optional)
+  const userId = typeof window !== 'undefined' ? (window as any).__USER_ID__ : null;
+  const [liked, setLiked] = useState(userLikes.includes(userId || ''));
 
   const handleLike = async () => {
-    const res = await fetch(`/api/stories/${storyId}/like`, { method: 'POST' });
+    const res = await fetch(`/api/stories/${storyId}/like`, {
+      method: 'POST',
+      headers: userId ? { 'x-user-id': userId } : {},
+    });
     const data = await res.json();
     setLikes(data.likes);
     setLiked(data.liked);

@@ -1,4 +1,3 @@
-import { currentUser } from '@clerk/nextjs/server';
 import dbConnect from '../../../lib/mongodb';
 import Story from '../../../models/Story';
 
@@ -10,15 +9,16 @@ export async function GET() {
 
 export async function POST(req: Request) {
   await dbConnect();
-  const user = await currentUser();
-  if (!user) return new Response('Unauthorized', { status: 401 });
+  // Simple header-based auth: expect x-user-id header set by client/dev tools
+  const userId = req.headers.get('x-user-id');
+  if (!userId) return new Response('Unauthorized', { status: 401 });
 
   const { title, description, chapters } = await req.json();
 
   const story = new Story({
     title,
     description,
-    authorId: user.id,
+    authorId: userId,
     chapters,
     published: true,
   });

@@ -1,51 +1,21 @@
-'use client';
+"use client";
 
-import { useSignIn } from '@clerk/nextjs';
 import { useState } from 'react';
 
 export default function CustomSignIn() {
-  const { isLoaded, signIn, setActive } = useSignIn();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleGoogle = () => {
-    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_google', redirectUrl: '/', redirectUrlComplete: '/' });
-  };
-
-  const handleFacebook = () => {
-    if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_facebook', redirectUrl: '/', redirectUrlComplete: '/' });
-  };
-
-  const handleMicrosoft = () => {
-    try {
-      if (signIn) signIn.authenticateWithRedirect({ strategy: 'oauth_microsoft', redirectUrl: '/', redirectUrlComplete: '/' });
-    } catch (err) {
-      console.error(err);
-      setError('Microsoft sign in failed');
-    }
-  };
+  const handleGoogle = () => setError('Social sign-in removed (no auth provider)');
+  const handleFacebook = () => setError('Social sign-in removed (no auth provider)');
+  const handleMicrosoft = () => setError('Social sign-in removed (no auth provider)');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signIn) return;
     setLoading(true);
-    setError('');
-    try {
-      const result = await signIn.create({
-        identifier: email,
-        password,
-      });
-      if (result.status === 'complete' && setActive) {
-        await setActive({ session: result.createdSessionId });
-      }
-    } catch (err: any) {
-      console.error(err);
-      setError(err.errors?.[0]?.message || 'Sign in failed');
-    } finally {
-      setLoading(false);
-    }
+    setError('Login not implemented yet');
   };
 
   return (
@@ -101,7 +71,7 @@ export default function CustomSignIn() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition disabled:opacity-50"
         >
           {loading ? 'Signing In...' : 'Sign In'}
         </button>

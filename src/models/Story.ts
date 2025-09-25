@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const StorySchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: String,
-  authorId: { type: String, required: true }, // Clerk user id
+  authorId: { type: String, required: true },
   chapters: [{
     title: String,
     content: String,

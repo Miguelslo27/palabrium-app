@@ -1,6 +1,5 @@
 import dbConnect from '@/lib/mongodb';
 import Story from '@/models/Story';
-import { currentUser } from '@clerk/nextjs/server';
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
@@ -12,14 +11,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
-  const user = await currentUser();
-  if (!user) return new Response('Unauthorized', { status: 401 });
+  // Temporary header-based auth: expect x-user-id to contain the current user id
+  const userId = req.headers.get('x-user-id');
+  if (!userId) return new Response('Unauthorized', { status: 401 });
 
   const { id } = await params;
   const story = await Story.findById(id);
   if (!story) return new Response('Story not found', { status: 404 });
 
-  if (story.authorId !== user.id) return new Response('Forbidden', { status: 403 });
+  if (story.authorId !== userId) return new Response('Forbidden', { status: 403 });
 
   await Story.findByIdAndDelete(id);
   return new Response('Story deleted', { status: 200 });
