@@ -23,7 +23,12 @@ export async function POST(req: Request) {
     published: true,
   });
 
-  await story.save();
-
-  return Response.json({ message: 'Story created', id: story._id });
+  try {
+    await story.save();
+    console.log('Story saved:', story._id);
+    return Response.json({ message: 'Story created', id: story._id });
+  } catch (error) {
+    console.error('Error saving story:', error);
+    return new Response('Error creating story', { status: 500 });
+  }
 }

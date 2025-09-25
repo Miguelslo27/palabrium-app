@@ -22,15 +22,29 @@ export default function CreateStory() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    console.log('Submitting form');
+    if (!title.trim()) {
+      alert('Title is required');
+      return;
+    }
+    if (!description.trim()) {
+      alert('Description is required');
+      return;
+    }
+    if (chapters.length === 0 || chapters.every(ch => !ch.content.trim())) {
+      alert('At least one chapter with content is required');
+      return;
+    }
     const response = await fetch('/api/stories', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title, description, chapters }),
     });
+    console.log('Response:', response.ok);
     if (response.ok) {
-      const { id } = await response.json();
-      router.push(`/story/${id}`);
+      const data = await response.json();
+      console.log('Data:', data);
+      router.push(`/story/${data.id}`);
     } else {
       alert('Error creating story');
     }
@@ -100,7 +114,7 @@ export default function CreateStory() {
             <button type="button" onClick={addChapter} className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition">
               Add New Chapter
             </button>
-            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition">
+            <button type="button" onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition">
               Save Story
             </button>
             <Link href="/">
