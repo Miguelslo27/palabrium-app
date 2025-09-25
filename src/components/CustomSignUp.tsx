@@ -4,15 +4,13 @@ import { useState } from 'react';
 import getClerkClient from '../lib/clerk-client';
 import { useRouter } from 'next/navigation';
 
-export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }) {
+export default function CustomSignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [debugResult, setDebugResult] = useState<any>(null);
-  const [debugError, setDebugError] = useState<any>(null);
   const [resendStatus, setResendStatus] = useState<string | null>(null);
   const router = useRouter();
 
@@ -32,8 +30,6 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
     e.preventDefault();
     setLoading(true);
     setError('');
-    setDebugError(null);
-    setDebugResult(null);
     try {
       // Prefer client-side Clerk sign-up flow: create SignUp -> attemptFirstFactor -> setActive
       try {
@@ -49,14 +45,12 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
         if (attempt.status === 'complete' && attempt.createdSessionId) {
           await clerk.setActive({ session: attempt.createdSessionId });
           await clerk.load();
-          setDebugResult({ message: 'Signup complete', sessionId: attempt.createdSessionId });
           setResendStatus('Signup successful — you are signed in');
           router.push('/');
           return;
         }
 
         // If not complete, fall through to server fallback
-        setDebugResult({ message: 'Signup requires additional verification', attempt });
       } catch (clientErr) {
         // Client-side flow failed; fallback to server endpoint
         console.warn('Client-side Clerk sign-up failed, falling back to server endpoint', clientErr);
@@ -68,9 +62,10 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
         const data = await res.json();
         if (!res.ok) {
           setError(data?.message || 'Signup failed');
-          setDebugError(data);
+          // keep error for user display
+          // debug info intentionally not stored on the client UI
         } else {
-          setDebugResult(data);
+          // server created user successfully
           // Try to sign-in client-side using the same credentials so we can obtain a createdSessionId
           // and call clerk.setActive() to sign the user in. This avoids relying on backend-created
           // sessions which aren't always usable client-side for setting browser cookies.
@@ -99,7 +94,6 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
       }
     } catch (err) {
       setError('Network error');
-      setDebugError(err);
     } finally {
       setLoading(false);
     }
@@ -193,16 +187,10 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
         </button>
       </form>
       {resendStatus && <p className="mt-4 text-green-600">{resendStatus}</p>}
-      {debugResult && (
-        <pre className="mt-4 text-xs text-gray-700 bg-white p-2 rounded">{JSON.stringify(debugResult, null, 2)}</pre>
-      )}
-      {debugError && (
-        <pre className="mt-4 text-xs text-red-700 bg-white p-2 rounded">{JSON.stringify(debugError, null, 2)}</pre>
-      )}
       <p className="mt-6 text-blue-600 hover:text-blue-800">
         <a href="/sign-in">Already have an account? Sign in</a>
       </p>
-      {/* Debug panel removed from component; debug is shown in the left column of the sign-up page (dev only) */}
+      {/* Debug panel removed from component (dev only) */}
     </div>
   );
 }

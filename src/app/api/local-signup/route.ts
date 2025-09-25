@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     // Debug: log the user object returned by Clerk (without sensitive fields)
     try {
-  console.log('Clerk createUser result:', JSON.stringify({ id: user.id, emailAddresses: user.emailAddresses?.map((e: any) => ({ id: e.id, emailAddress: e.emailAddress, verified: e.verification?.status })) }, null, 2));
+      console.log('Clerk createUser result:', JSON.stringify({ id: user.id, emailAddresses: user.emailAddresses?.map((e: any) => ({ id: e.id, emailAddress: e.emailAddress, verified: e.verification?.status })) }, null, 2));
     } catch (logErr) {
       console.warn('Could not stringify Clerk user for debug logging', logErr);
     }
