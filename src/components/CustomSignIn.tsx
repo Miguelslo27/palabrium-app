@@ -53,7 +53,16 @@ export default function CustomSignIn() {
   };
 
   return (
-    <div className="h-full w-full bg-red-50 p-8 flex flex-col justify-center">
+    <div className="relative h-full w-full bg-red-50 p-8 flex flex-col justify-center">
+      <button
+        type="button"
+        aria-label="Cerrar"
+        onClick={() => router.push('/')}
+        className="absolute top-4 right-4 text-2xl text-gray-700 hover:text-gray-900 cursor-pointer bg-transparent border-0 p-0"
+        style={{ lineHeight: 1 }}
+      >
+        ×
+      </button>
       <h1 className="text-4xl font-bold text-gray-800 text-center mb-8 flex-none">Sign In</h1>
       <div className="flex justify-center space-x-4 flex-none">
         <button
