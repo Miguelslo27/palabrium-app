@@ -24,7 +24,7 @@ export default function MyStories() {
       <Navbar />
       <div className="flex-1 max-w-4xl mx-auto p-8">
         <h1 className="text-3xl font-bold mb-6">My Stories</h1>
-        <Link href="/create-story" className="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
+        <Link href="/story/new" className="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
           Create New Story
         </Link>
         <div className="grid gap-4">
