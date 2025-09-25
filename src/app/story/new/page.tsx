@@ -51,7 +51,7 @@ export default function CreateStory() {
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-700"
+                    className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-700"
                     required
                   />
                 </div>
@@ -60,7 +60,7 @@ export default function CreateStory() {
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-32"
+                    className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-32"
                     required
                   />
                 </div>
@@ -76,7 +76,7 @@ export default function CreateStory() {
                         placeholder="Chapter Title"
                         value={chapter.title}
                         onChange={(e) => updateChapter(index, 'title', e.target.value)}
-                        className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-700"
+                        className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-700"
                       />
                     </div>
                     <div>
@@ -85,7 +85,7 @@ export default function CreateStory() {
                         placeholder="Chapter Content"
                         value={chapter.content}
                         onChange={(e) => updateChapter(index, 'content', e.target.value)}
-                        className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-64 placeholder:text-gray-700"
+                        className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-64 placeholder:text-gray-700"
                         required
                       />
                     </div>

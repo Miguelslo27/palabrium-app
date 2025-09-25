@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import StoryList from '@/components/StoryList';
 
 interface Story {
   _id: string;
   title: string;
   description: string;
+  authorId: string;
 }
 
 export default function MyStories() {
@@ -19,6 +21,17 @@ export default function MyStories() {
       .then(setStories);
   }, []);
 
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this story?')) {
+      const res = await fetch(`/api/stories/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setStories(stories.filter(story => story._id !== id));
+      } else {
+        alert('Failed to delete story');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -27,18 +40,7 @@ export default function MyStories() {
         <Link href="/story/new" className="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
           Create New Story
         </Link>
-        <div className="grid gap-4">
-          {stories.map((story) => (
-            <div key={story._id} className="p-4 border rounded hover:shadow">
-              <h2 className="text-xl font-semibold">
-                <Link href={`/story/${story._id}`} className="text-blue-600 hover:underline">
-                  {story.title}
-                </Link>
-              </h2>
-              <p className="text-gray-600">{story.description}</p>
-            </div>
-          ))}
-        </div>
+        <StoryList stories={stories} onDelete={handleDelete} />
       </div>
     </div>
   );

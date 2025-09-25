@@ -1,38 +1,42 @@
-import Link from 'next/link';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
+import StoryList from '@/components/StoryList';
 
 interface Story {
   _id: string;
   title: string;
   description: string;
+  authorId: string;
 }
 
-async function getStories(): Promise<Story[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/stories`);
-  if (!res.ok) return [];
-  return res.json();
-}
+export default function Stories() {
+  const [stories, setStories] = useState<Story[]>([]);
 
-export default async function Stories() {
-  const stories = await getStories();
+  useEffect(() => {
+    fetch('/api/stories')
+      .then(res => res.json())
+      .then(setStories);
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this story?')) {
+      const res = await fetch(`/api/stories/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setStories(stories.filter(story => story._id !== id));
+      } else {
+        alert('Failed to delete story');
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-1 max-w-4xl mx-auto p-8">
         <h1 className="text-3xl font-bold mb-6">Stories</h1>
-        <div className="grid gap-4">
-          {stories.map((story) => (
-            <div key={story._id} className="p-4 border rounded hover:shadow">
-              <h2 className="text-xl font-semibold">
-                <Link href={`/story/${story._id}`} className="text-blue-600 hover:underline">
-                  {story.title}
-                </Link>
-              </h2>
-              <p className="text-gray-600">{story.description}</p>
-            </div>
-          ))}
-        </div>
+        <StoryList stories={stories} onDelete={handleDelete} showDeleteForOwned={true} />
       </div>
     </div>
   );
