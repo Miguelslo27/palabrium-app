@@ -35,6 +35,8 @@ export default function CustomSignIn() {
       // If the sign-in is complete we get a createdSessionId
       if (signIn.status === 'complete' && signIn.createdSessionId) {
         await clerk.setActive({ session: signIn.createdSessionId });
+        // Ensure client updates its internal state and cookies before redirecting
+        await clerk.load();
         router.push('/');
       } else if (signIn.status === 'needs_first_factor' || signIn.status === 'needs_second_factor') {
         setError('Sign in requires additional verification (MFA or code).');

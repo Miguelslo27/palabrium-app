@@ -48,6 +48,7 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
 
         if (attempt.status === 'complete' && attempt.createdSessionId) {
           await clerk.setActive({ session: attempt.createdSessionId });
+          await clerk.load();
           setDebugResult({ message: 'Signup complete', sessionId: attempt.createdSessionId });
           setResendStatus('Signup successful — you are signed in');
           router.push('/');
@@ -70,6 +71,29 @@ export default function CustomSignUp({ onDebug }: { onDebug?: (d: any) => void }
           setDebugError(data);
         } else {
           setDebugResult(data);
+          // Try to sign-in client-side using the same credentials so we can obtain a createdSessionId
+          // and call clerk.setActive() to sign the user in. This avoids relying on backend-created
+          // sessions which aren't always usable client-side for setting browser cookies.
+          try {
+            const clerk: any = getClerkClient();
+            await clerk.load();
+
+            const signInApi = (clerk && (clerk.signIn || (clerk.client && clerk.client.signIn))) as any;
+            if (signInApi && typeof signInApi.create === 'function') {
+              const signIn = await signInApi.create({ strategy: 'password', identifier: email, password });
+              if (signIn.status === 'complete' && signIn.createdSessionId) {
+                await clerk.setActive({ session: signIn.createdSessionId });
+                await clerk.load();
+                setResendStatus('Signup successful — you are signed in');
+                router.push('/');
+                return;
+              }
+            }
+          } catch (signinErr) {
+            console.warn('Client-side sign-in after server signup failed', signinErr);
+          }
+
+          // If client-side activation didn't happen, fall back to an explanatory message about verification.
           setResendStatus('Signup successful — check your email if verification is required');
         }
       }
