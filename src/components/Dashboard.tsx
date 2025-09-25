@@ -12,10 +12,10 @@ export default async function Dashboard() {
           <Link href="/story/new" className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center justify-center">
             Create New Story
           </Link>
-          <Link href="/my-stories" className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition inline-flex items-center justify-center">
+          <Link href="/stories/mine" className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition inline-flex items-center justify-center">
             My Stories
           </Link>
-          <Link href="/explore" className="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition inline-flex items-center justify-center">
+          <Link href="/stories" className="flex-1 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition inline-flex items-center justify-center">
             Explore Stories
           </Link>
         </div>

@@ -10,8 +10,8 @@ export default async function Home() {
         <h1 className="text-2xl font-bold">Palabrium</h1>
         <nav className="flex space-x-4">
           <SignedIn>
-            <Link href="/my-stories" className="hover:underline">Mis Historias</Link>
-            <Link href="/explore" className="hover:underline">Explorar</Link>
+            <Link href="/stories/mine" className="hover:underline">Mis Historias</Link>
+            <Link href="/stories" className="hover:underline">Explorar</Link>
             <UserButton />
           </SignedIn>
         </nav>

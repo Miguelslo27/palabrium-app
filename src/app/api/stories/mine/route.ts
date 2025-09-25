@@ -1,6 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server';
-import dbConnect from '../../../lib/mongodb';
-import Story from '../../../models/Story';
+import dbConnect from '../../../../lib/mongodb';
+import Story from '../../../../models/Story';
 
 export async function GET() {
   const user = await currentUser();

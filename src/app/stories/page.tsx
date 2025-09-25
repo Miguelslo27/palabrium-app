@@ -1,6 +1,3 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
@@ -10,23 +7,20 @@ interface Story {
   description: string;
 }
 
-export default function MyStories() {
-  const [stories, setStories] = useState<Story[]>([]);
+async function getStories(): Promise<Story[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/stories`);
+  if (!res.ok) return [];
+  return res.json();
+}
 
-  useEffect(() => {
-    fetch('/api/my-stories')
-      .then(res => res.json())
-      .then(setStories);
-  }, []);
+export default async function Stories() {
+  const stories = await getStories();
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-1 max-w-4xl mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-6">My Stories</h1>
-        <Link href="/story/new" className="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
-          Create New Story
-        </Link>
+        <h1 className="text-3xl font-bold mb-6">Stories</h1>
         <div className="grid gap-4">
           {stories.map((story) => (
             <div key={story._id} className="p-4 border rounded hover:shadow">
