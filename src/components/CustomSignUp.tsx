@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import getClerkClient from '../lib/clerk-client';
+import startOAuth from '../lib/clerk-oauth';
 import { useRouter } from 'next/navigation';
 
 export default function CustomSignUp() {
@@ -15,15 +16,36 @@ export default function CustomSignUp() {
   const router = useRouter();
 
   const handleGoogle = () => {
-    setError('Social sign-up removed (no auth provider)');
+    (async () => {
+      try {
+        await startOAuth('signUp', 'oauth_google', '/', '/');
+      } catch (e) {
+        console.error('Google signup failed', e);
+        setError('Google signup failed. See console for details.');
+      }
+    })();
   };
 
   const handleFacebook = () => {
-    setError('Social sign-up removed (no auth provider)');
+    (async () => {
+      try {
+        await startOAuth('signUp', 'oauth_facebook', '/', '/');
+      } catch (e) {
+        console.error('Facebook signup failed', e);
+        setError('Facebook signup failed. See console for details.');
+      }
+    })();
   };
 
   const handleMicrosoft = () => {
-    setError('Social sign-up removed (no auth provider)');
+    (async () => {
+      try {
+        await startOAuth('signUp', 'oauth_microsoft', '/', '/');
+      } catch (e) {
+        console.error('Microsoft signup failed', e);
+        setError('Microsoft signup failed. See console for details.');
+      }
+    })();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

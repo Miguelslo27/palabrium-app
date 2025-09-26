@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import getClerkClient from '../lib/clerk-client';
+import startOAuth from '../lib/clerk-oauth';
 import { useRouter } from 'next/navigation';
 
 export default function CustomSignIn() {
@@ -14,6 +15,39 @@ export default function CustomSignIn() {
   const handleGoogle = () => setError('Social sign-in removed (no auth provider)');
   const handleFacebook = () => setError('Social sign-in removed (no auth provider)');
   const handleMicrosoft = () => setError('Social sign-in removed (no auth provider)');
+
+  const handleGoogleOAuth = () => {
+    (async () => {
+      try {
+        await startOAuth('signIn', 'oauth_google', '/', '/');
+      } catch (e) {
+        console.error('Google sign-in failed', e);
+        setError('Google sign-in failed. See console for details.');
+      }
+    })();
+  };
+
+  const handleFacebookOAuth = () => {
+    (async () => {
+      try {
+        await startOAuth('signIn', 'oauth_facebook', '/', '/');
+      } catch (e) {
+        console.error('Facebook sign-in failed', e);
+        setError('Facebook sign-in failed. See console for details.');
+      }
+    })();
+  };
+
+  const handleMicrosoftOAuth = () => {
+    (async () => {
+      try {
+        await startOAuth('signIn', 'oauth_microsoft', '/', '/');
+      } catch (e) {
+        console.error('Microsoft sign-in failed', e);
+        setError('Microsoft sign-in failed. See console for details.');
+      }
+    })();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,19 +102,19 @@ export default function CustomSignIn() {
       <h1 className="text-4xl font-bold text-gray-800 text-center mb-8 flex-none">Sign In</h1>
       <div className="flex justify-center space-x-4 flex-none">
         <button
-          onClick={handleGoogle}
+          onClick={handleGoogleOAuth}
           className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
           Google
         </button>
         <button
-          onClick={handleFacebook}
+          onClick={handleFacebookOAuth}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
           Facebook
         </button>
         <button
-          onClick={handleMicrosoft}
+          onClick={handleMicrosoftOAuth}
           className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
           Microsoft
