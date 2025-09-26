@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import getClerkClient from '../../../lib/clerk-client';
 
 export default function CreateStory() {
   const [title, setTitle] = useState('');
@@ -35,9 +36,26 @@ export default function CreateStory() {
       alert('At least one chapter with content is required');
       return;
     }
+    // Attempt to include a user id header required by the API
+    let userId: string | null = null;
+    try {
+      const clerk: any = getClerkClient();
+      await clerk.load();
+      // Different builds may expose user at clerk.user or clerk.client.user
+      userId = clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
+    } catch (e) {
+      // ignore — we'll fallback to any injected __USER_ID__ if present
+    }
+    if (!userId && typeof window !== 'undefined') {
+      userId = (window as any).__USER_ID__ || null;
+    }
+
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (userId) headers['x-user-id'] = String(userId);
+
     const response = await fetch('/api/stories', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ title, description, chapters }),
     });
     if (process.env.NODE_ENV !== 'production') console.log('Response:', response.ok);
@@ -53,77 +71,91 @@ export default function CreateStory() {
   return (
     <div className="h-screen flex flex-col bg-white">
       <Navbar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-hidden">
-          <form onSubmit={handleSubmit} className="h-full">
-            <div className="grid grid-cols-[1fr_3fr] gap-8 h-full">
-              <div className="space-y-6 p-8">
-                <h1 className="text-3xl font-bold mb-6 text-gray-900">Create New Story</h1>
-                <div>
-                  <label className="block text-lg font-medium text-gray-900 mb-2">Title</label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-700"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-lg font-medium text-gray-900 mb-2">Description</label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-32"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-6 h-full overflow-y-auto p-8">
-                <h2 className="text-xl font-semibold text-gray-900">Chapters</h2>
-                {chapters.map((chapter, index) => (
-                  <div key={index} className="space-y-4 p-4 border-2 border-gray-300 rounded-lg">
-                    <div>
-                      <label className="block text-lg font-medium text-gray-900 mb-2">Chapter Title</label>
-                      <input
-                        type="text"
-                        placeholder="Chapter Title"
-                        value={chapter.title}
-                        onChange={(e) => updateChapter(index, 'title', e.target.value)}
-                        className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-gray-700"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-lg font-medium text-gray-900 mb-2">Chapter Content</label>
-                      <textarea
-                        placeholder="Chapter Content"
-                        value={chapter.content}
-                        onChange={(e) => updateChapter(index, 'content', e.target.value)}
-                        className="w-full px-4 py-3 text-lg text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-64 placeholder:text-gray-700"
-                        required
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </form>
-        </div>
-        <div className="bg-gray-100 p-4 border-t border-gray-300">
-          <div className="flex justify-end space-x-4">
-            <button type="button" onClick={addChapter} className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition">
-              Add New Chapter
-            </button>
-            <button type="button" onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition">
-              Save Story
-            </button>
-            <Link href="/">
-              <button type="button" className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition">
-                Cancel
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
+          <div className="p-6 bg-gray-200/70 flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-gray-900">Create story</h1>
+            <div className="flex items-center gap-3">
+              <Link href="/">
+                <button type="button" className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm">
+                  Cancelar
+                </button>
+              </Link>
+              <button type="submit" className="bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
+                Guardar
               </button>
-            </Link>
+            </div>
           </div>
-        </div>
+          <div className="flex-1 flex overflow-auto min-h-0">
+            <aside className="w-72 h-full bg-gray-50 p-6 border-r border-gray-300 flex flex-col overflow-y-auto">
+              <div className="mb-4">
+                <span className="text-sm font-semibold text-gray-700 uppercase">Your book</span>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-800 mb-2">Title</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-800 mb-2">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 h-40 resize-none"
+                  required
+                />
+              </div>
+            </aside>
+
+            {/* Right main: chapters panel */}
+            <main className="flex-1 p-6 overflow-y-auto">
+              <div className="bg-white border border-gray-300 rounded shadow-sm h-full flex flex-col">
+                <div className="px-6 py-4 border-b border-gray-300 flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-900">Capítulos</h2>
+                </div>
+                <div className="p-6 flex-1 overflow-y-auto space-y-6">
+                  {chapters.map((chapter, index) => (
+                    <section key={index} className="bg-gray-50 p-4 border border-gray-300 rounded">
+                      <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-800 mb-1">Title</label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          value={chapter.title}
+                          onChange={(e) => updateChapter(index, 'title', e.target.value)}
+                          className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-800 mb-1">Contenido</label>
+                        <textarea
+                          placeholder=""
+                          value={chapter.content}
+                          onChange={(e) => updateChapter(index, 'content', e.target.value)}
+                          className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:border-blue-500 h-48 resize-vertical"
+                          required
+                        />
+                      </div>
+                    </section>
+                  ))}
+                </div>
+
+                <div className="px-6 py-4 border-t border-gray-300 bg-gray-50 flex items-center justify-between">
+                  <button type="button" onClick={addChapter} className="inline-flex items-center gap-2 px-3 py-1.5 bg-white text-gray-800 border border-gray-400 rounded shadow-sm">
+                    <span className="text-xl font-bold">+</span>
+                    <span>Agregar capítulo</span>
+                  </button>
+                  <div />
+                </div>
+              </div>
+            </main>
+          </div>
+        </form>
       </div>
     </div>
   );
