@@ -57,13 +57,27 @@ export default function MyStories() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this story?')) {
-      const res = await fetch(`/api/stories/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setStories(stories.filter(story => story._id !== id));
-      } else {
-        alert('Failed to delete story');
-      }
+    if (!confirm('Are you sure you want to delete this story?')) return;
+
+    let userId: string | null = null;
+    try {
+      const clerk: any = getClerkClient();
+      if (typeof clerk.load === 'function') await clerk.load();
+      userId = clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
+    } catch (e) {
+      // ignore
+    }
+    if (!userId && typeof window !== 'undefined') userId = (window as any).__USER_ID__ || null;
+    if (!userId) {
+      alert('You must be signed in to delete a story');
+      return;
+    }
+
+    const res = await fetch(`/api/stories/${id}`, { method: 'DELETE', headers: { 'x-user-id': String(userId) } });
+    if (res.ok) {
+      setStories(stories.filter(story => story._id !== id));
+    } else {
+      alert('Failed to delete story');
     }
   };
 

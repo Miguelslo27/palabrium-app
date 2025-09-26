@@ -23,9 +23,14 @@ export default function StoryCard({ story, showDelete = false, onDelete }: Story
         {showDelete && onDelete && (
           <button
             onClick={() => onDelete(story._id)}
-            className="text-red-500 hover:text-red-700 text-sm font-medium"
+            aria-label="Delete story"
+            title="Delete story"
+            className="h-8 w-8 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded disabled:opacity-50"
           >
-            Delete
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
           </button>
         )}
       </div>
