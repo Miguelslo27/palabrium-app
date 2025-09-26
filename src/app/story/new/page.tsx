@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import getClerkClient from '../../../lib/clerk-client';
 import EditorLayout from '@/components/Editor/EditorLayout';
 import EditorHeader from '@/components/Editor/EditorHeader';
+import Sidebar from '@/components/Editor/Sidebar';
 
 export default function CreateStory() {
   const [title, setTitle] = useState('');
@@ -115,30 +116,7 @@ export default function CreateStory() {
             </button>
           </EditorHeader>
           <div className="flex-1 flex overflow-auto min-h-0">
-            <aside className="w-72 h-full bg-gray-50 p-6 border-r border-gray-300 flex flex-col overflow-y-auto">
-              <div className="mb-4">
-                <span className="text-sm font-semibold text-gray-700 uppercase">Your book</span>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-800 mb-2">Title</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-800 mb-2">Description</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 h-40 resize-none"
-                  required
-                />
-              </div>
-            </aside>
+            <Sidebar title={title} description={description} setTitle={setTitle} setDescription={setDescription} />
 
             {/* Right main: chapters panel */}
             <main className="flex-1 p-6 overflow-y-auto">
