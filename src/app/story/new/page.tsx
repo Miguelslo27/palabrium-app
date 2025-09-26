@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import getClerkClient from '../../../lib/clerk-client';
+import EditorLayout from '@/components/Editor/EditorLayout';
+import EditorHeader from '@/components/Editor/EditorHeader';
 
 export default function CreateStory() {
   const [title, setTitle] = useState('');
@@ -90,31 +92,28 @@ export default function CreateStory() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white">
+    <EditorLayout>
       <Navbar />
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
-          <div className="p-6 bg-gray-200/70 flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Create story</h1>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof window !== 'undefined' && window.history.length > 1) {
-                    router.back();
-                  } else {
-                    router.push('/');
-                  }
-                }}
-                className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
-              >
-                Cancelar
-              </button>
-              <button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
-                {submitting ? 'Saving…' : 'Guardar'}
-              </button>
-            </div>
-          </div>
+          <EditorHeader title="Create story">
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push('/');
+                }
+              }}
+              className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
+            >
+              Cancelar
+            </button>
+            <button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
+              {submitting ? 'Saving…' : 'Guardar'}
+            </button>
+          </EditorHeader>
           <div className="flex-1 flex overflow-auto min-h-0">
             <aside className="w-72 h-full bg-gray-50 p-6 border-r border-gray-300 flex flex-col overflow-y-auto">
               <div className="mb-4">
@@ -235,6 +234,6 @@ export default function CreateStory() {
           </div>
         </form>
       </div>
-    </div>
+    </EditorLayout>
   );
 }
