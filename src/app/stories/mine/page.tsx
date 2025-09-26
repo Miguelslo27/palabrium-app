@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import StoryList from '@/components/StoryList';
-import type { Story } from '@/types/story';
-import getClerkClient from '../../../lib/clerk-client';
+import useMyStories from '@/hooks/useMyStories';
 import EditorLayout from '@/components/Editor/EditorLayout';
 import Button from '@/components/Editor/Shared/Button';
 import MineSidebar from '@/components/Stories/MineSidebar';
@@ -13,77 +12,12 @@ import PageHeader from '@/components/Common/PageHeader';
 import ContentCard from '@/components/Common/ContentCard';
 
 export default function MyStories() {
-  const [stories, setStories] = useState<Story[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [unauthorized, setUnauthorized] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      let userId: string | null = null;
-      try {
-        const clerk: any = getClerkClient();
-        // some builds expose load, some don't — defensive
-        if (typeof clerk.load === 'function') await clerk.load();
-        userId = clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-      } catch (e) {
-        // ignore
-      }
-      if (!userId && typeof window !== 'undefined') {
-        userId = (window as any).__USER_ID__ || null;
-      }
-
-      if (!userId) {
-        // no client user id available — API expects x-user-id
-        if (mounted) {
-          setUnauthorized(true);
-          setStories([]);
-          setLoading(false);
-        }
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/stories/mine', { headers: { 'x-user-id': String(userId) } });
-        if (!res.ok) {
-          if (mounted) setStories([]);
-        } else {
-          const data = await res.json();
-          if (mounted) setStories(data);
-        }
-      } catch (e) {
-        if (mounted) setStories([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => { mounted = false; };
-  }, []);
+  const { stories, loading, unauthorized, deleteStory, deleteAll } = useMyStories();
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this story?')) return;
-
-    let userId: string | null = null;
-    try {
-      const clerk: any = getClerkClient();
-      if (typeof clerk.load === 'function') await clerk.load();
-      userId = clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-    } catch (e) {
-      // ignore
-    }
-    if (!userId && typeof window !== 'undefined') userId = (window as any).__USER_ID__ || null;
-    if (!userId) {
-      alert('You must be signed in to delete a story');
-      return;
-    }
-
-    const res = await fetch(`/api/stories/${id}`, { method: 'DELETE', headers: { 'x-user-id': String(userId) } });
-    if (res.ok) {
-      setStories(stories.filter(story => story._id !== id));
-    } else {
-      alert('Failed to delete story');
-    }
+    const ok = await deleteStory(id);
+    if (!ok) alert('Failed to delete story');
   };
 
   return (
@@ -101,22 +35,8 @@ export default function MyStories() {
             storiesCount={stories.length}
             onClear={async () => {
               if (!confirm('Delete ALL your stories? This cannot be undone.')) return;
-              let userId: string | null = null;
-              try {
-                const clerk: any = getClerkClient();
-                if (typeof clerk.load === 'function') await clerk.load();
-                userId = clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-              } catch (e) {
-                // ignore
-              }
-              if (!userId && typeof window !== 'undefined') userId = (window as any).__USER_ID__ || null;
-              if (!userId) {
-                alert('You must be signed in to perform this action');
-                return;
-              }
-              const res = await fetch('/api/stories/mine', { method: 'DELETE', headers: { 'x-user-id': String(userId) } });
-              if (res.ok) {
-                setStories([]);
+              const ok = await deleteAll();
+              if (ok) {
                 alert('Deleted all stories');
               } else {
                 alert('Failed to delete stories');

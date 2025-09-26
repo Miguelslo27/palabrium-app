@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import getClerkClient from '../../../lib/clerk-client';
 import EditorLayout from '@/components/Editor/EditorLayout';
