@@ -9,6 +9,7 @@ import EditorLayout from '@/components/Editor/EditorLayout';
 import EditorHeader from '@/components/Editor/EditorHeader';
 import Sidebar from '@/components/Editor/Sidebar';
 import Chapters from '@/components/Editor/Chapters';
+import EditorForm from '@/components/Editor/EditorForm';
 
 export default function CreateStory() {
   const [title, setTitle] = useState('');
@@ -96,40 +97,39 @@ export default function CreateStory() {
   return (
     <EditorLayout>
       <Navbar />
-      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
-          <EditorHeader title="Create story">
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== 'undefined' && window.history.length > 1) {
-                  router.back();
-                } else {
-                  router.push('/');
-                }
-              }}
-              className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
-            >
-              Cancelar
-            </button>
-            <button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
-              {submitting ? 'Saving…' : 'Guardar'}
-            </button>
-          </EditorHeader>
-          <div className="flex-1 flex overflow-auto min-h-0">
-            <Sidebar title={title} description={description} setTitle={setTitle} setDescription={setDescription} />
+      <EditorForm onSubmit={handleSubmit}>
+        <EditorHeader title="Create story">
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 1) {
+                router.back();
+              } else {
+                router.push('/');
+              }
+            }}
+            className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
+          >
+            Cancelar
+          </button>
+          <button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
+            {submitting ? 'Saving…' : 'Guardar'}
+          </button>
+        </EditorHeader>
 
-            <Chapters
-              chapters={chapters}
-              expandedIndex={expandedIndex}
-              setExpandedIndex={setExpandedIndex}
-              addChapter={addChapter}
-              removeChapter={removeChapter}
-              updateChapter={updateChapter}
-            />
-          </div>
-        </form>
-      </div>
+        <div className="flex-1 flex overflow-auto min-h-0">
+          <Sidebar title={title} description={description} setTitle={setTitle} setDescription={setDescription} />
+
+          <Chapters
+            chapters={chapters}
+            expandedIndex={expandedIndex}
+            setExpandedIndex={setExpandedIndex}
+            addChapter={addChapter}
+            removeChapter={removeChapter}
+            updateChapter={updateChapter}
+          />
+        </div>
+      </EditorForm>
     </EditorLayout>
   );
 }
