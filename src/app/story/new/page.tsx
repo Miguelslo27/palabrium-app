@@ -97,11 +97,19 @@ export default function CreateStory() {
           <div className="p-6 bg-gray-200/70 flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">Create story</h1>
             <div className="flex items-center gap-3">
-              <Link href="/">
-                <button type="button" className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm">
-                  Cancelar
-                </button>
-              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push('/');
+                  }
+                }}
+                className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
+              >
+                Cancelar
+              </button>
               <button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
                 {submitting ? 'Saving…' : 'Guardar'}
               </button>
