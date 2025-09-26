@@ -1,5 +1,6 @@
 import React from 'react';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
+import Button from '@/components/Editor/Shared/Button';
 
 type Chapter = { title: string; content: string };
 
@@ -25,7 +26,7 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
             onChange={(e) => updateChapter(index, 'title', e.target.value)}
             className="w-full h-10 px-3 mr-3 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
           />
-          <button
+          <Button
             type="button"
             onClick={() => removeChapter(index)}
             disabled={chaptersLength === 1}
@@ -34,7 +35,7 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
             className="h-10 w-10 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <IconTrash className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
       </div>
       <div>
@@ -62,7 +63,7 @@ function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateCh
             <span className="text-sm text-gray-900">{displayTitle}</span>
           </div>
           <div>
-            <button
+            <Button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -74,7 +75,7 @@ function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateCh
               className="h-8 w-8 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <IconTrash className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -112,10 +113,10 @@ export default function Chapters({ chapters, expandedIndex, setExpandedIndex, ad
         </div>
 
         <div className="px-6 py-4 border-t border-gray-300 bg-gray-50 flex items-center justify-between">
-          <button type="button" onClick={addChapter} className="inline-flex items-center gap-2 px-3 py-1.5 bg-white text-gray-800 border border-gray-400 rounded shadow-sm">
+          <Button type="button" onClick={addChapter} className="inline-flex items-center gap-2 px-3 py-1.5 bg-white text-gray-800 border border-gray-400 rounded shadow-sm">
             <span className="text-xl font-bold">+</span>
             <span>Agregar capítulo</span>
-          </button>
+          </Button>
           <div />
         </div>
       </div>

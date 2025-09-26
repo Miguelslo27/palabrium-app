@@ -10,6 +10,7 @@ import EditorHeader from '@/components/Editor/EditorHeader';
 import Sidebar from '@/components/Editor/Sidebar';
 import Chapters from '@/components/Editor/Chapters';
 import EditorForm from '@/components/Editor/EditorForm';
+import Button from '@/components/Editor/Shared/Button';
 
 export default function CreateStory() {
   const [title, setTitle] = useState('');
@@ -99,7 +100,7 @@ export default function CreateStory() {
       <Navbar />
       <EditorForm onSubmit={handleSubmit}>
         <EditorHeader title="Create story">
-          <button
+          <Button
             type="button"
             onClick={() => {
               if (typeof window !== 'undefined' && window.history.length > 1) {
@@ -111,10 +112,10 @@ export default function CreateStory() {
             className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
           >
             Cancelar
-          </button>
-          <button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
+          </Button>
+          <Button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
             {submitting ? 'Saving…' : 'Guardar'}
-          </button>
+          </Button>
         </EditorHeader>
 
         <div className="flex-1 flex overflow-auto min-h-0">
