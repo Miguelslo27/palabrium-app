@@ -1,13 +1,13 @@
 # Lista de tareas pendientes
 
 ## En progreso
-- [-] Componentizar todo y dejar bien organizado
-- [-] Convertir y mejorar esquemas de historias y capítulos
+- [x] Componentizar todo y dejar bien organizado
+- [x] Convertir y mejorar esquemas de historias y capítulos
+- [x] Editar historia al hacer click en el título (Solo en Mis historias)
+- [-] Agregar endpoint de carga masiva
+- [-] Crear JSON con datos de prueba
 
 ## Prioridades para MVP
-- [ ] Agregar endpoint de carga masiva
-- [ ] Crear JSON con datos de prueba
-- [ ] Editar historia al hacer click en el título
 - [ ] Agregar botón de Preview (ojito)
 
 ## Sería bueno tener para la próxima versión
