@@ -10,6 +10,7 @@ import Button from '@/components/Editor/Shared/Button';
 import MineSidebar from '@/components/Stories/MineSidebar';
 import PageHeader from '@/components/Common/PageHeader';
 import ContentCard from '@/components/Common/ContentCard';
+import Hero from '@/components/Common/Hero';
 
 export default function MyStories() {
   const { stories, loading, unauthorized, deleteStory, deleteAll } = useMyStories();
@@ -44,9 +45,13 @@ export default function MyStories() {
             }}
           />
 
-          <main className="flex-1 p-6 overflow-y-auto">
-            <ContentCard>
-              <div className="p-6 flex-1 overflow-y-auto">
+          <main className="flex-1 p-6 flex flex-col min-h-0">
+            <Hero gradientClass="bg-gradient-to-r from-green-50 to-white" borderClass="border-green-100">
+              <h2 className="text-2xl font-semibold text-gray-900">Your personal workspace</h2>
+              <p className="text-sm text-gray-600 mt-2">Draft and manage your stories here. Only you can see them until you publish.</p>
+            </Hero>
+            <ContentCard className="flex-1">
+              <div className="p-6 flex-1 overflow-y-auto min-h-0">
                 {loading ? (
                   <div className="text-gray-600">Loading your stories…</div>
                 ) : unauthorized ? (
@@ -54,12 +59,12 @@ export default function MyStories() {
                 ) : stories.length === 0 ? (
                   <div className="text-gray-600">You have no stories yet. <Link href="/story/new" className="text-blue-600">Create one</Link>.</div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <StoryList stories={stories} onDelete={handleDelete} />
-                  </div>
+                  <StoryList stories={stories} onDelete={handleDelete} allowDelete={true} />
                 )}
               </div>
             </ContentCard>
+            {/* spacer so bottom padding is visible when main is the scroll container */}
+            <div className="h-0" aria-hidden="true" />
           </main>
         </div>
       </div>
