@@ -25,6 +25,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const story = await Story.findById(id)
   if (!story) return NextResponse.json({ error: 'Story not found' }, { status: 404 })
+  // auth check: only author can add chapters
+  const userId = req.headers.get('x-user-id')
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (String(story.authorId) !== String(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const chapter = await Chapter.create({ storyId: id, title, content, order })
   // increment chapterCount
