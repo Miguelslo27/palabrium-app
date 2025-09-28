@@ -46,13 +46,13 @@ export default function Navbar() {
       <nav className="flex space-x-4">
         {user ? (
           <>
-            <Link href="/stories/mine" className="hover:underline">Mis Historias</Link>
-            <Link href="/stories" className="hover:underline">Explorar</Link>
+            <Link href="/stories/mine" className="hover:underline">My Stories</Link>
+            <Link href="/stories" className="hover:underline">Explore</Link>
             <button onClick={handleSignOut} className="hover:underline">Logout</button>
           </>
         ) : (
           <>
-            <Link href="/stories" className="hover:underline">Explorar</Link>
+            <Link href="/stories" className="hover:underline">Explore</Link>
             <Link href="/sign-in" className="hover:underline">Sign In</Link>
             <Link href="/sign-up" className="hover:underline">Sign Up</Link>
           </>
