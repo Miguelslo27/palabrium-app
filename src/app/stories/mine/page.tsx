@@ -59,9 +59,7 @@ export default function MyStories() {
                 ) : stories.length === 0 ? (
                   <div className="text-gray-600">You have no stories yet. <Link href="/story/new" className="text-blue-600">Create one</Link>.</div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <StoryList stories={stories} onDelete={handleDelete} allowDelete={true} />
-                  </div>
+                  <StoryList stories={stories} onDelete={handleDelete} allowDelete={true} />
                 )}
               </div>
             </ContentCard>

@@ -58,25 +58,23 @@ export default function Stories() {
         <div className="flex flex-1 min-h-0">
           <CategoriesSidebar />
 
-          <div className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 p-6 overflow-y-auto">
             <Hero gradientClass="bg-gradient-to-r from-blue-50 to-white" borderClass="border-blue-100">
               <h2 className="text-2xl font-semibold text-gray-900">Discover stories created by the community</h2>
               <p className="text-sm text-gray-600 mt-2">Explore, read and get inspired. Create your own story and share it with others.</p>
             </Hero>
             <ContentCard>
-              <div className="p-6">
+              <div className="p-6 flex-1 overflow-y-auto">
                 {loading ? (
                   <div className="text-gray-600">Loading stories…</div>
                 ) : filtered.length === 0 ? (
                   <div className="text-gray-600">No stories found.</div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <StoryList stories={filtered} onDelete={handleDelete} />
-                  </div>
+                  <StoryList stories={filtered} onDelete={handleDelete} />
                 )}
               </div>
             </ContentCard>
-          </div>
+          </main>
         </div>
       </div>
     </div>
