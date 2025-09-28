@@ -1,29 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import EditorForm from '@/components/Editor/EditorForm';
-import EditorHeader from '@/components/Editor/EditorHeader';
-import Sidebar from '@/components/Editor/Sidebar';
-import Chapters from '@/components/Editor/Chapters';
-import Button from '@/components/Editor/Shared/Button';
-import { fetchChapters, createChapter, updateChapter, deleteChapter } from '@/lib/useChapters';
+import { useEffect, useState } from 'react';
 import getClerkClient from '@/lib/clerk-client';
+import { fetchChapters, createChapter, updateChapter, deleteChapter } from '@/lib/useChapters';
 
-type Props = { storyId: string };
+type UseStoryFormOpts = {
+  mode?: 'create' | 'edit';
+  storyId?: string;
+};
 
-export default function EditStoryClient({ storyId }: Props) {
-  const router = useRouter();
-
+export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormOpts) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [origStory, setOrigStory] = useState<any | null>(null);
-  const [chapters, setChapters] = useState<any[]>([]);
+  const [chapters, setChapters] = useState<any[]>(mode === 'create' ? [{ title: '', content: '' }] : []);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!storyId) return;
+    if (mode !== 'edit' || !storyId) return;
     let mounted = true;
     async function load() {
       try {
@@ -32,9 +27,9 @@ export default function EditStoryClient({ storyId }: Props) {
         const sdata = await sres.json();
         if (!mounted) return;
         setTitle(sdata.title || '');
-        setOrigStory(sdata || null);
         setDescription(sdata.description || '');
-        const ch = await fetchChapters(storyId);
+        setOrigStory(sdata || null);
+        const ch = await fetchChapters(storyId!);
         if (!mounted) return;
         setChapters(ch);
         setExpandedIndex(ch.length > 0 ? 0 : null);
@@ -44,7 +39,7 @@ export default function EditStoryClient({ storyId }: Props) {
     }
     load();
     return () => { mounted = false };
-  }, [storyId]);
+  }, [mode, storyId]);
 
   const addChapter = () => {
     const newChapters = [...chapters, { title: '', content: '' }];
@@ -67,26 +62,47 @@ export default function EditStoryClient({ storyId }: Props) {
     setChapters(newChapters);
   };
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function detectUserId(): Promise<string | null> {
+    try {
+      const clerk: any = getClerkClient();
+      await clerk.load();
+      return clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
+    } catch (err) {
+      if (typeof window !== 'undefined') return (window as any).__USER_ID__ || null;
+      return null;
+    }
+  }
+
+  async function create(payload: { title: string; description: string; chapters: any[] }) {
     if (submitting) return;
     setSubmitting(true);
     try {
-      // Try to get the user id from Clerk first, fallback to any injected __USER_ID__ for dev
-      let userId: string | null = null;
-      try {
-        const clerk: any = getClerkClient();
-        await clerk.load();
-        userId = clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-      } catch (err) {
-        // ignore — we'll fallback to window.__USER_ID__ below
-      }
-      if (!userId && typeof window !== 'undefined') {
-        userId = (window as any).__USER_ID__ || null;
-      }
-
+      const userId = await detectUserId();
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (userId) headers['x-user-id'] = String(userId);
+
+      const res = await fetch('/api/stories', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed creating story');
+      const data = await res.json();
+      return data;
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function edit() {
+    if (submitting) return;
+    if (!storyId) throw new Error('Missing story id');
+    setSubmitting(true);
+    try {
+      const userId = await detectUserId();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (userId) headers['x-user-id'] = String(userId);
+
       // Update metadata only if changed
       if (!origStory || origStory.title !== title || origStory.description !== description) {
         const metaRes = await fetch(`/api/stories/${storyId}`, {
@@ -106,7 +122,6 @@ export default function EditStoryClient({ storyId }: Props) {
         }
       }
 
-      // Update or create chapters only when their content changed. Also set order.
       for (let i = 0; i < chapters.length; i++) {
         const ch = chapters[i];
         const order = i;
@@ -122,45 +137,27 @@ export default function EditStoryClient({ storyId }: Props) {
         }
       }
 
-      router.push(`/story/${storyId}`);
-    } catch (err) {
-      console.error('save', err);
-      alert('Error saving story');
+      return { ok: true };
     } finally {
       setSubmitting(false);
     }
   }
 
-  return (
-    <EditorForm onSubmit={handleSubmit}>
-      <EditorHeader title="Edit story">
-        <Button
-          type="button"
-          onClick={() => {
-            if (typeof window !== 'undefined' && window.history.length > 1) router.back();
-            else router.push('/');
-          }}
-          className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
-        >
-          Cancelar
-        </Button>
-        <Button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
-          {submitting ? 'Saving…' : 'Guardar'}
-        </Button>
-      </EditorHeader>
-
-      <div className="flex-1 flex overflow-auto min-h-0">
-        <Sidebar title={title} description={description} setTitle={setTitle} setDescription={setDescription} />
-
-        <Chapters
-          chapters={chapters}
-          expandedIndex={expandedIndex}
-          setExpandedIndex={setExpandedIndex}
-          addChapter={addChapter}
-          removeChapter={removeChapter}
-          updateChapter={updateChapterLocal}
-        />
-      </div>
-    </EditorForm>
-  );
+  return {
+    title,
+    setTitle,
+    description,
+    setDescription,
+    origStory,
+    chapters,
+    setChapters,
+    expandedIndex,
+    setExpandedIndex,
+    submitting,
+    addChapter,
+    removeChapter,
+    updateChapterLocal,
+    create,
+    edit,
+  };
 }

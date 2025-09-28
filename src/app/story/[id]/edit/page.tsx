@@ -1,5 +1,5 @@
 import Navbar from '@/components/Navbar';
-import EditStoryClient from '@/components/Editor/EditStoryClient';
+import StoryFormClient from '@/components/Editor/StoryFormClient';
 import EditorLayout from '@/components/Editor/EditorLayout';
 
 export default function EditStoryPage({ params }: { params: { id: string } }) {
@@ -7,7 +7,7 @@ export default function EditStoryPage({ params }: { params: { id: string } }) {
   return (
     <EditorLayout>
       <Navbar />
-      <EditStoryClient storyId={id} />
+      <StoryFormClient mode="edit" storyId={id} />
     </EditorLayout>
   );
 }
