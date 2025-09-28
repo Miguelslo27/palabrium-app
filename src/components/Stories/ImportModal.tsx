@@ -102,7 +102,9 @@ export default function ImportModal({ open, onClose }: Props) {
 
         {result && (
           <div className="mt-4 p-3 bg-gray-50 border border-gray-100 rounded">
-            <pre className="text-sm whitespace-pre-wrap text-gray-900">{JSON.stringify(result, null, 2)}</pre>
+            <div className="max-h-[60vh] overflow-auto">
+              <pre className="text-sm whitespace-pre-wrap text-gray-900">{JSON.stringify(result, null, 2)}</pre>
+            </div>
           </div>
         )}
       </div>
