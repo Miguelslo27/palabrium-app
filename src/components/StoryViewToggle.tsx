@@ -14,9 +14,8 @@ export default function StoryViewToggle({ view, onChange }: Props) {
         onClick={() => onChange('grid')}
         aria-pressed={view === 'grid'}
         aria-label="Grid view"
-        className={`w-9 h-9 flex items-center justify-center rounded-md transition-colors ${
-          view === 'grid' ? 'bg-gray-200 text-gray-900 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-gray-50'
-        }`}
+        className={`w-9 h-9 flex items-center justify-center rounded-md transition-colors ${view === 'grid' ? 'bg-gray-200 text-gray-900 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-gray-50'
+          }`}
       >
         <span className="sr-only">Grid view</span>
         {/* grid icon */}
@@ -33,9 +32,8 @@ export default function StoryViewToggle({ view, onChange }: Props) {
         onClick={() => onChange('list')}
         aria-pressed={view === 'list'}
         aria-label="List view"
-        className={`w-9 h-9 flex items-center justify-center rounded-md transition-colors ${
-          view === 'list' ? 'bg-gray-200 text-gray-900 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-gray-50'
-        }`}
+        className={`w-9 h-9 flex items-center justify-center rounded-md transition-colors ${view === 'list' ? 'bg-gray-200 text-gray-900 ring-2 ring-blue-300' : 'bg-white text-gray-600 hover:bg-gray-50'
+          }`}
       >
         <span className="sr-only">List view</span>
         {/* list icon */}
