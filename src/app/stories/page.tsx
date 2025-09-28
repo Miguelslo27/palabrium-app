@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
 import { useEffect, useMemo, useState } from 'react';
 import Navbar from '@/components/Navbar';
-import StoryList from '@/components/StoryList';
 import type { Story } from '@/types/story';
-import PageHeader from '@/components/Common/PageHeader';
 import ContentCard from '@/components/Common/ContentCard';
 import Hero from '@/components/Common/Hero';
 import CategoriesSidebar from '@/components/Stories/CategoriesSidebar';
+import StoriesShell from '@/components/Stories/StoriesShell';
+import StoriesSidebar from '@/components/Stories/StoriesSidebar';
+import StoriesContent from '@/components/Stories/StoriesContent';
 
 export default function Stories() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -29,21 +30,21 @@ export default function Stories() {
   }, [stories, q]);
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this story?')) {
-      const res = await fetch(`/api/stories/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setStories(stories.filter(story => story._id !== id));
-      } else {
-        alert('Failed to delete story');
-      }
+    if (!confirm('Are you sure you want to delete this story?')) return;
+    const res = await fetch(`/api/stories/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setStories(prev => prev.filter(story => story._id !== id));
+    } else {
+      alert('Failed to delete story');
     }
   };
 
   return (
     <div className="h-screen flex flex-col bg-white">
       <Navbar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <PageHeader title="Stories">
+      <StoriesShell
+        title="Stories"
+        headerActions={(
           <div className="flex items-center gap-3">
             <input
               value={q}
@@ -53,32 +54,21 @@ export default function Stories() {
               className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
-        </PageHeader>
-
-        <div className="flex flex-1 min-h-0">
-          <CategoriesSidebar />
-
-          <main className="flex-1 p-6 overflow-y-auto">
-            <Hero gradientClass="bg-gradient-to-r from-blue-50 to-white" borderClass="border-blue-100">
-              <h2 className="text-2xl font-semibold text-gray-900">Discover stories created by the community</h2>
-              <p className="text-sm text-gray-600 mt-2">Explore, read and get inspired. Create your own story and share it with others.</p>
-            </Hero>
-            <ContentCard className="flex-1">
-              <div className="p-6 flex-1 min-h-0">
-                {loading ? (
-                  <div className="text-gray-600">Loading stories…</div>
-                ) : filtered.length === 0 ? (
-                  <div className="text-gray-600">No stories found.</div>
-                ) : (
-                  <StoryList stories={filtered} onDelete={handleDelete} />
-                )}
-              </div>
-            </ContentCard>
-            {/* spacer so bottom padding is visible when main is the scroll container */}
-            <div className="h-0" aria-hidden="true" />
-          </main>
-        </div>
-      </div>
+        )}
+        sidebar={<StoriesSidebar><CategoriesSidebar /></StoriesSidebar>}
+        hero={(
+          <Hero gradientClass="bg-gradient-to-r from-blue-50 to-white" borderClass="border-blue-100">
+            <h2 className="text-2xl font-semibold text-gray-900">Discover stories created by the community</h2>
+            <p className="text-sm text-gray-600 mt-2">Explore, read and get inspired. Create your own story and share it with others.</p>
+          </Hero>
+        )}
+      >
+        <ContentCard className="flex-1">
+          <div className="p-6 flex-1 min-h-0">
+            <StoriesContent loading={loading} stories={filtered} onDelete={handleDelete} />
+          </div>
+        </ContentCard>
+      </StoriesShell>
     </div>
   );
 }
