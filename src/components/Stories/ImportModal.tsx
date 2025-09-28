@@ -1,16 +1,15 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import getClerkClient from '@/lib/clerk-client';
 import Button from '@/components/Editor/Shared/Button';
 
 async function detectUserId(): Promise<string | null> {
   try {
-    // @ts-ignore
-    const cl = (window as any).Clerk;
-    if (cl && cl.user) return cl.user.id;
-    // @ts-ignore
-    if ((window as any).__USER_ID__) return (window as any).__USER_ID__;
-    return null;
+    const clerk: any = getClerkClient();
+    await clerk.load();
+    return clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
   } catch (err) {
+    if (typeof window !== 'undefined') return (window as any).__USER_ID__ || null;
     return null;
   }
 }
@@ -25,19 +24,41 @@ export default function ImportModal({ open, onClose }: Props) {
   const [dryRun, setDryRun] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<any | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // detect user id when modal opens
+  useEffect(() => {
+    if (!open) {
+      setUserId(null);
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      const id = await detectUserId();
+      if (mounted) setUserId(id);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [open]);
 
   if (!open) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!file) return;
+    if (!userId) {
+      setErrorMsg('You are not signed in. Please sign in or set window.__USER_ID__ for local testing.');
+      setSubmitting(false);
+      return;
+    }
     setSubmitting(true);
     setResult(null);
     try {
       const fd = new FormData();
       fd.append('file', file);
       const headers: Record<string, string> = {};
-      const userId = await detectUserId();
       if (userId) headers['x-user-id'] = String(userId);
       if (dryRun) headers['x-dry-run'] = '1';
 
@@ -61,10 +82,16 @@ export default function ImportModal({ open, onClose }: Props) {
             <label className="block text-sm font-medium text-gray-700">JSON file</label>
             <input className="mt-1" type="file" accept="application/json" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />
           </div>
+          {!userId && (
+            <div className="p-3 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded">
+              <strong>Warning:</strong> You are not signed in. Please sign in so imported stories are linked to your account. For local testing you may set <code>window.__USER_ID__</code>.
+            </div>
+          )}
           <div className="flex items-center">
             <input id="dry" type="checkbox" checked={dryRun} onChange={(e) => setDryRun(e.target.checked)} className="mr-2" />
             <label htmlFor="dry" className="text-sm">Dry run (validate only)</label>
           </div>
+          {errorMsg && <div className="text-sm text-red-600">{errorMsg}</div>}
           <div className="flex gap-2">
             <Button type="submit" disabled={submitting} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-300">
               {submitting ? 'Importing…' : 'Run import'}
