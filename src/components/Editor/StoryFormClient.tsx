@@ -72,10 +72,10 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
           }}
           className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded text-sm"
         >
-          Cancelar
+          Cancel
         </Button>
         <Button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
-          {submitting ? 'Saving…' : 'Guardar'}
+          {submitting ? 'Saving…' : 'Save'}
         </Button>
       </EditorHeader>
 
