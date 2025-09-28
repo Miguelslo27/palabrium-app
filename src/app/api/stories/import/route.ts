@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import mongoose from 'mongoose';
 import { z } from 'zod';
+import sanitizeHtml from 'sanitize-html';
 
 import Story from '@/models/Story';
 import Chapter from '@/models/Chapter';
@@ -30,10 +31,17 @@ const PayloadSchema = z.union([
 ]);
 
 async function parseMultipartFile(req: NextRequest): Promise<any | null> {
-  // Next.js App Router doesn't provide built-in multipart parsing here. Try to read body as text
-  // and parse as JSON as a fallback. For uploads from the UI, prefer application/json or
-  // send the file as the raw body with appropriate Content-Type.
   try {
+    // Try formData first (works for browser file uploads)
+    // @ts-ignore - NextRequest.formData exists in runtime
+    const fd = await (req as any).formData();
+    const file = fd.get('file');
+    if (file && typeof (file as any).text === 'function') {
+      const text = await (file as any).text();
+      return JSON.parse(text);
+    }
+
+    // Fallback: parse raw body as JSON
     const text = await req.text();
     if (!text) return null;
     return JSON.parse(text);
@@ -79,6 +87,14 @@ export async function POST(req: NextRequest) {
 
   for (let i = 0; i < storiesInput.length; i++) {
     const raw = storiesInput[i];
+    // sanitize chapter content before validating/creating
+    if (raw && Array.isArray(raw.chapters)) {
+      raw.chapters = raw.chapters.map((c: any) => ({
+        ...c,
+        content: typeof c.content === 'string' ? sanitizeHtml(c.content, { allowedTags: sanitizeHtml.defaults.allowedTags.filter((t: string) => t !== 'script') }) : c.content,
+      }));
+    }
+
     const storyValidation = StorySchema.safeParse(raw);
     if (!storyValidation.success) {
       results.push({ index: i, status: 'failed', error: storyValidation.error.flatten() });
