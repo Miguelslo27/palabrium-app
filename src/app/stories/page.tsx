@@ -1,18 +1,32 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import StoryList from '@/components/StoryList';
 import type { Story } from '@/types/story';
+import PageHeader from '@/components/Common/PageHeader';
+import ContentCard from '@/components/Common/ContentCard';
+import StoriesHero from '@/components/Stories/StoriesHero';
+import CategoriesSidebar from '@/components/Stories/CategoriesSidebar';
 
 export default function Stories() {
   const [stories, setStories] = useState<Story[]>([]);
+  const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch('/api/stories')
       .then(res => res.json())
-      .then(setStories);
+      .then((data) => setStories(data))
+      .finally(() => setLoading(false));
   }, []);
+
+  const filtered = useMemo(() => {
+    if (!q.trim()) return stories;
+    const s = q.toLowerCase();
+    return stories.filter(st => (st.title || '').toLowerCase().includes(s) || (st.description || '').toLowerCase().includes(s));
+  }, [stories, q]);
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this story?')) {
@@ -26,11 +40,41 @@ export default function Stories() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-white">
       <Navbar />
-      <div className="flex-1 max-w-4xl mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-6">Stories</h1>
-        <StoryList stories={stories} onDelete={handleDelete} showDeleteForOwned={true} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <PageHeader title="Stories">
+          <div className="flex items-center gap-3">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search stories..."
+              aria-label="Search stories"
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+        </PageHeader>
+
+        <div className="flex flex-1 min-h-0">
+          <CategoriesSidebar />
+
+          <div className="flex-1 p-6 overflow-y-auto">
+            <StoriesHero />
+            <ContentCard>
+              <div className="p-6">
+                {loading ? (
+                  <div className="text-gray-600">Loading stories…</div>
+                ) : filtered.length === 0 ? (
+                  <div className="text-gray-600">No stories found.</div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <StoryList stories={filtered} onDelete={handleDelete} showDeleteForOwned={true} />
+                  </div>
+                )}
+              </div>
+            </ContentCard>
+          </div>
+        </div>
       </div>
     </div>
   );
