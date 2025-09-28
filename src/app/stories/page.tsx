@@ -63,8 +63,8 @@ export default function Stories() {
               <h2 className="text-2xl font-semibold text-gray-900">Discover stories created by the community</h2>
               <p className="text-sm text-gray-600 mt-2">Explore, read and get inspired. Create your own story and share it with others.</p>
             </Hero>
-            <ContentCard>
-              <div className="p-6 flex-1 overflow-y-auto">
+            <ContentCard className="flex-1">
+              <div className="p-6 flex-1 min-h-0">
                 {loading ? (
                   <div className="text-gray-600">Loading stories…</div>
                 ) : filtered.length === 0 ? (

@@ -45,13 +45,13 @@ export default function MyStories() {
             }}
           />
 
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 p-6 flex flex-col min-h-0">
             <Hero gradientClass="bg-gradient-to-r from-green-50 to-white" borderClass="border-green-100">
               <h2 className="text-2xl font-semibold text-gray-900">Your personal workspace</h2>
               <p className="text-sm text-gray-600 mt-2">Draft and manage your stories here. Only you can see them until you publish.</p>
             </Hero>
-            <ContentCard>
-              <div className="p-6 flex-1 overflow-y-auto">
+            <ContentCard className="flex-1">
+              <div className="p-6 flex-1 overflow-y-auto min-h-0">
                 {loading ? (
                   <div className="text-gray-600">Loading your stories…</div>
                 ) : unauthorized ? (
