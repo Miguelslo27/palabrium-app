@@ -22,7 +22,6 @@ export default function MineSidebar({ storiesCount, onClear }: Props) {
           <Link href="/story/new">
             <Button className="text-sm bg-white border border-gray-300 px-3 py-2 rounded text-gray-800 text-center">Create story</Button>
           </Link>
-          {/* developer helper removed; use MineSidebar.onClear from page actions when needed */}
         </div>
       </div>
     </SidebarShell>
