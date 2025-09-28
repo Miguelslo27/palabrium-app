@@ -10,6 +10,7 @@ import Button from '@/components/Editor/Shared/Button';
 import MineSidebar from '@/components/Stories/MineSidebar';
 import PageHeader from '@/components/Common/PageHeader';
 import ContentCard from '@/components/Common/ContentCard';
+import StoriesContent from '@/components/Stories/StoriesContent';
 import Hero from '@/components/Common/Hero';
 import StoriesShell from '@/components/Stories/StoriesShell';
 
@@ -56,15 +57,16 @@ export default function MyStories() {
       >
         <ContentCard className="flex-1">
           <div className="p-6 flex-1 overflow-y-auto min-h-0">
-            {loading ? (
-              <div className="text-gray-600">Loading your stories…</div>
-            ) : unauthorized ? (
-              <div className="text-red-600">You must be signed in to see your stories.</div>
-            ) : stories.length === 0 ? (
-              <div className="text-gray-600">You have no stories yet. <Link href="/story/new" className="text-blue-600">Create one</Link>.</div>
-            ) : (
-              <StoryList stories={stories} onDelete={handleDelete} allowDelete={true} />
-            )}
+            <StoriesContent
+              loading={loading}
+              unauthorized={unauthorized}
+              stories={stories}
+              onDelete={handleDelete}
+              allowDelete={true}
+              emptyMessage={(
+                <span>You have no stories yet. <Link href="/story/new" className="text-blue-600">Create one</Link>.</span>
+              )}
+            />
           </div>
         </ContentCard>
       </StoriesShell>

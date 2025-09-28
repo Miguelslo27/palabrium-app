@@ -8,6 +8,7 @@ import ContentCard from '@/components/Common/ContentCard';
 import Hero from '@/components/Common/Hero';
 import CategoriesSidebar from '@/components/Stories/CategoriesSidebar';
 import StoriesShell from '@/components/Stories/StoriesShell';
+import StoriesContent from '@/components/Stories/StoriesContent';
 
 export default function Stories() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -64,13 +65,7 @@ export default function Stories() {
       >
         <ContentCard className="flex-1">
           <div className="p-6 flex-1 min-h-0">
-            {loading ? (
-              <div className="text-gray-600">Loading stories…</div>
-            ) : filtered.length === 0 ? (
-              <div className="text-gray-600">No stories found.</div>
-            ) : (
-              <StoryList stories={filtered} onDelete={handleDelete} />
-            )}
+            <StoriesContent loading={loading} stories={filtered} onDelete={handleDelete} />
           </div>
         </ContentCard>
       </StoriesShell>
