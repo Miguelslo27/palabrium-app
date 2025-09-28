@@ -39,7 +39,7 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
         </div>
       </div>
       <div>
-  <label className="block text-sm font-medium text-gray-800 mb-1">Content</label>
+        <label className="block text-sm font-medium text-gray-800 mb-1">Content</label>
         <textarea
           placeholder=""
           value={chapter.content}
