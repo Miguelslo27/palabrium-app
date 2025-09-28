@@ -8,6 +8,7 @@ import ContentCard from '@/components/Common/ContentCard';
 import Hero from '@/components/Common/Hero';
 import CategoriesSidebar from '@/components/Stories/CategoriesSidebar';
 import StoriesShell from '@/components/Stories/StoriesShell';
+import StoriesSidebar from '@/components/Stories/StoriesSidebar';
 import StoriesContent from '@/components/Stories/StoriesContent';
 
 export default function Stories() {
@@ -55,7 +56,7 @@ export default function Stories() {
             />
           </div>
         )}
-        sidebar={<CategoriesSidebar />}
+        sidebar={<StoriesSidebar><CategoriesSidebar /></StoriesSidebar>}
         hero={(
           <Hero gradientClass="bg-gradient-to-r from-blue-50 to-white" borderClass="border-blue-100">
             <h2 className="text-2xl font-semibold text-gray-900">Discover stories created by the community</h2>

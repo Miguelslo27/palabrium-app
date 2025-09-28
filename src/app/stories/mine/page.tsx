@@ -13,6 +13,7 @@ import ContentCard from '@/components/Common/ContentCard';
 import StoriesContent from '@/components/Stories/StoriesContent';
 import Hero from '@/components/Common/Hero';
 import StoriesShell from '@/components/Stories/StoriesShell';
+import StoriesSidebar from '@/components/Stories/StoriesSidebar';
 
 export default function MyStories() {
   const { stories, loading, unauthorized, deleteStory, deleteAll } = useMyStories();
@@ -34,18 +35,20 @@ export default function MyStories() {
           </Link>
         )}
         sidebar={(
-          <MineSidebar
-            storiesCount={stories.length}
-            onClear={async () => {
-              if (!confirm('Delete ALL your stories? This cannot be undone.')) return;
-              const ok = await deleteAll();
-              if (ok) {
-                alert('Deleted all stories');
-              } else {
-                alert('Failed to delete stories');
-              }
-            }}
-          />
+          <StoriesSidebar>
+            <MineSidebar
+              storiesCount={stories.length}
+              onClear={async () => {
+                if (!confirm('Delete ALL your stories? This cannot be undone.')) return;
+                const ok = await deleteAll();
+                if (ok) {
+                  alert('Deleted all stories');
+                } else {
+                  alert('Failed to delete stories');
+                }
+              }}
+            />
+          </StoriesSidebar>
         )}
         hero={(
           <Hero gradientClass="bg-gradient-to-r from-green-50 to-white" borderClass="border-green-100">
