@@ -1,5 +1,6 @@
 import dbConnect from '@/lib/mongodb';
 import Story from '@/models/Story';
+import Chapter from '@/models/Chapter';
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
@@ -21,6 +22,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
   if (story.authorId !== userId) return new Response('Forbidden', { status: 403 });
 
-  await Story.findByIdAndDelete(id);
+  // Delete chapters belonging to this story to keep DB consistent
+  await Chapter.deleteMany({ storyId: id });
+  await story.deleteOne();
   return new Response('Story deleted', { status: 200 });
 }

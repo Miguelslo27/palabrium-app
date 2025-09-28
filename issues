@@ -5,6 +5,8 @@
 - [-] Convertir y mejorar esquemas de historias y capítulos
 
 ## Prioridades para MVP
+- [ ] Agregar endpoint de carga masiva
+- [ ] Crear JSON con datos de prueba
 - [ ] Editar historia al hacer click en el título
 - [ ] Agregar botón de Preview (ojito)
 
