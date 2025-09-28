@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Navbar from '@/components/Navbar';
-import StoryList from '@/components/StoryList';
 import type { Story } from '@/types/story';
 import ContentCard from '@/components/Common/ContentCard';
 import Hero from '@/components/Common/Hero';

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import StoryCard from '@/components/StoryCard';
-import StoryViewToggle from '@/components/StoryViewToggle';
 import type { Story } from '@/types/story';
 
 type ViewMode = 'grid' | 'list';
@@ -21,26 +20,8 @@ interface StoryListProps {
 export default function StoryList({ stories, onDelete, allowDelete = false, view: controlledView, onChangeView }: StoryListProps) {
   const [localView, setLocalView] = useState<ViewMode>('grid');
 
-  // load persisted preference only when uncontrolled
-  useEffect(() => {
-    if (controlledView) return;
-    try {
-      const v = localStorage.getItem('stories.view');
-      if (v === 'grid' || v === 'list') setLocalView(v);
-    } catch (e) {
-      // ignore
-    }
-  }, [controlledView]);
-
-  useEffect(() => {
-    if (controlledView) return;
-    try {
-      localStorage.setItem('stories.view', localView);
-    } catch (e) {
-      // ignore
-    }
-  }, [localView, controlledView]);
-
+  // Controlled if `controlledView` is provided, otherwise use local state.
+  // Persistence of the preference is owned by the toolbar/parent (`StoriesContent`).
   const view = controlledView ?? localView;
   const setView = (v: ViewMode) => {
     if (onChangeView) return onChangeView(v);
@@ -50,7 +31,7 @@ export default function StoryList({ stories, onDelete, allowDelete = false, view
   return (
     <div>
       {view === 'grid' ? (
-        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))' }}>
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
           {stories.map((story) => (
             <StoryCard
               key={story._id}
