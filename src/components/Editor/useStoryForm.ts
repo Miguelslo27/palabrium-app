@@ -137,6 +137,16 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
         }
       }
 
+      // After a successful edit, refresh original story snapshot so UI knows it's saved
+      try {
+        const sres = await fetch(`/api/stories/${storyId}`);
+        if (sres.ok) {
+          const sdata = await sres.json();
+          setOrigStory(sdata || null);
+        }
+      } catch (e) {
+        // ignore
+      }
       return { ok: true };
     } finally {
       setSubmitting(false);

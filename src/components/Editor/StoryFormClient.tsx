@@ -54,7 +54,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
     try {
       await edit();
       if (onSaved && storyId) onSaved(storyId);
-      router.push(`/story/${storyId}`);
+      // stay on the edit form after saving (no navigation)
     } catch (err) {
       console.error('edit', err);
       alert('Error saving story');

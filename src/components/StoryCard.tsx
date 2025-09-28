@@ -18,7 +18,7 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
       <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 flex items-start gap-4">
         <div className="flex-1">
           <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
-            <Link href={`/story/${story._id}`}>
+            <Link href={showDelete ? `/story/${story._id}/edit` : `/story/${story._id}`}>
               {story.title}
             </Link>
           </h2>
@@ -51,7 +51,7 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
     <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 h-full flex flex-col">
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
-          <Link href={`/story/${story._id}`}>
+          <Link href={showDelete ? `/story/${story._id}/edit` : `/story/${story._id}`}>
             {story.title}
           </Link>
         </h2>
