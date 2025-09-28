@@ -6,7 +6,7 @@ import StoryList from '@/components/StoryList';
 import type { Story } from '@/types/story';
 import PageHeader from '@/components/Common/PageHeader';
 import ContentCard from '@/components/Common/ContentCard';
-import StoriesHero from '@/components/Stories/StoriesHero';
+import Hero from '@/components/Common/Hero';
 import CategoriesSidebar from '@/components/Stories/CategoriesSidebar';
 
 export default function Stories() {
@@ -59,7 +59,10 @@ export default function Stories() {
           <CategoriesSidebar />
 
           <div className="flex-1 p-6 overflow-y-auto">
-            <StoriesHero />
+            <Hero gradientClass="bg-gradient-to-r from-blue-50 to-white" borderClass="border-blue-100">
+              <h2 className="text-2xl font-semibold text-gray-900">Discover stories created by the community</h2>
+              <p className="text-sm text-gray-600 mt-2">Explore, read and get inspired. Create your own story and share it with others.</p>
+            </Hero>
             <ContentCard>
               <div className="p-6">
                 {loading ? (

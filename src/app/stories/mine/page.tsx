@@ -10,6 +10,7 @@ import Button from '@/components/Editor/Shared/Button';
 import MineSidebar from '@/components/Stories/MineSidebar';
 import PageHeader from '@/components/Common/PageHeader';
 import ContentCard from '@/components/Common/ContentCard';
+import Hero from '@/components/Common/Hero';
 
 export default function MyStories() {
   const { stories, loading, unauthorized, deleteStory, deleteAll } = useMyStories();
@@ -45,6 +46,10 @@ export default function MyStories() {
           />
 
           <main className="flex-1 p-6 overflow-y-auto">
+            <Hero gradientClass="bg-gradient-to-r from-green-50 to-white" borderClass="border-green-100">
+              <h2 className="text-2xl font-semibold text-gray-900">Your personal workspace</h2>
+              <p className="text-sm text-gray-600 mt-2">Draft and manage your stories here. Only you can see them until you publish.</p>
+            </Hero>
             <ContentCard>
               <div className="p-6 flex-1 overflow-y-auto">
                 {loading ? (
