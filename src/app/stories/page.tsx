@@ -74,6 +74,8 @@ export default function Stories() {
                 )}
               </div>
             </ContentCard>
+            {/* spacer so bottom padding is visible when main is the scroll container */}
+            <div className="h-0" aria-hidden="true" />
           </main>
         </div>
       </div>
