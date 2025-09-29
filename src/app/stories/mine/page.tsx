@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import useMyStories from '@/hooks/useMyStories';
+import useMyStoriesPaged from '@/hooks/useMyStoriesPaged';
 import EditorLayout from '@/components/Editor/EditorLayout';
 import Button from '@/components/Editor/Shared/Button';
 import MineSidebar from '@/components/Stories/MineSidebar';
@@ -15,6 +16,9 @@ import StoriesSidebar from '@/components/Stories/StoriesSidebar';
 
 export default function MyStories() {
   const { stories, loading, unauthorized, deleteStory, deleteAll, refresh } = useMyStories();
+  const paged = useMyStoriesPaged({ requestedPageSize: 10 });
+
+  const pagedStories = paged.stories;
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this story?')) return;
@@ -62,11 +66,18 @@ export default function MyStories() {
         <ContentCard className="flex-1">
           <div className="p-6 flex-1 overflow-y-auto min-h-0">
             <StoriesContent
-              loading={loading}
-              unauthorized={unauthorized}
-              stories={stories}
+              loading={paged.loading}
+              unauthorized={paged.unauthorized || unauthorized}
+              stories={pagedStories}
               onDelete={handleDelete}
               allowDelete={true}
+              pageSize={paged.pageSize}
+              // server paged mode
+              serverPaged={true}
+              total={paged.total}
+              page={paged.page}
+              onPageChange={paged.setPage}
+              onPageSizeChange={paged.setPageSize}
               emptyMessage={(
                 <span>You have no stories yet. <Link href="/story/new" className="text-blue-600">Create one</Link>.</span>
               )}

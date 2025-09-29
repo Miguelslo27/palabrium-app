@@ -2,10 +2,37 @@ import dbConnect from '../../../lib/mongodb';
 import Story from '../../../models/Story';
 import Chapter from '../../../models/Chapter';
 
-export async function GET() {
+export async function GET(req: Request) {
   await dbConnect();
-  const stories = await Story.find({ published: true }).sort({ createdAt: -1 });
-  return Response.json(stories);
+
+  const url = new URL(req.url);
+  const skipParam = url.searchParams.get('skip') || '0';
+  const limitParam = url.searchParams.get('limit') || '50';
+  const q = url.searchParams.get('q') || '';
+
+  let skip = parseInt(skipParam, 10);
+  let limit = parseInt(limitParam, 10);
+  if (Number.isNaN(skip) || skip < 0) skip = 0;
+  if (Number.isNaN(limit) || limit <= 0) limit = 50;
+  // enforce maximum batch size of 50
+  limit = Math.min(limit, 50);
+
+  // build filter (published + optional search)
+  const filter: any = { published: true };
+  if (q && q.trim()) {
+    // simple text search on title/description
+    const re = new RegExp(q.trim(), 'i');
+    filter.$or = [{ title: re }, { description: re }];
+  }
+
+  try {
+    const total = await Story.countDocuments(filter);
+    const items = await Story.find(filter).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(limit);
+    return Response.json({ items, total, skip, limit });
+  } catch (err) {
+    console.error('Error fetching stories with pagination', err);
+    return new Response('Error fetching stories', { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
