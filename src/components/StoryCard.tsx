@@ -9,16 +9,23 @@ interface StoryCardProps {
   showDelete?: boolean;
   onDelete?: (id: string) => void;
   view?: 'grid' | 'list';
+  // whether this story belongs to the current logged-in user
+  isMine?: boolean;
 }
 
-export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid' }: StoryCardProps) {
+export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid', isMine = false }: StoryCardProps) {
   const chapterCount = typeof story.chapterCount === 'number' ? story.chapterCount : (story.chapters?.length || 0);
   const createdDate = story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Unknown';
 
   if (view === 'list') {
     return (
-      <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 flex items-start gap-4">
+      <div className={`${isMine ? 'border-l-4 border-blue-400' : ''} bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 flex items-start gap-4`}>
         <div className="flex-1">
+          {isMine && (
+            <div className="inline-block mb-2">
+              <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Yours</span>
+            </div>
+          )}
           <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
             <Link href={showDelete ? `/story/${story._id}/edit` : `/story/${story._id}`}>
               {story.title}
@@ -53,13 +60,18 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
 
   // grid card
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 h-full flex flex-col">
+    <div className={`${isMine ? 'border-l-4 border-blue-400' : ''} bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 h-full flex flex-col`}>
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
           <Link href={showDelete ? `/story/${story._id}/edit` : `/story/${story._id}`}>
             {story.title}
           </Link>
         </h2>
+        {isMine && (
+          <div className="ml-3">
+            <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Yours</span>
+          </div>
+        )}
         {showDelete && onDelete && (
           <div className="flex items-center gap-2">
             <Link href={`/story/${story._id}`} target="_blank" rel="noopener noreferrer" aria-label="Preview story" title="Preview story" className="h-8 w-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 rounded">
