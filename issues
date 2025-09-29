@@ -3,17 +3,18 @@
 ## En progreso
 - [x] Agregar botón de Preview (icono de ojito)
 - [x] Resaltar historias propias en Explorar
-- [-] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
+- [x] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
 
 ## Prioridades para MVP
 - [ ] Pinear historias en Mis historias
-- [ ] Guarar nombre de autor en el libro
 - [ ] Permitir agregar portada
 - [ ] Permitir agregar imagen de fondo (para el hero)
 - [ ] Mostrar hero en la vista del libro con una imagen cargada. Si no hay, mostrar la portada
 - [ ] Mostrar la portada en las cards
 - [ ] Poner la imagen de fondo, en las cards
 - [ ] Agregar review (estrellitas) y comentario
+- [ ] Métricas de lectura
+- [ ] Guarar nombre de autor en el libro
 
 ## Finalizado
 - [x] Componentizar todo y dejar bien organizado
@@ -23,8 +24,15 @@
 - [x] Crear JSON con datos de prueba
 
 ## Sería bueno tener para la próxima versión
+- [ ] Seguir autores
 - [ ] Agregar para compartir historias (o capítulos) en redes sociales
 - [ ] --Alinear cantidad de historias con Stories (en mis historias sidebar)--
 
 ## Roadmap a futuro
-- [ ] 
+- [ ] Añadir géneros (formato label)
+- [ ] Filtrar por género
+- [ ] Diseño home
+- [ ] Diseño signup/signin
+- [ ] Diseño Mis historias
+- [ ] Diseño Explorar
+- [ ] Página de Perfil de autor
