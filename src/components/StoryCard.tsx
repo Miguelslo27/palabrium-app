@@ -10,7 +10,7 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid' }: StoryCardProps) {
-  const chapterCount = story.chapters?.length || 0;
+  const chapterCount = typeof story.chapterCount === 'number' ? story.chapterCount : (story.chapters?.length || 0);
   const createdDate = story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Unknown';
 
   if (view === 'list') {

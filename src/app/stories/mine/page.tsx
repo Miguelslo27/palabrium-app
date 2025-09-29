@@ -14,7 +14,7 @@ import StoriesShell from '@/components/Stories/StoriesShell';
 import StoriesSidebar from '@/components/Stories/StoriesSidebar';
 
 export default function MyStories() {
-  const { stories, loading, unauthorized, deleteStory, deleteAll } = useMyStories();
+  const { stories, loading, unauthorized, deleteStory, deleteAll, refresh } = useMyStories();
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this story?')) return;
@@ -44,6 +44,9 @@ export default function MyStories() {
                 } else {
                   alert('Failed to delete stories');
                 }
+              }}
+              onImported={async () => {
+                try { await refresh(); } catch (err) { try { /* ignore */ } catch (e) { } }
               }}
             />
           </StoriesSidebar>

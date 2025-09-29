@@ -9,6 +9,7 @@ export interface Story {
   title: string;
   description: string;
   authorId?: string;
+  chapterCount?: number;
   chapters: Chapter[];
   published?: boolean;
   likes?: string[];

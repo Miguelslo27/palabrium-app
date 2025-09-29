@@ -6,6 +6,7 @@ const StorySchema = new mongoose.Schema({
   authorId: { type: String, required: true },
   // chapters are stored in a separate collection (Chapter) with a 1:N relation
   chapterCount: { type: Number, default: 0 },
+  pinned: { type: Boolean, default: false },
   published: { type: Boolean, default: false },
   likes: [{ type: String }], // array of userIds
   createdAt: { type: Date, default: Date.now },
