@@ -9,7 +9,6 @@ interface StoryCardProps {
   showDelete?: boolean;
   onDelete?: (id: string) => void;
   view?: 'grid' | 'list';
-  // whether this story belongs to the current logged-in user
   isMine?: boolean;
 }
 

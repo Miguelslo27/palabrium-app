@@ -50,7 +50,10 @@ export default function MyStories() {
                 }
               }}
               onImported={async () => {
-                try { await refresh(); } catch (err) { try { /* ignore */ } catch (e) { } }
+                try {
+                  await refresh();
+                  try { await paged.refresh(); } catch (e) { /* ignore paged refresh errors */ }
+                } catch (err) { try { /* ignore */ } catch (e) { } }
               }}
             />
           </StoriesSidebar>

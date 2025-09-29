@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import StoryViewToggle from '@/components/StoryViewToggle';
+import StoryViewToggle from '@/components/Story/StoryViewToggle';
 
 type Props = {
   count: number;

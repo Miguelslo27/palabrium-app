@@ -74,7 +74,7 @@ export default function CustomSignIn() {
     } catch (err: any) {
       // See https://clerk.com/docs/guides/development/custom-flows/error-handling
       // for more info on error handling
-      setLoading(true);
+      setLoading(false);
       try {
         setError(err.errors.flatMap((er: any) => er.message).join(', '))
       } catch (_) {
