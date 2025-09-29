@@ -5,13 +5,13 @@
 - [x] Convertir y mejorar esquemas de historias y capítulos
 - [x] Editar historia al hacer click en el título (Solo en Mis historias)
 - [x] Agregar endpoint de carga masiva
-- [-] Crear JSON con datos de prueba
+- [x] Crear JSON con datos de prueba
+- [-] Agregar botón de Preview (icono de ojito)
 
 ## Prioridades para MVP
-- [ ] Agregar botón de Preview (ojito)
+- [ ] Resaltar historias propias en Explorar
 - [ ] Pinear historias en Mis historias
 - [ ] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
-- [ ] Resaltar historias propias en Explorar
 
 ## Sería bueno tener para la próxima versión
 - [ ] --Alinear cantidad de historias con Stories (en mis historias sidebar)--

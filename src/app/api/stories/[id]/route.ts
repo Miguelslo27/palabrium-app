@@ -7,7 +7,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const { id } = await params;
   const story = await Story.findById(id);
   if (!story) return new Response('Not found', { status: 404 });
-  return Response.json(story);
+  // Fetch chapters stored in separate collection and attach them
+  const chapters = await Chapter.find({ storyId: story._id }).sort({ order: 1, createdAt: 1 }).lean();
+  const plainStory = story.toObject ? story.toObject() : JSON.parse(JSON.stringify(story));
+  plainStory.chapters = chapters || [];
+  return Response.json(plainStory);
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
