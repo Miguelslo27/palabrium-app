@@ -17,9 +17,10 @@ async function detectUserId(): Promise<string | null> {
 type Props = {
   open: boolean;
   onClose: () => void;
+  onImported?: () => void;
 };
 
-export default function ImportModal({ open, onClose }: Props) {
+export default function ImportModal({ open, onClose, onImported }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [dryRun, setDryRun] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -65,6 +66,13 @@ export default function ImportModal({ open, onClose }: Props) {
       const res = await fetch('/api/stories/import', { method: 'POST', body: fd, headers });
       const json = await res.json();
       setResult(json);
+      // If import actually created items, notify parent so it can refresh lists
+      try {
+        const created = Array.isArray(json.results) ? json.results.filter((r: any) => r.status === 'created').length : 0;
+        if (created > 0 && typeof onImported === 'function') onImported();
+      } catch (err) {
+        // ignore
+      }
     } catch (err) {
       setResult({ error: String(err) });
     } finally {
