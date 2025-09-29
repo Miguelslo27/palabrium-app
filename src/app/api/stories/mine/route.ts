@@ -6,8 +6,26 @@ export async function GET(req: Request) {
   if (!userId) return new Response('Unauthorized', { status: 401 });
 
   await dbConnect();
-  const stories = await Story.find({ authorId: userId }).sort({ createdAt: -1 });
-  return Response.json(stories);
+
+  const url = new URL(req.url);
+  const skipParam = url.searchParams.get('skip') || '0';
+  const limitParam = url.searchParams.get('limit') || '50';
+
+  let skip = parseInt(skipParam, 10);
+  let limit = parseInt(limitParam, 10);
+  if (Number.isNaN(skip) || skip < 0) skip = 0;
+  if (Number.isNaN(limit) || limit <= 0) limit = 50;
+  limit = Math.min(limit, 50);
+
+  try {
+    const filter = { authorId: userId } as any;
+    const total = await Story.countDocuments(filter);
+    const items = await Story.find(filter).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(limit);
+    return Response.json({ items, total, skip, limit });
+  } catch (err) {
+    console.error('Error fetching user stories with pagination', err);
+    return new Response('Error fetching stories', { status: 500 });
+  }
 }
 
 export async function DELETE(req: Request) {

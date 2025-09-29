@@ -11,6 +11,7 @@ type Props = {
   page?: number;
   totalPages?: number;
   pageSize?: number;
+  total?: number;
   onChangePage?: (p: number) => void;
   onChangePageSize?: (s: number) => void;
 };
@@ -24,10 +25,21 @@ export default function StoriesToolbar({
   pageSize,
   onChangePage,
   onChangePageSize,
+  total,
 }: Props) {
   return (
     <div className="flex items-center justify-between mb-4">
-      <div className="text-sm text-gray-600">Showing {count} stories</div>
+      <div className="text-sm text-gray-600">
+        {typeof page !== 'undefined' && typeof total === 'number' ? (
+          (() => {
+            const start = (page - 1) * (pageSize || 10) + 1;
+            const end = Math.min(total, (page - 1) * (pageSize || 10) + (pageSize || 10));
+            return <>Showing {start}-{end} of {total}</>;
+          })()
+        ) : (
+          <>Showing {count} stories</>
+        )}
+      </div>
       <div className="flex items-center gap-4">
         <StoryViewToggle view={view} onChange={onChangeView} />
 
