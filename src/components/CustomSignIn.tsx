@@ -1,92 +1,94 @@
 "use client";
 
-import { useState } from 'react';
-import getClerkClient from '../lib/clerk-client';
-import startOAuth from '../lib/clerk-oauth';
-import { useRouter } from 'next/navigation';
+import { FormEvent, useState, useEffect } from 'react';
+import { OAuthStrategy } from '@clerk/types'
+import { useUser, useSignIn } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 export default function CustomSignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { isLoaded, signIn, setActive } = useSignIn()
+
+  const router = useRouter();
+  const { isSignedIn } = useUser();
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
 
-  const handleGoogle = () => setError('Social sign-in removed (no auth provider)');
-  const handleFacebook = () => setError('Social sign-in removed (no auth provider)');
-  const handleMicrosoft = () => setError('Social sign-in removed (no auth provider)');
+  const signInWith = (strategy: OAuthStrategy) => {
+    if (!signIn) return Promise.reject(new Error('signIn not available'))
 
-  const handleGoogleOAuth = () => {
-    (async () => {
-      try {
-        await startOAuth('signIn', 'oauth_google', '/', '/');
-      } catch (e) {
-        console.error('Google sign-in failed', e);
-        setError('Google sign-in failed. See console for details.');
-      }
-    })();
-  };
+    return signIn
+      .authenticateWithRedirect({
+        strategy,
+        redirectUrl: '/sign-in/sso-callback',
+        redirectUrlComplete: '/',
+      })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err: any) => {
+        // See https://clerk.com/docs/guides/development/custom-flows/error-handling
+        // for more info on error handling
+        console.log(err.errors)
+        console.error(err, null, 2)
+      })
+  }
 
-  const handleFacebookOAuth = () => {
-    (async () => {
-      try {
-        await startOAuth('signIn', 'oauth_facebook', '/', '/');
-      } catch (e) {
-        console.error('Facebook sign-in failed', e);
-        setError('Facebook sign-in failed. See console for details.');
-      }
-    })();
-  };
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
 
-  const handleMicrosoftOAuth = () => {
-    (async () => {
-      try {
-        await startOAuth('signIn', 'oauth_microsoft', '/', '/');
-      } catch (e) {
-        console.error('Microsoft sign-in failed', e);
-        setError('Microsoft sign-in failed. See console for details.');
-      }
-    })();
-  };
+    if (!isLoaded) return
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    // Start the sign-in process using the email and password provided
     try {
-      const clerk: any = getClerkClient();
-      await clerk.load();
+      setLoading(true);
+      const signInAttempt = await signIn.create({
+        identifier: email,
+        password,
+      })
 
-      // Try to complete the sign-in in a single step by providing the password
-      // Use clerk.signIn if available, otherwise try clerk.client.signIn (some SDK builds expose it there)
-      const signInApi = (clerk && (clerk.signIn || (clerk.client && clerk.client.signIn))) as any;
-      if (!signInApi || typeof signInApi.create !== 'function') {
-        throw new Error('Clerk signIn API not available on client instance. Make sure @clerk/clerk-js is loaded and NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is valid.');
-      }
-
-      const signIn = await signInApi.create({ strategy: 'password', identifier: email, password });
-
-      // If the sign-in is complete we get a createdSessionId
-      if (signIn.status === 'complete' && signIn.createdSessionId) {
-        await clerk.setActive({ session: signIn.createdSessionId });
-        // Ensure client updates its internal state and cookies before redirecting
-        await clerk.load();
-        router.push('/');
-      } else if (signIn.status === 'needs_first_factor' || signIn.status === 'needs_second_factor') {
-        setError('Sign in requires additional verification (MFA or code).');
-      } else if (signIn.status === 'needs_identifier') {
-        setError('Please provide a valid identifier.');
+      if (signInAttempt.status === 'complete') {
+        await setActive({
+          session: signInAttempt.createdSessionId,
+          navigate: async ({ session }: any) => {
+            if (session?.currentTask) {
+              // Check for tasks and navigate to custom UI to help users resolve them
+              // See https://clerk.com/docs/guides/development/custom-flows/overview#session-tasks
+              console.log(session?.currentTask)
+              return
+            }
+            setLoading(true);
+            router.push('/')
+          },
+        })
       } else {
-        setError('Sign in not completed.');
+        // If the status is not complete, check why. User may need to
+        // complete further steps.
+        setLoading(true);
+        setError('Something went wrong. Try again.')
+        console.error(JSON.stringify(signInAttempt, null, 2))
       }
     } catch (err: any) {
-      console.error('Sign in error', err);
-      // Clerk returns structured errors; show a helpful message
-      setError(err?.message || (err?.error && err.error) || 'Sign in failed');
-    } finally {
-      setLoading(false);
+      // See https://clerk.com/docs/guides/development/custom-flows/error-handling
+      // for more info on error handling
+      setLoading(true);
+      try {
+        setError(err.errors.flatMap((er: any) => er.message).join(', '))
+      } catch (_) {
+        setError(err?.message || 'Sign in failed')
+      }
+      console.error(JSON.stringify(err, null, 2))
     }
-  };
+  }
+
+  useEffect(() => {
+    if (isSignedIn) router.replace('/');
+  }, [isSignedIn, router]);
+
+  if (!signIn) return null
 
   return (
     <div className="relative h-full w-full bg-red-50 p-8 flex flex-col justify-center">
@@ -102,19 +104,19 @@ export default function CustomSignIn() {
       <h1 className="text-4xl font-bold text-gray-800 text-center mb-8 flex-none">Sign In</h1>
       <div className="flex justify-center space-x-4 flex-none">
         <button
-          onClick={handleGoogleOAuth}
+          onClick={() => { signInWith('oauth_google') }}
           className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
           Google
         </button>
         <button
-          onClick={handleFacebookOAuth}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
+          onClick={() => { signInWith('oauth_apple') }}
+          className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
-          Facebook
+          Apple
         </button>
         <button
-          onClick={handleMicrosoftOAuth}
+          onClick={() => { signInWith('oauth_microsoft') }}
           className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
           Microsoft
@@ -158,6 +160,6 @@ export default function CustomSignIn() {
       <p className="mt-6 text-blue-600 hover:text-blue-800">
         <a href="/sign-up">Don't have an account? Sign up</a>
       </p>
-    </div>
+    </div >
   );
 }
