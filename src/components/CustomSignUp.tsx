@@ -1,14 +1,14 @@
 "use client";
 
 import { FormEvent, useState, useEffect } from 'react';
-// import getClerkClient from '../lib/clerk-client';
-// import startOAuth from '../lib/clerk-oauth';
-import { useSignUp, useUser } from '@clerk/nextjs'
+import { OAuthStrategy } from '@clerk/types'
+import { useSignUp, useUser, useSignIn } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation';
 
 export default function CustomSignUp() {
-  // Client-side redirect guard: if already signed in, navigate to home
+  const { signIn } = useSignIn()
   const router = useRouter();
+
   const { isSignedIn } = useUser();
   const { isLoaded, signUp, setActive } = useSignUp();
   const [emailAddress, setEmailAddress] = useState('');
@@ -22,111 +22,25 @@ export default function CustomSignUp() {
   const [verifying, setVerifying] = useState(false);
   const [code, setCode] = useState('');
 
-  // const handleGoogle = () => {
-  //   (async () => {
-  //     try {
-  //       await startOAuth('signUp', 'oauth_google', '/', '/');
-  //     } catch (e) {
-  //       console.error('Google signup failed', e);
-  //       setError('Google signup failed. See console for details.');
-  //     }
-  //   })();
-  // };
+  const signInWith = (strategy: OAuthStrategy) => {
+    if (!signIn) return Promise.reject(new Error('signIn not available'))
 
-  // const handleFacebook = () => {
-  //   (async () => {
-  //     try {
-  //       await startOAuth('signUp', 'oauth_facebook', '/', '/');
-  //     } catch (e) {
-  //       console.error('Facebook signup failed', e);
-  //       setError('Facebook signup failed. See console for details.');
-  //     }
-  //   })();
-  // };
-
-  // const handleMicrosoft = () => {
-  //   (async () => {
-  //     try {
-  //       await startOAuth('signUp', 'oauth_microsoft', '/', '/');
-  //     } catch (e) {
-  //       console.error('Microsoft signup failed', e);
-  //       setError('Microsoft signup failed. See console for details.');
-  //     }
-  //   })();
-  // };
-
-  // const handleSubmit = async (e: FormEvent) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setError('');
-  //   try {
-  //     // Prefer client-side Clerk sign-up flow: create SignUp -> attemptFirstFactor -> setActive
-  //     try {
-  //       const clerk: any = getClerkClient();
-  //       await clerk.load();
-
-  //       // Create a signUp instance (password strategy)
-  //       const signUp = await clerk.signUp.create({ strategy: 'password', identifier: email });
-
-  //       // Attempt first factor (password)
-  //       const attempt = await signUp.attemptFirstFactor({ strategy: 'password', password });
-
-  //       if (attempt.status === 'complete' && attempt.createdSessionId) {
-  //         await clerk.setActive({ session: attempt.createdSessionId });
-  //         await clerk.load();
-  //         setResendStatus('Signup successful — you are signed in');
-  //         router.push('/');
-  //         return;
-  //       }
-
-  //       // If not complete, fall through to server fallback
-  //     } catch (clientErr) {
-  //       // Client-side flow failed; fallback to server endpoint
-  //       console.warn('Client-side Clerk sign-up failed, falling back to server endpoint', clientErr);
-  //       const res = await fetch('/api/local-signup', {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify({ email, password, firstName, lastName }),
-  //       });
-  //       const data = await res.json();
-  //       if (!res.ok) {
-  //         setError(data?.message || 'Signup failed');
-  //         // keep error for user display
-  //         // debug info intentionally not stored on the client UI
-  //       } else {
-  //         // server created user successfully
-  //         // Try to sign-in client-side using the same credentials so we can obtain a createdSessionId
-  //         // and call clerk.setActive() to sign the user in. This avoids relying on backend-created
-  //         // sessions which aren't always usable client-side for setting browser cookies.
-  //         try {
-  //           const clerk: any = getClerkClient();
-  //           await clerk.load();
-
-  //           const signInApi = (clerk && (clerk.signIn || (clerk.client && clerk.client.signIn))) as any;
-  //           if (signInApi && typeof signInApi.create === 'function') {
-  //             const signIn = await signInApi.create({ strategy: 'password', identifier: email, password });
-  //             if (signIn.status === 'complete' && signIn.createdSessionId) {
-  //               await clerk.setActive({ session: signIn.createdSessionId });
-  //               await clerk.load();
-  //               setResendStatus('Signup successful — you are signed in');
-  //               router.push('/');
-  //               return;
-  //             }
-  //           }
-  //         } catch (signinErr) {
-  //           console.warn('Client-side sign-in after server signup failed', signinErr);
-  //         }
-
-  //         // If client-side activation didn't happen, fall back to an explanatory message about verification.
-  //         setResendStatus('Signup successful — check your email if verification is required');
-  //       }
-  //     }
-  //   } catch (err) {
-  //     setError('Network error');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+    return signIn
+      .authenticateWithRedirect({
+        strategy,
+        redirectUrl: '/sign-in/sso-callback',
+        redirectUrlComplete: '/',
+      })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err: any) => {
+        // See https://clerk.com/docs/guides/development/custom-flows/error-handling
+        // for more info on error handling
+        console.log(err.errors)
+        console.error(err, null, 2)
+      })
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -208,6 +122,9 @@ export default function CustomSignUp() {
     if (isSignedIn) router.replace('/');
   }, [isSignedIn, router]);
 
+  // If signIn is not available yet, render nothing (after hooks executed)
+  if (!signIn) return null
+
   // Display the verification form to capture the OTP code
   if (verifying) {
     return (
@@ -249,24 +166,24 @@ export default function CustomSignUp() {
       </button>
       <h1 className="text-4xl font-bold text-gray-800 text-center mb-8 flex-none">Sign Up</h1>
       <div className="flex justify-center space-x-4 flex-none">
-        {/* <button
-          onClick={handleGoogle}
+        <button
+          onClick={() => { signInWith('oauth_google') }}
           className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
           Google
         </button>
         <button
-          onClick={handleFacebook}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
+          onClick={() => { signInWith('oauth_apple') }}
+          className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
-          Facebook
+          Apple
         </button>
         <button
-          onClick={handleMicrosoft}
+          onClick={() => { signInWith('oauth_microsoft') }}
           className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition"
         >
           Microsoft
-        </button> */}
+        </button>
       </div>
       <div className="flex items-center my-4 flex-none">
         <hr className="flex-1 border-gray-300" />
