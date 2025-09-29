@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Comments from '@/components/Comments';
-import Hero from '@/components/Common/Hero';
+
 import StoriesShell from '@/components/Stories/StoriesShell';
 import ContentCard from '@/components/Common/ContentCard';
 import ChapterViewer from '@/components/Story/ChapterViewer';
+import StoryHero from '@/components/Story/StoryHero';
 import type { Story } from '@/types/story';
 import clerkClient from '@/lib/clerk';
 
@@ -36,9 +37,7 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
       <Navbar />
       <StoriesShell
         hero={(
-          <Hero gradientClass="bg-gradient-to-r from-blue-50 to-white" borderClass="border-blue-100">
-            <h2 className="text-2xl font-semibold">{story.title}</h2>
-          </Hero>
+          <StoryHero initialTitle={story.title} />
         )}
       >
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-4 gap-6">

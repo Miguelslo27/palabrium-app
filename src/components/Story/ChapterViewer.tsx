@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import ChapterList from './ChapterList';
 import ChapterReader from './ChapterReader';
+import { chapterProgress } from '@/lib/chapterProgress';
 
 type Chapter = { title: string; content: string };
 
@@ -22,6 +23,11 @@ export default function ChapterViewer({ chapters, initialIndex = 0, title, autho
   const onSelect = useCallback((i: number) => setIndex(i), []);
   const onNext = useCallback(() => setIndex(i => Math.min(i + 1, chapters.length - 1)), [chapters.length]);
   const onPrev = useCallback(() => setIndex(i => Math.max(i - 1, 0)), []);
+
+  // publish progress when index changes
+  React.useEffect(() => {
+    chapterProgress.publish({ index, total: chapters.length });
+  }, [index, chapters.length]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
