@@ -1,19 +1,22 @@
 "use client";
 
-import { useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 // import getClerkClient from '../lib/clerk-client';
 // import startOAuth from '../lib/clerk-oauth';
-import { useSignIn } from '@clerk/nextjs'
+import { useSignIn, useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
 export default function CustomSignIn() {
+  // Client-side redirect guard: if already signed in, navigate to home
+  const router = useRouter();
+  const { isSignedIn } = useUser();
+
   const { isLoaded, signIn, setActive } = useSignIn()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
 
   // const handleGoogle = () => setError('Social sign-in removed (no auth provider)');
   // const handleFacebook = () => setError('Social sign-in removed (no auth provider)');
@@ -28,7 +31,6 @@ export default function CustomSignIn() {
   //       setError('Google sign-in failed. See console for details.');
   //     }
   //   })();
-  // };
 
   // const handleFacebookOAuth = () => {
   //   (async () => {
@@ -52,7 +54,7 @@ export default function CustomSignIn() {
   //   })();
   // };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
+  // const handleSubmit = async (e: FormEvent) => {
   //   e.preventDefault();
   //   setLoading(true);
   //   setError('');
@@ -91,7 +93,7 @@ export default function CustomSignIn() {
   //   }
   // };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
     if (!isLoaded) return
@@ -109,7 +111,7 @@ export default function CustomSignIn() {
       if (signInAttempt.status === 'complete') {
         await setActive({
           session: signInAttempt.createdSessionId,
-          navigate: async ({ session }) => {
+          navigate: async ({ session }: any) => {
             if (session?.currentTask) {
               // Check for tasks and navigate to custom UI to help users resolve them
               // See https://clerk.com/docs/guides/development/custom-flows/overview#session-tasks
@@ -131,10 +133,18 @@ export default function CustomSignIn() {
       // See https://clerk.com/docs/guides/development/custom-flows/error-handling
       // for more info on error handling
       setLoading(true);
-      setError(err.errors.flatMap((er: any) => er.message).join(', '))
+      try {
+        setError(err.errors.flatMap((er: any) => er.message).join(', '))
+      } catch (_) {
+        setError(err?.message || 'Sign in failed')
+      }
       console.error(JSON.stringify(err, null, 2))
     }
   }
+
+  useEffect(() => {
+    if (isSignedIn) router.replace('/');
+  }, [isSignedIn, router]);
 
   return (
     <div className="relative h-full w-full bg-red-50 p-8 flex flex-col justify-center">

@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 // import getClerkClient from '../lib/clerk-client';
 // import startOAuth from '../lib/clerk-oauth';
-import { useSignUp } from '@clerk/nextjs'
+import { useSignUp, useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation';
 
 export default function CustomSignUp() {
+  // Client-side redirect guard: if already signed in, navigate to home
+  const router = useRouter();
+  const { isSignedIn } = useUser();
   const { isLoaded, signUp, setActive } = useSignUp();
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
@@ -18,9 +21,6 @@ export default function CustomSignUp() {
 
   const [verifying, setVerifying] = useState(false);
   const [code, setCode] = useState('');
-
-  // const [resendStatus, setResendStatus] = useState<string | null>(null);
-  const router = useRouter();
 
   // const handleGoogle = () => {
   //   (async () => {
@@ -55,7 +55,7 @@ export default function CustomSignUp() {
   //   })();
   // };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
+  // const handleSubmit = async (e: FormEvent) => {
   //   e.preventDefault();
   //   setLoading(true);
   //   setError('');
@@ -128,7 +128,7 @@ export default function CustomSignUp() {
   //   }
   // };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!isLoaded) return;
@@ -161,7 +161,7 @@ export default function CustomSignUp() {
     }
   }
 
-  const handleVerify = async (e: React.FormEvent) => {
+  const handleVerify = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!isLoaded) return;
@@ -203,6 +203,10 @@ export default function CustomSignUp() {
       console.error('Error:', JSON.stringify(err, null, 2))
     }
   }
+
+  useEffect(() => {
+    if (isSignedIn) router.replace('/');
+  }, [isSignedIn, router]);
 
   // Display the verification form to capture the OTP code
   if (verifying) {
