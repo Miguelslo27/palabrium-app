@@ -2,8 +2,8 @@
 
 ## En progreso
 - [x] Agregar botón de Preview (icono de ojito)
-- [ ] Resaltar historias propias en Explorar
-- [ ] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
+- [x] Resaltar historias propias en Explorar
+- [-] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
 
 ## Prioridades para MVP
 - [ ] Pinear historias en Mis historias
