@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Story } from '@/types/story';
-import getClerkClient from '@/lib/clerk-client';
+import getClientUserId from '@/lib/getClientUserId';
 
 type UseMyStories = {
   stories: Story[];
@@ -11,20 +11,7 @@ type UseMyStories = {
   deleteAll: () => Promise<boolean>;
 };
 
-async function getClientUserId(): Promise<string | null> {
-  try {
-    const clerk: any = getClerkClient();
-    if (typeof clerk.load === 'function') await clerk.load();
-    const id = clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-    if (id) return String(id);
-  } catch (e) {
-    // ignore
-  }
-  if (typeof window !== 'undefined') {
-    return (window as any).__USER_ID__ || null;
-  }
-  return null;
-}
+// use shared helper getClientUserId
 
 export default function useMyStories(): UseMyStories {
   const [stories, setStories] = useState<Story[]>([]);
