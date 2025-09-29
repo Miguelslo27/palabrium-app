@@ -47,7 +47,6 @@ export default function CustomSignUp() {
 
     if (!isLoaded) return;
 
-    // Start the sign-up process using the email and password provided
     try {
       setLoading(true);
       await signUp.create({
@@ -57,7 +56,6 @@ export default function CustomSignUp() {
         lastName,
       });
 
-      // Send the user an email with the verification code
       await signUp.prepareEmailAddressVerification({
         strategy: 'email_code',
       });
