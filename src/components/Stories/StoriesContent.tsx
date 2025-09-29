@@ -12,10 +12,15 @@ type Props = {
   onDelete?: (id: string) => void;
   allowDelete?: boolean;
   emptyMessage?: React.ReactNode;
+  // optional pagination: page size (defaults to 10) and initial page
+  pageSize?: number;
+  initialPage?: number;
 };
 
-export default function StoriesContent({ loading, unauthorized, stories, onDelete, allowDelete = false, emptyMessage }: Props) {
+export default function StoriesContent({ loading, unauthorized, stories, onDelete, allowDelete = false, emptyMessage, pageSize: pageSizeProp, initialPage = 1 }: Props) {
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [page, setPage] = useState<number>(initialPage || 1);
+  const [pageSize, setPageSize] = useState<number>(pageSizeProp || 10);
 
   useEffect(() => {
     try {
@@ -25,6 +30,11 @@ export default function StoriesContent({ loading, unauthorized, stories, onDelet
       // ignore
     }
   }, []);
+
+  // keep page within bounds if initial values change
+  useEffect(() => {
+    setPage((p) => Math.max(1, Math.min(p, Math.max(1, Math.ceil((stories?.length || 0) / (pageSize || 10))))));
+  }, [stories.length, pageSize]);
 
   useEffect(() => {
     try {
@@ -38,10 +48,31 @@ export default function StoriesContent({ loading, unauthorized, stories, onDelet
   if (unauthorized) return <div className="text-red-600">You must be signed in to see your stories.</div>;
   if (!stories || stories.length === 0) return <div className="text-gray-600">{emptyMessage ?? 'No stories found.'}</div>;
 
+  // Determine pagination window
+  const effectivePageSize = pageSize || 10;
+  const total = stories.length;
+  const totalPages = Math.max(1, Math.ceil(total / effectivePageSize));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const start = (currentPage - 1) * effectivePageSize;
+  const pagedStories = stories.slice(start, start + effectivePageSize);
+
   return (
     <div>
-      <StoriesToolbar count={stories.length} view={view} onChangeView={(v) => setView(v)} />
-      <StoryList stories={stories} onDelete={onDelete} allowDelete={allowDelete} view={view} />
+      <StoriesToolbar
+        count={stories.length}
+        view={view}
+        onChangeView={(v) => setView(v)}
+        page={currentPage}
+        totalPages={totalPages}
+        pageSize={effectivePageSize}
+        onChangePage={(p) => setPage(p)}
+        onChangePageSize={(s) => {
+          setPageSize(s);
+          setPage(1);
+        }}
+      />
+
+      <StoryList stories={pagedStories} onDelete={onDelete} allowDelete={allowDelete} view={view} />
     </div>
   );
 }
