@@ -1,28 +1,30 @@
 # Lista de tareas pendientes
 
 ## En progreso
-- [x] Componentizar todo y dejar bien organizado
-- [x] Convertir y mejorar esquemas de historias y capítulos
-- [x] Editar historia al hacer click en el título (Solo en Mis historias)
-- [x] Agregar endpoint de carga masiva
-- [x] Crear JSON con datos de prueba
 - [-] Agregar botón de Preview (icono de ojito)
-
-## Prioridades para MVP
 - [ ] Resaltar historias propias en Explorar
-- [ ] Pinear historias en Mis historias
 - [ ] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
 
-## Sería bueno tener para la próxima versión
+## Prioridades para MVP
+- [ ] Pinear historias en Mis historias
 - [ ] Guarar nombre de autor en el libro
 - [ ] Permitir agregar portada
 - [ ] Permitir agregar imagen de fondo (para el hero)
 - [ ] Mostrar hero en la vista del libro con una imagen cargada. Si no hay, mostrar la portada
 - [ ] Mostrar la portada en las cards
 - [ ] Poner la imagen de fondo, en las cards
+- [ ] Agregar review (estrellitas) y comentario
+
+## Finalizado
+- [x] Componentizar todo y dejar bien organizado
+- [x] Convertir y mejorar esquemas de historias y capítulos
+- [x] Editar historia al hacer click en el título (Solo en Mis historias)
+- [x] Agregar endpoint de carga masiva
+- [x] Crear JSON con datos de prueba
+
+## Sería bueno tener para la próxima versión
 - [ ] Agregar para compartir historias (o capítulos) en redes sociales
 - [ ] --Alinear cantidad de historias con Stories (en mis historias sidebar)--
 
 ## Roadmap a futuro
-- [ ] Agregar review (estrellitas) y comentario
 - [ ] 
