@@ -3,7 +3,7 @@ import React from 'react';
 import PageHeader from '@/components/Common/PageHeader';
 
 type Props = {
-  title: string;
+  title?: string;
   headerActions?: React.ReactNode;
   sidebar?: React.ReactNode;
   hero?: React.ReactNode;
@@ -23,9 +23,11 @@ export default function StoriesShell({
 }: Props) {
   return (
     <div className={`flex-1 flex flex-col overflow-hidden ${className}`}>
-      <PageHeader title={title}>
-        {headerActions}
-      </PageHeader>
+      {title && (
+        <PageHeader title={title}>
+          {headerActions}
+        </PageHeader>
+      )}
 
       <div className="flex flex-1 min-h-0">
         {sidebar}
