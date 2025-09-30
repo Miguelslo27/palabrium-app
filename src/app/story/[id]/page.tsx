@@ -57,7 +57,7 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
           </div>
 
           <aside className="md:col-span-1">
-            <div className="sticky top-20">
+            <div className="sticky top-0">
               <Comments storyId={story._id} />
             </div>
           </aside>

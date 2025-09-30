@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import getClientUserId from '@/lib/getClientUserId';
 
 interface Comment {
   _id: string;
   content: string;
   createdAt: string;
+  authorName?: string | null;
+  authorImage?: string | null;
 }
 
 interface CommentsProps {
@@ -66,7 +69,7 @@ export default function Comments({ storyId }: CommentsProps) {
   };
 
   return (
-    <div className="mt-8">
+    <div>
       <h3 className="text-xl font-semibold mb-4">Comments</h3>
       <form onSubmit={handleSubmit} className="mb-4">
         <textarea
@@ -89,8 +92,27 @@ export default function Comments({ storyId }: CommentsProps) {
         <div className="space-y-4">
           {comments.map((comment) => (
             <div key={comment._id} className="p-4 border rounded">
-              <p>{comment.content}</p>
-              <small className="text-gray-500">{new Date(comment.createdAt).toLocaleString()}</small>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  {comment.authorImage ? (
+                    <Image
+                      src={comment.authorImage}
+                      alt={comment.authorName || 'author'}
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">{(comment.authorName && comment.authorName[0]) || '?'}</div>
+                  )}
+                  <div className="text-sm font-medium">{comment.authorName || 'Unknown'}</div>
+                </div>
+                <div className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString()}</div>
+              </div>
+              <div>
+                <p>{comment.content}</p>
+              </div>
             </div>
           ))}
         </div>

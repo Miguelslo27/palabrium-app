@@ -32,19 +32,20 @@ export default function ChapterViewer({ chapters, initialIndex = 0, title, autho
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
       <aside className="md:col-span-1 bg-white/60 p-4 rounded border">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-1">{title}</h2>
-          <div className="text-sm text-gray-600">
-            <div>Author: {authorName || 'Unknown'}</div>
-            <div>Created: {createdAt ? new Date(createdAt).toLocaleString() : '—'}</div>
-            <div>Chapters: {chapterCount ?? chapters.length}</div>
+        <div className="sticky top-0 ">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold mb-1">{title}</h2>
+            <div className="text-sm text-gray-600">
+              <div>Author: {authorName || 'Unknown'}</div>
+              <div>Created: {createdAt ? new Date(createdAt).toLocaleString() : '—'}</div>
+              <div>Chapters: {chapterCount ?? chapters.length}</div>
+            </div>
           </div>
-        </div>
-        {description && <p className="text-sm text-gray-800 mb-4">{description}</p>}
-
-        <div>
-          <h3 className="font-semibold mb-2">Chapters</h3>
-          <ChapterList chapters={chapters} activeIndex={index} onSelect={onSelect} />
+          {description && <p className="text-sm text-gray-800 mb-4">{description}</p>}
+          <div>
+            <h3 className="font-semibold mb-2">Chapters</h3>
+            <ChapterList chapters={chapters} activeIndex={index} onSelect={onSelect} />
+          </div>
         </div>
       </aside>
 
