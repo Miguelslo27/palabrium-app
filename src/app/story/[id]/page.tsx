@@ -5,7 +5,7 @@ import Comments from '@/components/Comments';
 import StoriesShell from '@/components/Stories/StoriesShell';
 import ChapterViewer from '@/components/Story/ChapterViewer';
 import StoryHero from '@/components/Story/StoryHero';
-import StoryBravo from '@/components/Story/StoryBravo';
+import StoryActions from '@/components/Story/StoryActions';
 import type { Story } from '@/types/story';
 import clerkClient from '@/lib/clerk';
 
@@ -39,7 +39,7 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
         hero={(
           <StoryHero
             initialTitle={story.title}
-            actions={<StoryBravo storyId={story._id} initialBravos={story.bravos?.length ?? 0} userBravos={story.bravos ?? []} />}
+            actions={<StoryActions storyId={story._id} initialBravos={story.bravos?.length ?? 0} userBravos={story.bravos ?? []} authorId={story.authorId} />}
           />
         )}
       >

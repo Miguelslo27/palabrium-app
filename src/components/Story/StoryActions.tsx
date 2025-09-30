@@ -12,7 +12,7 @@ interface Props {
   authorId?: string | null;
 }
 
-export default function StoryBravo({ storyId, initialBravos, userBravos, authorId }: Props) {
+export default function StoryActions({ storyId, initialBravos, userBravos, authorId }: Props) {
   const [bravosCount, setBravosCount] = useState<number>(initialBravos);
   const [braved, setBraved] = useState<boolean | undefined>(undefined);
   const [isAuthor, setIsAuthor] = useState<boolean>(false);

@@ -7,7 +7,8 @@
 - [x] Corregir likes (cambiar el nombre)
 - [x] Corregir comentarios
 - [x] Poner comentarios a la derecha en la página de la historia
-- [ ] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
+- [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
+- [ ] Implementar publicación de historia y capítulo
 
 ## Prioridades para MVP
 - [ ] Guardar datos básicos de usuario en mi base cuando se registran
