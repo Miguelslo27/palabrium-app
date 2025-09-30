@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
 import Button from '@/components/Editor/Shared/Button';
 import getClientUserId from '@/lib/getClientUserId';
@@ -17,7 +17,27 @@ type Props = {
   setChapterPublished?: (i: number, payload: PublishedPayload) => void;
 };
 
-function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersLength }: { chapter: Chapter; index: number; updateChapter: (i: number, field: string, value: string) => void; removeChapter: (i: number) => void; chaptersLength: number; }) {
+function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersLength, setChapterPublished, publishLoading, setPublishLoading }: { chapter: Chapter; index: number; updateChapter: (i: number, field: string, value: string) => void; removeChapter: (i: number) => void; chaptersLength: number; setChapterPublished?: (i: number, payload: PublishedPayload) => void; publishLoading?: boolean; setPublishLoading?: (b: boolean) => void; }) {
+  const togglePublish = async (publish: boolean) => {
+    if (!chapter._id) return;
+    try {
+      setPublishLoading?.(true);
+      const userId = await getClientUserId();
+      const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
+        body: JSON.stringify({ published: publish }),
+      });
+      if (!res.ok) throw new Error('Failed to toggle publish chapter');
+      const data = await res.json();
+      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: publish, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
+    } catch (err) {
+      console.error('toggle publish chapter', err);
+    } finally {
+      setPublishLoading?.(false);
+    }
+  };
+
   return (
     <section className="p-4">
       <div className="mb-3 flex-1 flex flex-col">
@@ -30,16 +50,46 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
             onChange={(e) => updateChapter(index, 'title', e.target.value)}
             className="w-full h-10 px-3 mr-3 text-sm text-gray-900 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
           />
-          <Button
-            type="button"
-            onClick={() => removeChapter(index)}
-            disabled={chaptersLength === 1}
-            aria-label="Remove chapter"
-            title="Remove chapter"
-            className="h-10 w-10 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <IconTrash className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {chapter._id && (
+              !chapter.published ? (
+                <button
+                  onClick={async () => {
+                    await togglePublish(true);
+                  }}
+                  title="Publish chapter"
+                  className="h-10 w-10 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50"
+                  disabled={publishLoading}
+                >
+                  {publishLoading ? '...' : 'P'}
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={async () => {
+                      await togglePublish(false);
+                    }}
+                    title="Unpublish chapter"
+                    className="h-10 w-10 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded disabled:opacity-50"
+                    disabled={publishLoading}
+                  >
+                    {publishLoading ? '...' : 'U'}
+                  </button>
+                </>
+              )
+            )}
+
+            <Button
+              type="button"
+              onClick={() => removeChapter(index)}
+              disabled={chaptersLength === 1}
+              aria-label="Remove chapter"
+              title="Remove chapter"
+              className="h-10 w-10 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <IconTrash className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </div>
       <div>
@@ -56,20 +106,81 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
   );
 }
 
-function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateChapter, chaptersLength, setChapterPublished }: { chapter: Chapter; index: number; isOpen: boolean; onToggle: () => void; removeChapter: (i: number) => void; updateChapter: (i: number, field: string, value: string) => void; chaptersLength: number; setChapterPublished?: (i: number, published: boolean) => void; }) {
+function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateChapter, chaptersLength, setChapterPublished }: { chapter: Chapter; index: number; isOpen: boolean; onToggle: () => void; removeChapter: (i: number) => void; updateChapter: (i: number, field: string, value: string) => void; chaptersLength: number; setChapterPublished?: (i: number, payload: PublishedPayload) => void; }) {
   const displayTitle = chapter.title?.trim() ? chapter.title : `Chapter ${index + 1}`;
+  const [publishLoading, setPublishLoading] = useState(false);
+
   return (
     <div className="bg-gray-50 border border-gray-300 rounded">
       {!isOpen && (
         <div className="p-4 flex items-center justify-between cursor-pointer" onClick={onToggle}>
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-gray-600">#{index + 1}</span>
             <span className="text-sm text-gray-900">{displayTitle}</span>
             {chapter.published && (
-              <span className="ml-2 inline-block text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Publicado</span>
+              <span className="ml-2 inline-block text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Published</span>
             )}
           </div>
-          <div>
+          <div className="flex items-center gap-2">
+            {chapter._id && (
+              !chapter.published ? (
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    try {
+                      setPublishLoading(true);
+                      const userId = await getClientUserId();
+                      const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
+                        body: JSON.stringify({ published: true }),
+                      });
+                      if (!res.ok) throw new Error('Failed to publish chapter');
+                      const data = await res.json();
+                      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: true, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
+                    } catch (err) {
+                      console.error('publish chapter', err);
+                    } finally {
+                      setPublishLoading(false);
+                    }
+                  }}
+                  title="Publish chapter"
+                  className="h-8 w-8 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50"
+                  disabled={publishLoading}
+                >
+                  {publishLoading ? '...' : 'P'}
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      try {
+                        setPublishLoading(true);
+                        const userId = await getClientUserId();
+                        const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
+                          body: JSON.stringify({ published: false }),
+                        });
+                        if (!res.ok) throw new Error('Failed to unpublish chapter');
+                        const data = await res.json();
+                        if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: false, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
+                      } catch (err) {
+                        console.error('unpublish chapter', err);
+                      } finally {
+                        setPublishLoading(false);
+                      }
+                    }}
+                    title="Unpublish chapter"
+                    className="h-8 w-8 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded disabled:opacity-50"
+                    disabled={publishLoading}
+                  >
+                    {publishLoading ? '...' : 'U'}
+                  </button>
+                </>
+              )
+            )}
+
             <Button
               type="button"
               onClick={(e) => {
@@ -89,60 +200,7 @@ function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateCh
 
       {isOpen && (
         <div>
-          <div className="p-3 flex items-center justify-end gap-3">
-            {chapter._id && !chapter.published && (
-              <button
-                onClick={async () => {
-                  try {
-                    const userId = await getClientUserId();
-                    const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
-                      method: 'PUT',
-                      headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
-                      body: JSON.stringify({ published: true }),
-                    });
-                    if (!res.ok) throw new Error('Failed to publish chapter');
-                    const data = await res.json();
-                    if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: true, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
-                    alert('Capítulo publicado');
-                  } catch (err) {
-                    console.error('publish chapter', err);
-                    alert('Error publicando capítulo');
-                  }
-                }}
-                className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
-              >
-                Publish chapter
-              </button>
-            )}
-            {chapter.published && (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-green-700">Publicado</span>
-                <button
-                  onClick={async () => {
-                    try {
-                      const userId = await getClientUserId();
-                      const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
-                        body: JSON.stringify({ published: false }),
-                      });
-                      if (!res.ok) throw new Error('Failed to unpublish chapter');
-                      const data = await res.json();
-                      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: false, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
-                      alert('Capítulo despublicado');
-                    } catch (err) {
-                      console.error('unpublish chapter', err);
-                      alert('Error despublicando capítulo');
-                    }
-                  }}
-                  className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm"
-                >
-                  Unpublish
-                </button>
-              </div>
-            )}
-          </div>
-          <ChapterEditor chapter={chapter} index={index} updateChapter={updateChapter} removeChapter={removeChapter} chaptersLength={chaptersLength} />
+          <ChapterEditor chapter={chapter} index={index} updateChapter={updateChapter} removeChapter={removeChapter} chaptersLength={chaptersLength} setChapterPublished={setChapterPublished} publishLoading={publishLoading} setPublishLoading={setPublishLoading} />
         </div>
       )}
     </div>

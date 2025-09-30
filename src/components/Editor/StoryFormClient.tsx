@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import EditorForm from '@/components/Editor/EditorForm';
 import EditorHeader from '@/components/Editor/EditorHeader';
@@ -18,6 +18,7 @@ type Props = {
 
 export default function StoryFormClient({ mode = 'create', storyId, onSaved }: Props) {
   const router = useRouter();
+  const [publishLoading, setPublishLoading] = useState(false);
   const {
     title,
     setTitle,
@@ -38,7 +39,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
     reload,
   } = useStoryForm({ mode, storyId });
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (mode === 'create') {
       // prepare payload with order and published
@@ -71,11 +72,12 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
           <>
             {origStory && origStory.published ? (
               <div className="flex items-center gap-3">
-                <span className="inline-block text-sm bg-green-100 text-green-800 px-3 py-1 rounded">Publicado</span>
+                <span className="text-sm text-green-700">Published</span>
                 <Button
                   type="button"
                   onClick={async () => {
                     try {
+                      setPublishLoading(true);
                       const userId = await getClientUserId();
                       const res = await fetch(`/api/stories/${storyId}/publish`, {
                         method: 'PUT',
@@ -84,15 +86,16 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                       });
                       if (!res.ok) throw new Error('Failed to unpublish story');
                       await reload();
-                      alert('Story unpublished');
                     } catch (err) {
                       console.error('unpublish', err);
-                      alert('Failed to unpublish story');
+                    } finally {
+                      setPublishLoading(false);
                     }
                   }}
                   className="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-4 rounded text-sm"
+                  disabled={publishLoading}
                 >
-                  Unpublish
+                  {publishLoading ? 'Unpublishing...' : 'Unpublish'}
                 </Button>
               </div>
             ) : (
@@ -101,6 +104,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                 onClick={async () => {
                   if (!storyId) return;
                   try {
+                    setPublishLoading(true);
                     const userId = await getClientUserId();
                     const res = await fetch(`/api/stories/${storyId}/publish`, {
                       method: 'PUT',
@@ -109,15 +113,16 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                     });
                     if (!res.ok) throw new Error('Failed to publish story');
                     await reload();
-                    alert('Story published');
                   } catch (err) {
                     console.error('publish', err);
-                    alert('Failed to publish story');
+                  } finally {
+                    setPublishLoading(false);
                   }
                 }}
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded text-sm"
+                disabled={publishLoading}
               >
-                Publish
+                {publishLoading ? 'Publishing...' : 'Publish'}
               </Button>
             )}
           </>
