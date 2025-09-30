@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image'
 import { useUser, useClerk } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const { user } = useUser();
   const { signOut } = useClerk()
-  const router = useRouter();
 
   return (
     <header className="w-full flex justify-between items-center p-4 bg-gray-800 text-white shadow">
@@ -27,7 +25,6 @@ export default function Navbar() {
                 className="rounded-full"
                 alt="Picture of the author"
               />
-              {user.fullName}
             </button>
           </>
         ) : (

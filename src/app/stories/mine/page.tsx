@@ -50,7 +50,10 @@ export default function MyStories() {
                 }
               }}
               onImported={async () => {
-                try { await refresh(); } catch (err) { try { /* ignore */ } catch (e) { } }
+                try {
+                  await refresh();
+                  try { await paged.refresh(); } catch (e) { /* ignore paged refresh errors */ }
+                } catch (err) { try { /* ignore */ } catch (e) { } }
               }}
             />
           </StoriesSidebar>
@@ -71,8 +74,8 @@ export default function MyStories() {
               stories={pagedStories}
               onDelete={handleDelete}
               allowDelete={true}
+              showYoursBadge={false}
               pageSize={paged.pageSize}
-              // server paged mode
               serverPaged={true}
               total={paged.total}
               page={paged.page}
