@@ -4,18 +4,18 @@
 - [x] Agregar botón de Preview (icono de ojito)
 - [x] Resaltar historias propias en Explorar
 - [x] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
-- [-] Pinear historias en Mis historias
+- [ ] Corregir likes (cambiar el nombre)
+- [ ] Corregir comentarios
+- [ ] Poner comentarios y contador de favoritos a la derecha
 
 ## Prioridades para MVP
-- [ ] Corregir comentarios
-- [ ] Corregir likes (cambiar el nombre)
-- [ ] Poner comentarios y contador de favoritos a la derecha
 - [ ] Añadir géneros (formato label)
 - [ ] Permitir agregar portada
 - [ ] Permitir agregar imagen de fondo (para el hero)
 - [ ] Mostrar hero en la vista del libro con una imagen cargada. Si no hay, mostrar la portada
 - [ ] Mostrar la portada en las cards
 - [ ] Poner la imagen de fondo, en las cards
+- [ ] Pinear historias en Mis historias
 - [ ] Agregar review (estrellitas) y comentario
 - [ ] Métricas de lectura
 - [ ] Guarar nombre de autor en el libro
@@ -30,6 +30,8 @@
 ## Sería bueno tener para la próxima versión
 - [ ] Seguir autores
 - [ ] Agregar para compartir historias (o capítulos) en redes sociales
+- [ ] Agregar respuestas a comentarios
+- [ ] Agregar likes a comentarios
 - [ ] --Alinear cantidad de historias con Stories (en mis historias sidebar)--
 
 ## Roadmap a futuro
