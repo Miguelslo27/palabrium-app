@@ -20,13 +20,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const published = typeof body.published === 'boolean' ? body.published : undefined;
     if (typeof published !== 'boolean') return new Response('Bad Request', { status: 400 });
 
-    chapter.published = published;
-    chapter.publishedAt = published ? new Date() : null;
-    chapter.unPublishedAt = !published ? new Date() : null;
-    chapter.publishedBy = published ? String(userId) : null;
-    chapter.unPublishedBy = !published ? String(userId) : null;
-    await chapter.save();
-    return Response.json({ ok: true, id: chapter._id, published: chapter.published });
+    const now = new Date();
+    const setObj: any = {
+      published: published,
+      publishedAt: published ? now : null,
+      publishedBy: published ? String(userId) : null,
+      unPublishedAt: !published ? now : null,
+      unPublishedBy: !published ? String(userId) : null,
+    };
+
+    await Chapter.collection.updateOne({ _id: chapter._id }, { $set: setObj });
+    const rawDoc = await Chapter.collection.findOne({ _id: chapter._id });
+    return Response.json(rawDoc);
   } catch (err) {
     console.error('Error toggling chapter published', err);
     return new Response('Error updating chapter', { status: 500 });

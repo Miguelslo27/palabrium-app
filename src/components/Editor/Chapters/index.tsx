@@ -1,8 +1,11 @@
 import React from 'react';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
 import Button from '@/components/Editor/Shared/Button';
+import getClientUserId from '@/lib/getClientUserId';
 
-type Chapter = { title: string; content: string };
+type Chapter = { title: string; content: string; _id?: string; published?: boolean; publishedAt?: string | null };
+
+type PublishedPayload = boolean | { published: boolean; publishedAt?: string | null; publishedBy?: string | null };
 
 type Props = {
   chapters: Chapter[];
@@ -11,6 +14,7 @@ type Props = {
   addChapter: () => void;
   removeChapter: (i: number) => void;
   updateChapter: (i: number, field: string, value: string) => void;
+  setChapterPublished?: (i: number, payload: PublishedPayload) => void;
 };
 
 function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersLength }: { chapter: Chapter; index: number; updateChapter: (i: number, field: string, value: string) => void; removeChapter: (i: number) => void; chaptersLength: number; }) {
@@ -52,7 +56,7 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
   );
 }
 
-function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateChapter, chaptersLength }: { chapter: Chapter; index: number; isOpen: boolean; onToggle: () => void; removeChapter: (i: number) => void; updateChapter: (i: number, field: string, value: string) => void; chaptersLength: number; }) {
+function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateChapter, chaptersLength, setChapterPublished }: { chapter: Chapter; index: number; isOpen: boolean; onToggle: () => void; removeChapter: (i: number) => void; updateChapter: (i: number, field: string, value: string) => void; chaptersLength: number; setChapterPublished?: (i: number, published: boolean) => void; }) {
   const displayTitle = chapter.title?.trim() ? chapter.title : `Chapter ${index + 1}`;
   return (
     <div className="bg-gray-50 border border-gray-300 rounded">
@@ -61,6 +65,9 @@ function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateCh
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-gray-600">#{index + 1}</span>
             <span className="text-sm text-gray-900">{displayTitle}</span>
+            {chapter.published && (
+              <span className="ml-2 inline-block text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Publicado</span>
+            )}
           </div>
           <div>
             <Button
@@ -81,13 +88,68 @@ function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateCh
       )}
 
       {isOpen && (
-        <ChapterEditor chapter={chapter} index={index} updateChapter={updateChapter} removeChapter={removeChapter} chaptersLength={chaptersLength} />
+        <div>
+          <div className="p-3 flex items-center justify-end gap-3">
+            {chapter._id && !chapter.published && (
+              <button
+                onClick={async () => {
+                  try {
+                    const userId = await getClientUserId();
+                    const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
+                      body: JSON.stringify({ published: true }),
+                    });
+                    if (!res.ok) throw new Error('Failed to publish chapter');
+                    const data = await res.json();
+                    if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: true, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
+                    alert('Capítulo publicado');
+                  } catch (err) {
+                    console.error('publish chapter', err);
+                    alert('Error publicando capítulo');
+                  }
+                }}
+                className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+              >
+                Publish chapter
+              </button>
+            )}
+            {chapter.published && (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-green-700">Publicado</span>
+                <button
+                  onClick={async () => {
+                    try {
+                      const userId = await getClientUserId();
+                      const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
+                        body: JSON.stringify({ published: false }),
+                      });
+                      if (!res.ok) throw new Error('Failed to unpublish chapter');
+                      const data = await res.json();
+                      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: false, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
+                      alert('Capítulo despublicado');
+                    } catch (err) {
+                      console.error('unpublish chapter', err);
+                      alert('Error despublicando capítulo');
+                    }
+                  }}
+                  className="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm"
+                >
+                  Unpublish
+                </button>
+              </div>
+            )}
+          </div>
+          <ChapterEditor chapter={chapter} index={index} updateChapter={updateChapter} removeChapter={removeChapter} chaptersLength={chaptersLength} />
+        </div>
       )}
     </div>
   );
 }
 
-export default function Chapters({ chapters, expandedIndex, setExpandedIndex, addChapter, removeChapter, updateChapter }: Props) {
+export default function Chapters({ chapters, expandedIndex, setExpandedIndex, addChapter, removeChapter, updateChapter, setChapterPublished }: Props) {
   return (
     <main className="flex-1 p-6 overflow-y-auto">
       <div className="bg-white border border-gray-300 rounded shadow-sm h-full flex flex-col">
@@ -107,6 +169,7 @@ export default function Chapters({ chapters, expandedIndex, setExpandedIndex, ad
                 removeChapter={removeChapter}
                 updateChapter={updateChapter}
                 chaptersLength={chapters.length}
+                setChapterPublished={setChapterPublished}
               />
             );
           })}

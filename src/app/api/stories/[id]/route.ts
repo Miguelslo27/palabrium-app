@@ -46,6 +46,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const { title, description, published } = body;
   if (typeof title === 'string') story.title = title;
   if (typeof description === 'string') story.description = description;
+  // Only update published flag here if explicitly provided, but avoid changing audit fields from this endpoint.
   if (typeof published === 'boolean') story.published = published;
   await story.save();
   return Response.json(story);

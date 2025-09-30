@@ -16,13 +16,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const published = typeof body.published === 'boolean' ? body.published : undefined;
     if (typeof published !== 'boolean') return new Response('Bad Request', { status: 400 });
 
-    story.published = published;
-    story.publishedAt = published ? new Date() : null;
-    story.unPublishedAt = !published ? new Date() : null;
-    story.publishedBy = published ? String(userId) : null;
-    story.unPublishedBy = !published ? String(userId) : null;
-    await story.save();
-    return Response.json({ ok: true, id: story._id, published: story.published });
+    const now = new Date();
+    const setObj: any = {
+      published: published,
+      publishedAt: published ? now : null,
+      publishedBy: published ? String(userId) : null,
+      unPublishedAt: !published ? now : null,
+      unPublishedBy: !published ? String(userId) : null,
+    };
+
+    await Story.collection.updateOne({ _id: story._id }, { $set: setObj });
+    const rawDoc = await Story.collection.findOne({ _id: story._id });
+    return Response.json(rawDoc);
   } catch (err) {
     console.error('Error toggling published', err);
     return new Response('Error updating story', { status: 500 });

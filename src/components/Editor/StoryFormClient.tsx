@@ -8,6 +8,7 @@ import Sidebar from '@/components/Editor/Sidebar';
 import Chapters from '@/components/Editor/Chapters';
 import Button from '@/components/Editor/Shared/Button';
 import useStoryForm from '@/components/Editor/useStoryForm';
+import getClientUserId from '@/lib/getClientUserId';
 
 type Props = {
   mode?: 'create' | 'edit';
@@ -31,8 +32,10 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
     addChapter,
     removeChapter,
     updateChapterLocal,
+    setChapterPublished,
     create,
     edit,
+    reload,
   } = useStoryForm({ mode, storyId });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -64,6 +67,61 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
   return (
     <EditorForm onSubmit={handleSubmit}>
       <EditorHeader title={mode === 'create' ? 'Create story' : 'Edit story'}>
+        {mode === 'edit' && storyId && (
+          <>
+            {origStory && origStory.published ? (
+              <div className="flex items-center gap-3">
+                <span className="inline-block text-sm bg-green-100 text-green-800 px-3 py-1 rounded">Publicado</span>
+                <Button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const userId = await getClientUserId();
+                      const res = await fetch(`/api/stories/${storyId}/publish`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
+                        body: JSON.stringify({ published: false }),
+                      });
+                      if (!res.ok) throw new Error('Failed to unpublish story');
+                      await reload();
+                      alert('Story unpublished');
+                    } catch (err) {
+                      console.error('unpublish', err);
+                      alert('Failed to unpublish story');
+                    }
+                  }}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-4 rounded text-sm"
+                >
+                  Unpublish
+                </Button>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                onClick={async () => {
+                  if (!storyId) return;
+                  try {
+                    const userId = await getClientUserId();
+                    const res = await fetch(`/api/stories/${storyId}/publish`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
+                      body: JSON.stringify({ published: true }),
+                    });
+                    if (!res.ok) throw new Error('Failed to publish story');
+                    await reload();
+                    alert('Story published');
+                  } catch (err) {
+                    console.error('publish', err);
+                    alert('Failed to publish story');
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded text-sm"
+              >
+                Publish
+              </Button>
+            )}
+          </>
+        )}
         <Button
           type="button"
           onClick={() => {
@@ -89,6 +147,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
           addChapter={addChapter}
           removeChapter={removeChapter}
           updateChapter={updateChapterLocal}
+          setChapterPublished={setChapterPublished}
         />
       </div>
     </EditorForm>
