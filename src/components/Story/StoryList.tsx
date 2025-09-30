@@ -10,13 +10,13 @@ interface StoryListProps {
   stories: Story[];
   allowDelete?: boolean;
   view?: ViewMode;
+  showYoursBadge?: boolean;
   onDelete?: (id: string) => void;
   onChangeView?: (v: ViewMode) => void;
 }
 
-export default function StoryList({ stories, onDelete, allowDelete = false, view }: StoryListProps) {
+export default function StoryList({ stories, onDelete, allowDelete = false, view, showYoursBadge = true }: StoryListProps) {
   const { user } = useUser();
-
 
   return (
     <div>
@@ -30,6 +30,7 @@ export default function StoryList({ stories, onDelete, allowDelete = false, view
               showDelete={allowDelete && !!onDelete}
               onDelete={onDelete}
               isMine={!!user?.id && story.authorId === user.id}
+              showYoursBadge={showYoursBadge}
             />
           ))}
         </div>
@@ -43,6 +44,7 @@ export default function StoryList({ stories, onDelete, allowDelete = false, view
               showDelete={allowDelete && !!onDelete}
               onDelete={onDelete}
               isMine={!!user?.id && story.authorId === user.id}
+              showYoursBadge={showYoursBadge}
             />
           ))}
         </div>

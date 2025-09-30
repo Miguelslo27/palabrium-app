@@ -74,8 +74,8 @@ export default function MyStories() {
               stories={pagedStories}
               onDelete={handleDelete}
               allowDelete={true}
+              showYoursBadge={false}
               pageSize={paged.pageSize}
-              // server paged mode
               serverPaged={true}
               total={paged.total}
               page={paged.page}

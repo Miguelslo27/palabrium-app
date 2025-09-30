@@ -16,6 +16,7 @@ type Props = {
   serverPaged?: boolean;
   total?: number;
   page?: number;
+  showYoursBadge?: boolean;
   onDelete?: (id: string) => void;
   onPageChange?: (p: number) => void;
   onPageSizeChange?: (s: number) => void;
@@ -35,6 +36,7 @@ export default function StoriesContent({
   page: controlledPage,
   onPageChange,
   onPageSizeChange,
+  showYoursBadge = true,
 }: Props) {
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [pageState, setPageState] = useState<number>(initialPage || 1);
@@ -97,7 +99,7 @@ export default function StoriesContent({
         total={total}
       />
 
-      <StoryList stories={pagedStories} onDelete={onDelete} allowDelete={allowDelete} view={view} />
+      <StoryList stories={pagedStories} onDelete={onDelete} allowDelete={allowDelete} view={view} showYoursBadge={showYoursBadge} />
     </div>
   );
 }

@@ -7,12 +7,13 @@ import IconTrash from '@/components/Editor/Shared/IconTrash';
 interface StoryCardProps {
   story: Story;
   showDelete?: boolean;
-  onDelete?: (id: string) => void;
   view?: 'grid' | 'list';
   isMine?: boolean;
+  showYoursBadge?: boolean;
+  onDelete?: (id: string) => void;
 }
 
-export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid', isMine = false }: StoryCardProps) {
+export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid', isMine = false, showYoursBadge = true }: StoryCardProps) {
   const chapterCount = typeof story.chapterCount === 'number' ? story.chapterCount : (story.chapters?.length || 0);
   const createdDate = story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Unknown';
 
@@ -20,7 +21,7 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
     return (
       <div className={`${isMine ? 'border-l-4 border-blue-400' : ''} bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 flex items-start gap-4`}>
         <div className="flex-1">
-          {isMine && (
+          {(isMine && showYoursBadge) && (
             <div className="inline-block mb-2">
               <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Yours</span>
             </div>
@@ -66,7 +67,7 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
             {story.title}
           </Link>
         </h2>
-        {isMine && (
+        {(isMine && showYoursBadge) && (
           <div className="ml-3">
             <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Yours</span>
           </div>
