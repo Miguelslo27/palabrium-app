@@ -3,9 +3,9 @@ import Navbar from '@/components/Navbar';
 import Comments from '@/components/Comments';
 
 import StoriesShell from '@/components/Stories/StoriesShell';
-import ContentCard from '@/components/Common/ContentCard';
 import ChapterViewer from '@/components/Story/ChapterViewer';
 import StoryHero from '@/components/Story/StoryHero';
+import StoryBravo from '@/components/Story/StoryBravo';
 import type { Story } from '@/types/story';
 import clerkClient from '@/lib/clerk';
 
@@ -37,7 +37,10 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
       <Navbar />
       <StoriesShell
         hero={(
-          <StoryHero initialTitle={story.title} />
+          <StoryHero
+            initialTitle={story.title}
+            actions={<StoryBravo storyId={story._id} initialBravos={story.bravos?.length ?? 0} userBravos={story.bravos ?? []} />}
+          />
         )}
       >
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -51,10 +54,6 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
               chapterCount={story.chapterCount ?? (story.chapters ? story.chapters.length : 0)}
               description={story.description || null}
             />
-
-            <div className="mt-8">
-              <Comments storyId={story._id} />
-            </div>
           </div>
         </div>
       </StoriesShell>

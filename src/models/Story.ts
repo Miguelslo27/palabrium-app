@@ -8,7 +8,7 @@ const StorySchema = new mongoose.Schema({
   chapterCount: { type: Number, default: 0 },
   pinned: { type: Boolean, default: false },
   published: { type: Boolean, default: false },
-  likes: [{ type: String }], // array of userIds
+  bravos: [{ type: String }], // array of userIds (formerly 'likes')
   createdAt: { type: Date, default: Date.now },
 });
 

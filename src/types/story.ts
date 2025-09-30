@@ -12,7 +12,7 @@ export interface Story {
   chapterCount?: number;
   chapters: Chapter[];
   published?: boolean;
-  likes?: string[];
+  bravos?: string[];
   createdAt?: string;
 }
 
