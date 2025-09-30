@@ -5,7 +5,7 @@ const ChapterSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   order: { type: Number, default: 0 },
-  published: { type: Boolean, default: true },
+  published: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 
