@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import getClientUserId from '@/lib/getClientUserId';
 
 import type { Story } from '@/types/story';
 import IconExternal from '@/components/Editor/Shared/IconExternal';
@@ -19,6 +20,19 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
   const chapterCount = typeof story.chapterCount === 'number' ? story.chapterCount : (story.chapters?.length || 0);
   const createdDate = story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Unknown';
   const [bravosCount, setBravosCount] = useState<number>(story.bravos?.length ?? 0);
+  const [braved, setBraved] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    let mounted = true;
+    getClientUserId().then((id) => {
+      if (!mounted) return;
+      // only initialize braved if it hasn't been set yet
+      if (typeof braved === 'undefined') {
+        setBraved(id ? (story.bravos ?? []).includes(id) : false);
+      }
+    });
+    return () => { mounted = false; };
+  }, [story.bravos]);
 
   if (view === 'list') {
     return (
@@ -43,7 +57,8 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
                 storyId={story._id}
                 initialBravos={bravosCount}
                 userBravos={story.bravos ?? []}
-                onToggle={(count) => setBravosCount(count)}
+                onToggle={(count, newBraved) => { setBravosCount(count); setBraved(newBraved); }}
+                braved={braved}
               />
             </div>
           </div>
@@ -109,7 +124,8 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
             storyId={story._id}
             initialBravos={bravosCount}
             userBravos={story.bravos ?? []}
-            onToggle={(count) => setBravosCount(count)}
+            onToggle={(count, newBraved) => { setBravosCount(count); setBraved(newBraved); }}
+            braved={braved}
           />
         </div>
       </div>
