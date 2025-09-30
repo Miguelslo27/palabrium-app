@@ -42,11 +42,11 @@ export default function BravoButton({ storyId, initialBravos, userBravos, onTogg
         alert(text || `Request failed: ${res.status}`);
         return;
       }
-  const data = await res.json();
-  setBravos(data.bravos);
-  // if parent controls braved via prop, parent will update it via onToggle; otherwise update internal state
-  if (typeof controlledBraved === 'undefined') setInternalBraved(data.braved);
-  if (typeof onToggle === 'function') onToggle(data.bravos, data.braved);
+      const data = await res.json();
+      setBravos(data.bravos);
+      // if parent controls braved via prop, parent will update it via onToggle; otherwise update internal state
+      if (typeof controlledBraved === 'undefined') setInternalBraved(data.braved);
+      if (typeof onToggle === 'function') onToggle(data.bravos, data.braved);
     } catch (err) {
       console.error('Bravo toggle error', err);
       alert('Error al enviar Bravo. Revisa la consola.');
