@@ -4,7 +4,7 @@
 - [x] Agregar botón de Preview (icono de ojito)
 - [x] Resaltar historias propias en Explorar
 - [x] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
-- [-] Corregir likes (cambiar el nombre)
+- [x] Corregir likes (cambiar el nombre)
 - [ ] Corregir comentarios
 - [ ] Poner comentarios y contador de favoritos a la derecha
 
