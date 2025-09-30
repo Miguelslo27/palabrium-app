@@ -44,7 +44,7 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
         )}
       >
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="md:col-span-4">
+          <div className="md:col-span-3">
             <ChapterViewer
               chapters={(story.chapters || []).map(c => ({ title: c.title, content: c.content }))}
               initialIndex={0}
@@ -55,6 +55,12 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
               description={story.description || null}
             />
           </div>
+
+          <aside className="md:col-span-1">
+            <div className="sticky top-0">
+              <Comments storyId={story._id} />
+            </div>
+          </aside>
         </div>
       </StoriesShell>
     </div>
