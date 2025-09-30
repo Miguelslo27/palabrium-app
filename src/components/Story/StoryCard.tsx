@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import { useState } from 'react';
 
 import type { Story } from '@/types/story';
 import IconExternal from '@/components/Editor/Shared/IconExternal';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
+import BravoButton from '@/components/BravoButton';
 
 interface StoryCardProps {
   story: Story;
@@ -16,6 +18,7 @@ interface StoryCardProps {
 export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid', isMine = false, showYoursBadge = true }: StoryCardProps) {
   const chapterCount = typeof story.chapterCount === 'number' ? story.chapterCount : (story.chapters?.length || 0);
   const createdDate = story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Unknown';
+  const [bravosCount, setBravosCount] = useState<number>(story.bravos?.length ?? 0);
 
   if (view === 'list') {
     return (
@@ -35,6 +38,14 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
           <div className="mt-3 text-sm text-gray-500 flex gap-4">
             <span>{chapterCount} chapter{chapterCount !== 1 ? 's' : ''}</span>
             <span>Created {createdDate}</span>
+            <div>
+              <BravoButton
+                storyId={story._id}
+                initialBravos={bravosCount}
+                userBravos={story.bravos ?? []}
+                onToggle={(count) => setBravosCount(count)}
+              />
+            </div>
           </div>
         </div>
 
@@ -92,7 +103,15 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
       <p className="text-gray-700 mb-4 line-clamp-3 flex-1">{story.description}</p>
       <div className="flex justify-between items-center text-sm text-gray-500 mt-4">
         <span>{chapterCount} chapter{chapterCount !== 1 ? 's' : ''}</span>
-        <span>Created {createdDate}</span>
+        <div className="flex items-center gap-4">
+          <span>Created {createdDate}</span>
+          <BravoButton
+            storyId={story._id}
+            initialBravos={bravosCount}
+            userBravos={story.bravos ?? []}
+            onToggle={(count) => setBravosCount(count)}
+          />
+        </div>
       </div>
     </div>
   );
