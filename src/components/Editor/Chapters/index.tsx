@@ -3,7 +3,7 @@ import IconTrash from '@/components/Editor/Shared/IconTrash';
 import IconEye from '@/components/Editor/Shared/IconEye';
 import IconEyeOff from '@/components/Editor/Shared/IconEyeOff';
 import Button from '@/components/Editor/Shared/Button';
-import getClientUserId from '@/lib/getClientUserId';
+import { toggleChapterPublish } from '@/lib/useChapters';
 import ChapterControls from '@/components/Editor/Chapters/Controls';
 
 type Chapter = { title: string; content: string; _id?: string; published?: boolean; publishedAt?: string | null };
@@ -25,14 +25,7 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
     if (!chapter._id) return;
     try {
       setPublishLoading?.(true);
-      const userId = await getClientUserId();
-      const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
-        body: JSON.stringify({ published: publish }),
-      });
-      if (!res.ok) throw new Error('Failed to toggle publish chapter');
-      const data = await res.json();
+      const data = await toggleChapterPublish(String(chapter._id), publish);
       if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: publish, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
     } catch (err) {
       console.error('toggle publish chapter', err);
