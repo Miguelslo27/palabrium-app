@@ -2,6 +2,7 @@ import { useState } from 'react';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
 import Button from '@/components/Editor/Shared/Button';
 import getClientUserId from '@/lib/getClientUserId';
+import ChapterControls from '@/components/Editor/Chapters/Controls';
 
 type Chapter = { title: string; content: string; _id?: string; published?: boolean; publishedAt?: string | null };
 
@@ -120,80 +121,17 @@ function ChapterCard({ chapter, index, isOpen, onToggle, removeChapter, updateCh
               <span className="ml-2 inline-block text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Published</span>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            {chapter._id && (
-              !chapter.published ? (
-                <button
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    try {
-                      setPublishLoading(true);
-                      const userId = await getClientUserId();
-                      const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
-                        body: JSON.stringify({ published: true }),
-                      });
-                      if (!res.ok) throw new Error('Failed to publish chapter');
-                      const data = await res.json();
-                      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: true, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
-                    } catch (err) {
-                      console.error('publish chapter', err);
-                    } finally {
-                      setPublishLoading(false);
-                    }
-                  }}
-                  title="Publish chapter"
-                  className="h-8 w-8 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50"
-                  disabled={publishLoading}
-                >
-                  {publishLoading ? '...' : 'P'}
-                </button>
-              ) : (
-                <>
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      try {
-                        setPublishLoading(true);
-                        const userId = await getClientUserId();
-                        const res = await fetch(`/api/chapters/${chapter._id}/publish`, {
-                          method: 'PUT',
-                          headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
-                          body: JSON.stringify({ published: false }),
-                        });
-                        if (!res.ok) throw new Error('Failed to unpublish chapter');
-                        const data = await res.json();
-                        if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: false, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
-                      } catch (err) {
-                        console.error('unpublish chapter', err);
-                      } finally {
-                        setPublishLoading(false);
-                      }
-                    }}
-                    title="Unpublish chapter"
-                    className="h-8 w-8 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded disabled:opacity-50"
-                    disabled={publishLoading}
-                  >
-                    {publishLoading ? '...' : 'U'}
-                  </button>
-                </>
-              )
-            )}
-
-            <Button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeChapter(index);
-              }}
-              disabled={chaptersLength === 1}
-              aria-label="Remove chapter"
-              title="Remove chapter"
-              className="h-8 w-8 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <IconTrash className="h-4 w-4" />
-            </Button>
+          <div>
+            <ChapterControls
+              chapter={chapter}
+              index={index}
+              chaptersLength={chaptersLength}
+              removeChapter={removeChapter}
+              setChapterPublished={setChapterPublished}
+              publishLoading={publishLoading}
+              setPublishLoading={setPublishLoading}
+              compact={true}
+            />
           </div>
         </div>
       )}
