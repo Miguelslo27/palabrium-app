@@ -16,7 +16,7 @@ async function getStory(id: string): Promise<Story | null> {
 }
 
 export default async function StoryPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
   const story = await getStory(id);
   if (!story) notFound();
 
