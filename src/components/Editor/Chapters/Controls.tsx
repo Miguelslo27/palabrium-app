@@ -1,5 +1,7 @@
 import React from 'react';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
+import IconEye from '@/components/Editor/Shared/IconEye';
+import IconEyeOff from '@/components/Editor/Shared/IconEyeOff';
 import getClientUserId from '@/lib/getClientUserId';
 
 type Chapter = { title: string; content: string; _id?: string; published?: boolean; publishedAt?: string | null };
@@ -53,11 +55,10 @@ export default function ChapterControls({ chapter, index, chaptersLength, remove
             className={`${sizeClass} flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50`}
             disabled={publishLoading}
           >
-            {publishLoading ? '...' : 'P'}
+            {publishLoading ? '...' : <IconEye className={iconSize} />}
           </button>
         ) : (
           <>
-            <span className="text-sm text-green-700">Publicado</span>
             <button
               onClick={async (e) => {
                 e.stopPropagation();
@@ -67,7 +68,7 @@ export default function ChapterControls({ chapter, index, chaptersLength, remove
               className={`${sizeClass} flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded disabled:opacity-50`}
               disabled={publishLoading}
             >
-              {publishLoading ? '...' : 'U'}
+              {publishLoading ? '...' : <IconEyeOff className={iconSize} />}
             </button>
           </>
         )

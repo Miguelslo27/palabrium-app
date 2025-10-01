@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
+import IconEye from '@/components/Editor/Shared/IconEye';
+import IconEyeOff from '@/components/Editor/Shared/IconEyeOff';
 import Button from '@/components/Editor/Shared/Button';
 import getClientUserId from '@/lib/getClientUserId';
 import ChapterControls from '@/components/Editor/Chapters/Controls';
@@ -62,7 +64,7 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
                   className="h-10 w-10 flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-50"
                   disabled={publishLoading}
                 >
-                  {publishLoading ? '...' : 'P'}
+                  {publishLoading ? '...' : <IconEye className='h-5 w-5' />}
                 </button>
               ) : (
                 <>
@@ -74,7 +76,7 @@ function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersL
                     className="h-10 w-10 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded disabled:opacity-50"
                     disabled={publishLoading}
                   >
-                    {publishLoading ? '...' : 'U'}
+                    {publishLoading ? '...' : <IconEyeOff className='h-5 w-5' />}
                   </button>
                 </>
               )
