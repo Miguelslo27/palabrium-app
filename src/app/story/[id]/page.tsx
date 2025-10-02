@@ -32,6 +32,8 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
     authorName = null;
   }
 
+  const publishedChapters = (story.chapters || []).filter((c: any) => Boolean(c.published));
+
   return (
     <div className="h-screen flex flex-col bg-white">
       <Navbar />
@@ -46,12 +48,12 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="md:col-span-3">
             <ChapterViewer
-              chapters={(story.chapters || []).map(c => ({ title: c.title, content: c.content }))}
+              chapters={publishedChapters.map((c: any) => ({ title: c.title, content: c.content }))}
               initialIndex={0}
               title={story.title}
               authorName={authorName || story.authorId || null}
               createdAt={story.createdAt || null}
-              chapterCount={story.chapterCount ?? (story.chapters ? story.chapters.length : 0)}
+              chapterCount={publishedChapters.length}
               description={story.description || null}
             />
           </div>
