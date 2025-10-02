@@ -28,4 +28,9 @@ UserSchema.pre('save', function (next) {
   next();
 });
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+// Force model recreation in development
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
+
+export default mongoose.model('User', UserSchema);

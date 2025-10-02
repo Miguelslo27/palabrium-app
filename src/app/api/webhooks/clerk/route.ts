@@ -2,70 +2,67 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '../../../../lib/mongodb';
 import User from '../../../../models/User';
 
-// Funciones auxiliares para manejar eventos de Clerk
 async function handleUserCreated(userData: any) {
-  console.log('👤 Creando nuevo usuario:', userData.id);
+  // Extraer email de diferentes posibles fuentes
+  let email = '';
+  if (userData.email_addresses && userData.email_addresses.length > 0) {
+    email = userData.email_addresses[0].email_address || '';
+  }
+
+  // Si no hay email, generar uno temporal para pruebas de Clerk
+  if (!email && userData.primary_email_address_id) {
+    email = `${userData.id}@clerk-test.com`;
+  }
 
   const user = new User({
     clerkId: userData.id,
-    email: userData.email_addresses?.[0]?.email_address || '',
+    email: email,
     firstName: userData.first_name || '',
     lastName: userData.last_name || '',
     username: userData.username || '',
-    imageUrl: userData.image_url || ''
+    imageUrl: userData.image_url || userData.profile_image_url || ''
   });
 
   await user.save();
-  console.log('✅ Usuario creado exitosamente en MongoDB');
   return user;
 }
 
 async function handleUserUpdated(userData: any) {
-  console.log('✏️ Actualizando usuario:', userData.id);
+  // Extraer email de diferentes posibles fuentes
+  let email = '';
+  if (userData.email_addresses && userData.email_addresses.length > 0) {
+    email = userData.email_addresses[0].email_address || '';
+  }
 
   const user = await User.findOneAndUpdate(
     { clerkId: userData.id },
     {
-      email: userData.email_addresses?.[0]?.email_address || '',
+      email: email,
       firstName: userData.first_name || '',
       lastName: userData.last_name || '',
       username: userData.username || '',
-      imageUrl: userData.image_url || '',
+      imageUrl: userData.image_url || userData.profile_image_url || '',
       updatedAt: new Date()
     },
     { new: true, upsert: true }
   );
 
-  console.log('✅ Usuario actualizado exitosamente en MongoDB');
   return user;
 }
 
 async function handleUserDeleted(userData: any) {
-  console.log('🗑️ Eliminando usuario:', userData.id);
-
   const result = await User.findOneAndDelete({ clerkId: userData.id });
-
-  if (result) {
-    console.log('✅ Usuario eliminado exitosamente de MongoDB');
-  } else {
-    console.log('⚠️ Usuario no encontrado para eliminar');
-  }
-
   return result;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('🎯 Webhook de Clerk recibido');
-
     // Conectar a la base de datos
     await dbConnect();
 
+    // Parsear payload
     const payload = await req.json();
     const { type, data } = payload;
-
-    console.log('📦 Evento recibido:', type);
-    console.log('� Datos del usuario:', data?.id);
 
     let result;
 
@@ -83,7 +80,6 @@ export async function POST(req: NextRequest) {
         break;
 
       default:
-        console.log('⚠️ Tipo de evento no manejado:', type);
         return NextResponse.json({
           message: 'Event type not handled',
           type
@@ -98,7 +94,7 @@ export async function POST(req: NextRequest) {
     }, { status: 200 });
 
   } catch (error) {
-    console.error('❌ Error procesando webhook:', error);
+    console.error('Webhook error:', error);
     return NextResponse.json({
       error: 'Webhook processing failed',
       message: error instanceof Error ? error.message : 'Unknown error'
