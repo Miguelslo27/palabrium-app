@@ -7,7 +7,8 @@ const isPublicRoute = createRouteMatcher([
   '/stories',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/api/stories(.*)'
+  '/api/stories(.*)',
+  '/api/webhooks/clerk'
 ])
 
 // Middleware that protects private routes and redirects authenticated users
