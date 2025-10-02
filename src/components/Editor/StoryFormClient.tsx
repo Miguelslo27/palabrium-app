@@ -9,6 +9,7 @@ import Chapters from '@/components/Editor/Chapters';
 import Button from '@/components/Editor/Shared/Button';
 import useStoryForm from '@/components/Editor/useStoryForm';
 import getClientUserId from '@/lib/getClientUserId';
+import { toggleStoryPublish } from '@/lib/useStories';
 
 type Props = {
   mode?: 'create' | 'edit';
@@ -78,13 +79,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                   onClick={async () => {
                     try {
                       setPublishLoading(true);
-                      const userId = await getClientUserId();
-                      const res = await fetch(`/api/stories/${storyId}/publish`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
-                        body: JSON.stringify({ published: false }),
-                      });
-                      if (!res.ok) throw new Error('Failed to unpublish story');
+                      await toggleStoryPublish(String(storyId), false);
                       await reload();
                     } catch (err) {
                       console.error('unpublish', err);
@@ -105,13 +100,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                   if (!storyId) return;
                   try {
                     setPublishLoading(true);
-                    const userId = await getClientUserId();
-                    const res = await fetch(`/api/stories/${storyId}/publish`, {
-                      method: 'PUT',
-                      headers: { 'Content-Type': 'application/json', ...(userId ? { 'x-user-id': String(userId) } : {}) },
-                      body: JSON.stringify({ published: true }),
-                    });
-                    if (!res.ok) throw new Error('Failed to publish story');
+                    await toggleStoryPublish(String(storyId), true);
                     await reload();
                   } catch (err) {
                     console.error('publish', err);

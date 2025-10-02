@@ -11,6 +11,8 @@ async function detectUserId(): Promise<string | null> {
   }
 }
 
+export { detectUserId };
+
 export async function fetchChapters(storyId: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/stories/${storyId}/chapters`)
   if (!res.ok) throw new Error('Failed to fetch chapters')
