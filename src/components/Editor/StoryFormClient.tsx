@@ -38,6 +38,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
     create,
     edit,
     reload,
+    applyOrigStoryPatch,
   } = useStoryForm({ mode, storyId });
 
   async function handleSubmit(e: FormEvent) {
@@ -79,8 +80,8 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                   onClick={async () => {
                     try {
                       setPublishLoading(true);
-                      await toggleStoryPublish(String(storyId), false);
-                      await reload();
+                      const data = await toggleStoryPublish(String(storyId), false);
+                      applyOrigStoryPatch({ published: false, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null });
                     } catch (err) {
                       console.error('unpublish', err);
                     } finally {
@@ -100,8 +101,8 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                   if (!storyId) return;
                   try {
                     setPublishLoading(true);
-                    await toggleStoryPublish(String(storyId), true);
-                    await reload();
+                    const data = await toggleStoryPublish(String(storyId), true);
+                    applyOrigStoryPatch({ published: true, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null });
                   } catch (err) {
                     console.error('publish', err);
                   } finally {

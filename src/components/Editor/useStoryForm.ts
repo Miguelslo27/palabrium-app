@@ -175,6 +175,14 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     }
   }
 
+  // Apply a shallow patch to the loaded original story snapshot
+  const applyOrigStoryPatch = (patch: Partial<any>) => {
+    setOrigStory((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, ...patch };
+    });
+  };
+
   return {
     title,
     setTitle,
@@ -192,6 +200,7 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     setChapterPublished,
     create,
     edit,
+    applyOrigStoryPatch,
     // allow caller to refresh loaded data
     reload: loadStoryAndChapters,
   };

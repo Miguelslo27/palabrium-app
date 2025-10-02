@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 
-type Chapter = { title: string; content: string };
+type Chapter = { title: string; content: string; published?: boolean };
 
 type Props = {
   chapter?: Chapter | null;
@@ -10,9 +10,10 @@ type Props = {
   total: number;
   onNext: () => void;
   onPrev: () => void;
+  viewerIsAuthor?: boolean;
 };
 
-export default function ChapterReader({ chapter, index, total, onNext, onPrev }: Props) {
+export default function ChapterReader({ chapter, index, total, onNext, onPrev, viewerIsAuthor = false }: Props) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'ArrowRight') onNext();
@@ -27,9 +28,15 @@ export default function ChapterReader({ chapter, index, total, onNext, onPrev }:
   return (
     <article>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-2xl font-bold">{chapter.title}</h3>
+        <h3 className={`text-2xl font-bold ${!chapter.published && viewerIsAuthor ? 'text-gray-500' : ''}`}>{chapter.title}</h3>
         <div className="text-sm text-gray-600">{index + 1} / {total}</div>
       </div>
+
+      {!chapter.published && viewerIsAuthor && (
+        <div className="mb-4">
+          <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Draft</span>
+        </div>
+      )}
 
       <div className="prose max-w-none whitespace-pre-wrap">{chapter.content}</div>
 
