@@ -2,8 +2,8 @@ import Navbar from '@/components/Navbar';
 import StoryFormClient from '@/components/Editor/StoryFormClient';
 import EditorLayout from '@/components/Editor/EditorLayout';
 
-export default function EditStoryPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function EditStoryPage({ params }: { params: { id: string } }) {
+  const { id } = await params;
   return (
     <EditorLayout>
       <Navbar />

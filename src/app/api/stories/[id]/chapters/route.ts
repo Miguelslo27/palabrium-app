@@ -21,7 +21,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ error: 'Invalid story id' }, { status: 400 })
   }
   const body = await req.json()
-  const { title = 'Untitled', content = '', order } = body
+  const { title = 'Untitled', content = '', order, published = false } = body
 
   const story = await Story.findById(id)
   if (!story) return NextResponse.json({ error: 'Story not found' }, { status: 404 })
@@ -30,7 +30,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (String(story.authorId) !== String(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const chapter = await Chapter.create({ storyId: id, title, content, order })
+  const chapter = await Chapter.create({ storyId: id, title, content, order, published: Boolean(published) })
   // increment chapterCount
   story.chapterCount = (story.chapterCount || 0) + 1
   await story.save()

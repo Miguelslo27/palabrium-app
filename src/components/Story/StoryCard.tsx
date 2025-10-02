@@ -22,6 +22,9 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
   const [bravosCount, setBravosCount] = useState<number>(story.bravos?.length ?? 0);
   const [braved, setBraved] = useState<boolean | undefined>(undefined);
 
+  // left border indicates published state: green = published, yellow = unpublished
+  const leftBorderClass = story?.published ? 'border-l-4 border-green-400' : 'border-l-4 border-yellow-400';
+
   useEffect(() => {
     let mounted = true;
     getClientUserId().then((id) => {
@@ -36,7 +39,7 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
 
   if (view === 'list') {
     return (
-      <div className={`${isMine ? 'border-l-4 border-blue-400' : ''} bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 flex items-start gap-4`}>
+      <div className={`${leftBorderClass} bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 flex items-start gap-4`}>
         <div className="flex-1">
           {(isMine && showYoursBadge) && (
             <div className="inline-block mb-2">
@@ -86,7 +89,7 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
 
   // grid card
   return (
-    <div className={`${isMine ? 'border-l-4 border-blue-400' : ''} bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 h-full flex flex-col`}>
+    <div className={`${leftBorderClass} bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 h-full flex flex-col`}>
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
           <Link href={showDelete ? `/story/${story._id}/edit` : `/story/${story._id}`}>

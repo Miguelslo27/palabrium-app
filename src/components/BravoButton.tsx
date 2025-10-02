@@ -59,7 +59,7 @@ export default function BravoButton({ storyId, initialBravos, userBravos, onTogg
       disabled={!userId}
       className={`px-4 py-2 rounded ${((typeof controlledBraved !== 'undefined') ? controlledBraved : internalBraved) ? 'bg-yellow-500 text-white' : 'bg-gray-200'} ${!userId ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
-      {!userId && <>...</>}
+      {!userId && <>Bravo</>}
       {userId && (<>{((typeof controlledBraved !== 'undefined') ? controlledBraved : internalBraved) ? 'Bravos' : 'Bravo'} ({bravos})</>)}
     </button>
   );

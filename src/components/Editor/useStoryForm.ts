@@ -17,27 +17,30 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
+  async function loadStoryAndChapters() {
     if (mode !== 'edit' || !storyId) return;
-    let mounted = true;
-    async function load() {
-      try {
-        const sres = await fetch(`/api/stories/${storyId}`);
-        if (!sres.ok) throw new Error('Story not found');
-        const sdata = await sres.json();
-        if (!mounted) return;
-        setTitle(sdata.title || '');
-        setDescription(sdata.description || '');
-        setOrigStory(sdata || null);
-        const ch = await fetchChapters(storyId!);
-        if (!mounted) return;
-        setChapters(ch);
-        setExpandedIndex(ch.length > 0 ? 0 : null);
-      } catch (err) {
-        console.error('load', err);
-      }
+    try {
+      const sres = await fetch(`/api/stories/${storyId}`);
+      if (!sres.ok) throw new Error('Story not found');
+      const sdata = await sres.json();
+      setTitle(sdata.title || '');
+      setDescription(sdata.description || '');
+      setOrigStory(sdata || null);
+      const ch = await fetchChapters(storyId!);
+      setChapters(ch);
+      setExpandedIndex(ch.length > 0 ? 0 : null);
+    } catch (err) {
+      console.error('load', err);
     }
-    load();
+  }
+
+  useEffect(() => {
+    let mounted = true;
+    if (mode !== 'edit' || !storyId) return;
+    (async () => {
+      if (!mounted) return;
+      await loadStoryAndChapters();
+    })();
     return () => { mounted = false };
   }, [mode, storyId]);
 
@@ -59,6 +62,33 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
   const updateChapterLocal = (index: number, field: string, value: string) => {
     const newChapters = [...chapters];
     newChapters[index] = { ...newChapters[index], [field]: value };
+    setChapters(newChapters);
+  };
+
+  type PublishedPayload =
+    | boolean
+    | {
+      published: boolean;
+      publishedAt?: string | null;
+      publishedBy?: string | null;
+      unPublishedAt?: string | null;
+      unPublishedBy?: string | null;
+    };
+  const setChapterPublished = (index: number, payload: PublishedPayload) => {
+    const newChapters = [...chapters];
+    if (!newChapters[index]) return;
+    if (typeof payload === 'boolean') {
+      newChapters[index] = { ...newChapters[index], published: Boolean(payload) };
+    } else {
+      newChapters[index] = {
+        ...newChapters[index],
+        published: Boolean(payload.published),
+        publishedAt: payload.publishedAt ?? newChapters[index].publishedAt ?? null,
+        unPublishedAt: payload.unPublishedAt ?? newChapters[index].unPublishedAt ?? null,
+        publishedBy: payload.publishedBy ?? newChapters[index].publishedBy ?? null,
+        unPublishedBy: payload.unPublishedBy ?? newChapters[index].unPublishedBy ?? null,
+      };
+    }
     setChapters(newChapters);
   };
 
@@ -153,6 +183,14 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     }
   }
 
+  // Apply a shallow patch to the loaded original story snapshot
+  const applyOrigStoryPatch = (patch: Partial<any>) => {
+    setOrigStory((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, ...patch };
+    });
+  };
+
   return {
     title,
     setTitle,
@@ -167,7 +205,11 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     addChapter,
     removeChapter,
     updateChapterLocal,
+    setChapterPublished,
     create,
     edit,
+    applyOrigStoryPatch,
+    // allow caller to refresh loaded data
+    reload: loadStoryAndChapters,
   };
 }

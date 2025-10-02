@@ -30,9 +30,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (String(story.authorId) !== String(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   const body = await req.json()
   const { title, content, order, published } = body
+  // Build update object only with provided fields to avoid overwriting audit fields accidentally
+  const update: any = {}
+  if (typeof title === 'string') update.title = title
+  if (typeof content === 'string') update.content = content
+  if (typeof order === 'number') update.order = order
+  if (typeof published === 'boolean') update.published = published
+
   const chapter = await Chapter.findByIdAndUpdate(
     id,
-    { title, content, order, published },
+    update,
     { new: true }
   ).lean()
   if (!chapter) return NextResponse.json({ error: 'Not found' }, { status: 404 })

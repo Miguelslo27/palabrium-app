@@ -48,7 +48,8 @@ export async function POST(req: Request) {
     title,
     description,
     authorId: userId,
-    published: true,
+    // default published is false in the model; allow client to pass published === true if desired
+    published: typeof body.published === 'boolean' ? Boolean(body.published) : false,
   });
 
   try {
