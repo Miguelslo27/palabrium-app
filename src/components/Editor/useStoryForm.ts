@@ -65,7 +65,15 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     setChapters(newChapters);
   };
 
-  type PublishedPayload = boolean | { published: boolean; publishedAt?: string | null; publishedBy?: string | null };
+  type PublishedPayload =
+    | boolean
+    | {
+      published: boolean;
+      publishedAt?: string | null;
+      publishedBy?: string | null;
+      unPublishedAt?: string | null;
+      unPublishedBy?: string | null;
+    };
   const setChapterPublished = (index: number, payload: PublishedPayload) => {
     const newChapters = [...chapters];
     if (!newChapters[index]) return;
@@ -76,9 +84,9 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
         ...newChapters[index],
         published: Boolean(payload.published),
         publishedAt: payload.publishedAt ?? newChapters[index].publishedAt ?? null,
-        unPublishedAt: (payload as any).unPublishedAt ?? newChapters[index].unPublishedAt ?? null,
+        unPublishedAt: payload.unPublishedAt ?? newChapters[index].unPublishedAt ?? null,
         publishedBy: payload.publishedBy ?? newChapters[index].publishedBy ?? null,
-        unPublishedBy: (payload as any).unPublishedBy ?? newChapters[index].unPublishedBy ?? null,
+        unPublishedBy: payload.unPublishedBy ?? newChapters[index].unPublishedBy ?? null,
       };
     }
     setChapters(newChapters);

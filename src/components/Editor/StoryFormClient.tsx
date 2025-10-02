@@ -10,6 +10,7 @@ import Button from '@/components/Editor/Shared/Button';
 import useStoryForm from '@/components/Editor/useStoryForm';
 import getClientUserId from '@/lib/getClientUserId';
 import { toggleStoryPublish } from '@/lib/useStories';
+import IconExternal from '@/components/Editor/Shared/IconExternal';
 
 type Props = {
   mode?: 'create' | 'edit';
@@ -127,6 +128,18 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
         >
           Cancel
         </Button>
+        {mode === 'edit' && storyId && (
+          <Button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined') window.open(`/story/${storyId}`, '_blank', 'noopener,noreferrer');
+            }}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-3 rounded text-sm flex items-center gap-2"
+          >
+            <IconExternal className="h-4 w-4" />
+            Preview
+          </Button>
+        )}
         <Button type="submit" disabled={submitting} className="bg-blue-700 disabled:opacity-60 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded text-sm shadow">
           {submitting ? 'Saving…' : 'Save'}
         </Button>

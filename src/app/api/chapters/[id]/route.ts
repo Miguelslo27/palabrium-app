@@ -44,8 +44,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   ).lean()
   if (!chapter) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json(chapter)
-  if (!chapter) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(chapter)
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {

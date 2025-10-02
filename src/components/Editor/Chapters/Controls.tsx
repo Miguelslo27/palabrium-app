@@ -5,7 +5,15 @@ import IconEyeOff from '@/components/Editor/Shared/IconEyeOff';
 import { toggleChapterPublish } from '@/lib/useChapters';
 
 type Chapter = { title: string; content: string; _id?: string; published?: boolean; publishedAt?: string | null };
-type PublishedPayload = boolean | { published: boolean; publishedAt?: string | null; publishedBy?: string | null };
+type PublishedPayload =
+  | boolean
+  | {
+    published: boolean;
+    publishedAt?: string | null;
+    publishedBy?: string | null;
+    unPublishedAt?: string | null;
+    unPublishedBy?: string | null;
+  };
 
 type Props = {
   chapter: Chapter;
@@ -27,7 +35,7 @@ export default function ChapterControls({ chapter, index, chaptersLength, remove
     try {
       setPublishLoading?.(true);
       const data = await toggleChapterPublish(String(chapter._id), publish);
-      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: publish, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null } as any);
+      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: publish, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null });
     } catch (err) {
       console.error('toggle publish chapter', err);
     } finally {
