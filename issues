@@ -8,7 +8,7 @@
 - [x] Corregir comentarios
 - [x] Poner comentarios a la derecha en la página de la historia
 - [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
-- [-] Implementar publicación de historia y capítulo
+- [x] Implementar publicación de historia y capítulo
 - [ ] Guardar datos básicos de usuario en mi base cuando se registran
 
 ## Prioridades para MVP
