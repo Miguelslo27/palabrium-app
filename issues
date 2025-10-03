@@ -9,6 +9,8 @@
 - [ ] Página de Perfil de autor
 
 ## Prioridades para MVP
+- [ ] Configurar lista de usuarios por invitación para el MVP usando Clerk
+- [ ] Permitir que los usuarios invitados puedan repartir invitaciones (3 por usuario)
 - [ ] Permitir reordenar capítulos arrastrando y soltando
 - [ ] Añadir géneros (formato label)
 - [ ] Permitir agregar portada
