@@ -21,7 +21,6 @@ export default function Stories() {
     setPageSize,
     total,
     isLoading,
-    isPrefetching,
     refresh,
   } = useBufferedPagedStories({ endpoint: '/api/stories', filters: { q }, requestedPageSize: 10, batchSize: 50, prefetchThreshold: 1 });
 
@@ -31,7 +30,7 @@ export default function Stories() {
     if (!confirm('Are you sure you want to delete this story?')) return;
     const res = await fetch(`/api/stories/${id}`, { method: 'DELETE' });
     if (res.ok) {
-      try { await refresh(); } catch (e) { /* ignore */ }
+      try { await refresh(); } catch { /* ignore */ }
     } else {
       alert('Failed to delete story');
     }

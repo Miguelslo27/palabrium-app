@@ -10,7 +10,7 @@ export function getClerkClient(): Clerk {
     console.error('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set. Clerk client may not initialize correctly.');
   }
   // Some @clerk/clerk-js types don't declare the 'load' option here; it's safe at runtime.
-  // @ts-ignore - allow passing runtime options the types may not reflect
+  // @ts-expect-error - allow passing runtime options the types may not reflect
   clerkInstance = new Clerk(key, { load: true });
   return clerkInstance;
 }

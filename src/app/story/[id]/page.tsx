@@ -24,10 +24,10 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
   let authorName: string | null = null;
   try {
     if (process.env.CLERK_SECRET_KEY && story.authorId) {
-      const u: any = await clerkClient.users.getUser(story.authorId);
+      const u = await clerkClient.users.getUser(story.authorId);
       authorName = (u?.firstName || u?.lastName) ? `${u?.firstName || ''} ${u?.lastName || ''}`.trim() : u?.fullName || u?.primaryEmailAddress?.emailAddress || null;
     }
-  } catch (e) {
+  } catch {
     // ignore and fallback to authorId
     authorName = null;
   }
@@ -48,7 +48,7 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="md:col-span-3">
             <ChapterViewer
-              chapters={allChapters.map((c: any) => ({ title: c.title, content: c.content, published: Boolean(c.published) }))}
+              chapters={allChapters.map((c) => ({ title: c.title, content: c.content, published: Boolean(c.published) }))}
               initialIndex={0}
               title={story.title}
               authorId={story.authorId}

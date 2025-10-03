@@ -2,6 +2,7 @@ export interface Chapter {
   title: string;
   content: string;
   order?: number;
+  published?: boolean;
 }
 
 export interface Story {
@@ -12,6 +13,10 @@ export interface Story {
   chapterCount?: number;
   chapters: Chapter[];
   published?: boolean;
+  publishedAt?: string | null;
+  unPublishedAt?: string | null;
+  publishedBy?: string | null;
+  unPublishedBy?: string | null;
   bravos?: string[];
   createdAt?: string;
 }

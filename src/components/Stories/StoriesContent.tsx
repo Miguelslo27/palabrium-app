@@ -46,7 +46,7 @@ export default function StoriesContent({
     try {
       const v = localStorage.getItem('stories.view');
       if (v === 'grid' || v === 'list') setView(v);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, []);
@@ -64,7 +64,7 @@ export default function StoriesContent({
   useEffect(() => {
     try {
       localStorage.setItem('stories.view', view);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [view]);

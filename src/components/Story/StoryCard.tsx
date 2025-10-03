@@ -35,7 +35,7 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
       }
     });
     return () => { mounted = false; };
-  }, [story.bravos]);
+  }, [story.bravos, braved]); // Added braved dependency
 
   if (view === 'list') {
     return (

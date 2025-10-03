@@ -105,10 +105,10 @@ export async function POST(req: NextRequest) {
     const headers = req.headers;
 
     // Verify webhook signature
-    const wh = new Webhook(webhookSecret);
     let evt: ClerkWebhookEvent;
 
     try {
+      const wh = new Webhook(webhookSecret);
       evt = wh.verify(rawBody, {
         'svix-id': headers.get('svix-id') || '',
         'svix-timestamp': headers.get('svix-timestamp') || '',
@@ -125,19 +125,17 @@ export async function POST(req: NextRequest) {
     // Parse payload
     const { type, data } = evt;
 
-    let result;
-
     switch (type) {
       case 'user.created':
-        result = await handleUserCreated(data);
+        await handleUserCreated(data);
         break;
 
       case 'user.updated':
-        result = await handleUserUpdated(data);
+        await handleUserUpdated(data);
         break;
 
       case 'user.deleted':
-        result = await handleUserDeleted(data);
+        await handleUserDeleted(data);
         break;
 
       default:
@@ -156,9 +154,18 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Webhook error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    console.error('Error details:', {
+      message: errorMessage,
+      stack: errorStack,
+      timestamp: new Date().toISOString()
+    });
+
     return NextResponse.json({
       error: 'Webhook processing failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: errorMessage
     }, { status: 500 });
   }
 }

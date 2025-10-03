@@ -15,7 +15,7 @@ import StoriesShell from '@/components/Stories/StoriesShell';
 import StoriesSidebar from '@/components/Stories/StoriesSidebar';
 
 export default function MyStories() {
-  const { stories, loading, unauthorized, deleteStory, deleteAll, refresh } = useMyStories();
+  const { stories, unauthorized, deleteStory, deleteAll, refresh } = useMyStories();
   const paged = useMyStoriesPaged({ requestedPageSize: 10 });
 
   const pagedStories = paged.stories;
@@ -52,8 +52,8 @@ export default function MyStories() {
               onImported={async () => {
                 try {
                   await refresh();
-                  try { await paged.refresh(); } catch (e) { /* ignore paged refresh errors */ }
-                } catch (err) { try { /* ignore */ } catch (e) { } }
+                  try { await paged.refresh(); } catch { /* ignore paged refresh errors */ }
+                } catch { try { /* ignore */ } catch { } }
               }}
             />
           </StoriesSidebar>

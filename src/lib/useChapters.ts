@@ -1,12 +1,23 @@
 import getClerkClient from '@/lib/clerk-client';
 
+interface ChapterData {
+  title: string;
+  content: string;
+  order?: number;
+  published?: boolean;
+}
+
 async function detectUserId(): Promise<string | null> {
   try {
-    const clerk: any = getClerkClient();
+    const clerk = getClerkClient() as {
+      load(): Promise<void>;
+      user?: { id?: string };
+      client?: { user?: { id?: string } }
+    };
     await clerk.load();
     return clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-  } catch (err) {
-    if (typeof window !== 'undefined') return (window as any).__USER_ID__ || null;
+  } catch {
+    if (typeof window !== 'undefined') return (window as { __USER_ID__?: string }).__USER_ID__ || null;
     return null;
   }
 }
@@ -19,7 +30,7 @@ export async function fetchChapters(storyId: string) {
   return res.json()
 }
 
-export async function createChapter(storyId: string, data: any) {
+export async function createChapter(storyId: string, data: ChapterData) {
   const userId = await detectUserId();
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (userId) headers['x-user-id'] = String(userId);
@@ -32,7 +43,7 @@ export async function createChapter(storyId: string, data: any) {
   return res.json()
 }
 
-export async function updateChapter(id: string, data: any) {
+export async function updateChapter(id: string, data: ChapterData) {
   const userId = await detectUserId();
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (userId) headers['x-user-id'] = String(userId);

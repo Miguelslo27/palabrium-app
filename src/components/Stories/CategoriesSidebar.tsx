@@ -5,7 +5,7 @@ import Button from '@/components/Editor/Shared/Button';
 
 const SAMPLE_CATEGORIES = ['All', 'Fiction', 'Sci‑Fi', 'Poetry', 'Non‑fiction'];
 
-export default function CategoriesSidebar({ }: {}) {
+export default function CategoriesSidebar() {
   return (
     <SidebarShell header={<div className="mb-4"><span className="text-sm font-semibold text-gray-700 uppercase">Categories</span></div>}>
       <div className="mb-4">

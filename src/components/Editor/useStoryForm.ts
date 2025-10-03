@@ -1,8 +1,31 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import getClerkClient from '@/lib/clerk-client';
 import { fetchChapters, createChapter, updateChapter, deleteChapter } from '@/lib/useChapters';
+
+interface Story {
+  _id?: string;
+  title?: string;
+  description?: string;
+  published?: boolean;
+  publishedAt?: string | null;
+  unPublishedAt?: string | null;
+  publishedBy?: string | null;
+  unPublishedBy?: string | null;
+}
+
+interface Chapter {
+  _id?: string;
+  title: string;
+  content: string;
+  order?: number;
+  published?: boolean;
+  publishedAt?: string | null;
+  unPublishedAt?: string | null;
+  publishedBy?: string | null;
+  unPublishedBy?: string | null;
+}
 
 type UseStoryFormOpts = {
   mode?: 'create' | 'edit';
@@ -12,12 +35,12 @@ type UseStoryFormOpts = {
 export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormOpts) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [origStory, setOrigStory] = useState<any | null>(null);
-  const [chapters, setChapters] = useState<any[]>(mode === 'create' ? [{ title: '', content: '' }] : []);
+  const [origStory, setOrigStory] = useState<Story | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>(mode === 'create' ? [{ title: '', content: '' }] : []);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const [submitting, setSubmitting] = useState(false);
 
-  async function loadStoryAndChapters() {
+  const loadStoryAndChapters = useCallback(async () => {
     if (mode !== 'edit' || !storyId) return;
     try {
       const sres = await fetch(`/api/stories/${storyId}`);
@@ -32,7 +55,7 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     } catch (err) {
       console.error('load', err);
     }
-  }
+  }, [mode, storyId]);
 
   useEffect(() => {
     let mounted = true;
@@ -42,7 +65,7 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
       await loadStoryAndChapters();
     })();
     return () => { mounted = false };
-  }, [mode, storyId]);
+  }, [loadStoryAndChapters, mode, storyId]);
 
   const addChapter = () => {
     const newChapters = [...chapters, { title: '', content: '' }];
@@ -94,16 +117,16 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
 
   async function detectUserId(): Promise<string | null> {
     try {
-      const clerk: any = getClerkClient();
+      const clerk = getClerkClient() as { load(): Promise<void>; user?: { id?: string }; client?: { user?: { id?: string } } };
       await clerk.load();
       return clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-    } catch (err) {
-      if (typeof window !== 'undefined') return (window as any).__USER_ID__ || null;
+    } catch {
+      if (typeof window !== 'undefined') return (window as { __USER_ID__?: string }).__USER_ID__ || null;
       return null;
     }
   }
 
-  async function create(payload: { title: string; description: string; chapters: any[] }) {
+  async function create(payload: { title: string; description: string; chapters: Chapter[] }) {
     if (submitting) return;
     setSubmitting(true);
     try {
@@ -156,7 +179,7 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
         const ch = chapters[i];
         const order = i;
         if (ch._id) {
-          const old = existing.find((e: any) => String(e._id) === String(ch._id));
+          const old = existing.find((e: Chapter) => String(e._id) === String(ch._id));
           const changed = !old || old.title !== ch.title || old.content !== ch.content || Boolean(old.published) !== Boolean(ch.published) || Number(old.order || 0) !== order;
           if (changed) {
             await updateChapter(ch._id, { title: ch.title, content: ch.content, order, published: Boolean(ch.published) });
@@ -174,7 +197,7 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
           const sdata = await sres.json();
           setOrigStory(sdata || null);
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
       return { ok: true };
@@ -184,8 +207,8 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
   }
 
   // Apply a shallow patch to the loaded original story snapshot
-  const applyOrigStoryPatch = (patch: Partial<any>) => {
-    setOrigStory((prev: any) => {
+  const applyOrigStoryPatch = (patch: Partial<Story>) => {
+    setOrigStory((prev) => {
       if (!prev) return prev;
       return { ...prev, ...patch };
     });

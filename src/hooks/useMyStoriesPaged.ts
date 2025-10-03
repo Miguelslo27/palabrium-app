@@ -34,7 +34,7 @@ export default function useMyStoriesPaged(opts: { requestedPageSize?: number } =
           await hook.refresh();
           return true;
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
       return false;
@@ -51,7 +51,7 @@ export default function useMyStoriesPaged(opts: { requestedPageSize?: number } =
           await hook.refresh();
           return true;
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
       return false;

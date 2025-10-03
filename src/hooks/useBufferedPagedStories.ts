@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Story } from '@/types/story';
 
 type UseBufferedOptions = {
@@ -51,7 +51,7 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
   const fetchedSkipsRef = useRef<Set<number>>(new Set());
   const abortRef = useRef<AbortController | null>(null);
 
-  const buildUrl = (skip: number, limit: number) => {
+  const buildUrl = useCallback((skip: number, limit: number) => {
     const url = new URL(endpoint, (typeof window !== 'undefined' && window.location.origin) || 'http://localhost');
     url.searchParams.set('skip', String(skip));
     url.searchParams.set('limit', String(limit));
@@ -61,7 +61,7 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
       });
     }
     return url.toString();
-  };
+  }, [endpoint, filters]);
 
   const fetchBatch = useCallback(async (skip: number) => {
     if (fetchedSkipsRef.current.has(skip)) return; // already fetched
@@ -79,7 +79,7 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
           const h = await headersProvider();
           headers = h;
         }
-      } catch (e) {
+      } catch {
         // ignore header provider errors
       }
       const res = await fetch(url, { signal: controller.signal, headers });
@@ -100,7 +100,7 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
       fetchedSkipsRef.current.delete(skip);
       console.error('Error fetching batch', err);
     }
-  }, [endpoint, JSON.stringify(filters), effectiveBatch]);
+  }, [effectiveBatch, buildUrl, headersProvider]);
 
   const fetchInitial = useCallback(async () => {
     setIsLoading(true);
@@ -145,9 +145,9 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
     const lastBufferedSkips = Array.from(bufferRef.current.keys()).sort((a, b) => a - b);
     if (lastBufferedSkips.length > 0) {
       const lastSkip = lastBufferedSkips[lastBufferedSkips.length - 1];
-      const lastBatchIndex = lastSkip / effectiveBatch;
+      // const lastBatchIndex = lastSkip / effectiveBatch;
       const lastBufferedPage = Math.floor(((lastSkip + (bufferRef.current.get(lastSkip)?.length || 0) - 1) / pageSize)) + 1;
-      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      // const totalPages = Math.max(1, Math.ceil(total / pageSize));
       // if current page is within prefetchThreshold of lastBufferedPage, prefetch next batch
       if (lastBufferedPage - page <= prefetchThreshold) {
         const nextSkip = lastSkip + effectiveBatch;
@@ -159,6 +159,9 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
     }
   }, [page, pageSize, effectiveBatch, fetchBatch, prefetchThreshold, total]);
 
+  // extract complex dependency to avoid warning
+  const filtersJson = useMemo(() => JSON.stringify(filters || {}), [filters]);
+
   // reset buffer when filters change
   useEffect(() => {
     (async () => {
@@ -167,14 +170,14 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
       setPage(1);
       await fetchInitial();
     })();
-  }, [JSON.stringify(filters || {})]);
+  }, [filtersJson, fetchInitial]);
 
   // ensure page stays in bounds when total/pageSize changes
   useEffect(() => {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     if (page > totalPages) setPage(totalPages);
     if (page < 1) setPage(1);
-  }, [total, pageSize]);
+  }, [total, pageSize, page]);
 
   return {
     itemsForPage,

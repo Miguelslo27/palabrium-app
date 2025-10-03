@@ -8,7 +8,6 @@ import Sidebar from '@/components/Editor/Sidebar';
 import Chapters from '@/components/Editor/Chapters';
 import Button from '@/components/Editor/Shared/Button';
 import useStoryForm from '@/components/Editor/useStoryForm';
-import getClientUserId from '@/lib/getClientUserId';
 import { toggleStoryPublish } from '@/lib/useStories';
 import IconExternal from '@/components/Editor/Shared/IconExternal';
 
@@ -28,7 +27,6 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
     setDescription,
     origStory,
     chapters,
-    setChapters,
     expandedIndex,
     setExpandedIndex,
     submitting,
@@ -38,7 +36,6 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
     setChapterPublished,
     create,
     edit,
-    reload,
     applyOrigStoryPatch,
   } = useStoryForm({ mode, storyId });
 

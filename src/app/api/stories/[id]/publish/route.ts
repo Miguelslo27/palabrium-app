@@ -1,5 +1,6 @@
 import dbConnect from '@/lib/mongodb';
 import Story from '@/models/Story';
+import { PublishRequestBody, PublishUpdateObject } from '@/types/api';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
@@ -12,12 +13,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (String(story.authorId) !== String(userId)) return new Response('Forbidden', { status: 403 });
 
   try {
-    const body = await req.json();
+    const body: PublishRequestBody = await req.json();
     const published = typeof body.published === 'boolean' ? body.published : undefined;
     if (typeof published !== 'boolean') return new Response('Bad Request', { status: 400 });
 
     const now = new Date();
-    const setObj: any = {
+    const setObj: PublishUpdateObject = {
       published: published,
       publishedAt: published ? now : null,
       publishedBy: published ? String(userId) : null,
