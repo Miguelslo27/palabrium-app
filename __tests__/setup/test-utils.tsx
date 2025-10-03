@@ -5,7 +5,6 @@
 
 import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { clerkClientMocks } from '../mocks/clerk';
 
 // Mock ClerkProvider wrapper
 interface TestProviderProps {

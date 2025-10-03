@@ -228,7 +228,7 @@ describe('mongodb', () => {
         // Act
         try {
           await dbConnectModule.default();
-        } catch (e) {
+        } catch {
           // Expected to throw
         }
 
@@ -403,7 +403,7 @@ describe('mongodb', () => {
       mongoose = require('mongoose');
       const firstConnect = mongoose.connect as jest.Mock;
       firstConnect.mockResolvedValue(mongoose);
-      let module1 = require('@/lib/mongodb');
+      const module1 = require('@/lib/mongodb');
       const result1 = await module1.default();
 
       // Second invocation (module cache cleared but global cache persists)
@@ -411,7 +411,7 @@ describe('mongodb', () => {
       mongoose = require('mongoose');
       const secondConnect = mongoose.connect as jest.Mock;
       secondConnect.mockResolvedValue(mongoose);
-      let module2 = require('@/lib/mongodb');
+      const module2 = require('@/lib/mongodb');
       const result2 = await module2.default();
 
       // Assert - First call should connect, second should use cache
