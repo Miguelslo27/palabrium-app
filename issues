@@ -1,25 +1,15 @@
 # Lista de tareas pendientes
 
 ## En progreso
-- [x] Agregar botón de Preview (icono de ojito)
-- [x] Resaltar historias propias en Explorar
-- [x] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
-- [x] Corregir likes (cambiar el nombre)
-- [x] Corregir comentarios
-- [x] Poner comentarios a la derecha en la página de la historia
-- [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
-- [x] Implementar publicación de historia y capítulo
-- [x] Guardar datos básicos de usuario en mi base cuando se registran
-- [x] Corregir errores de lint
-- [-] Agregar safe-guard para prevenir push con errores
+- [-] Configurar suites de prueba y comenzar a agregar tests hatas alcanzar el 80/90% de cobertura
+- [ ] Relacionar historias y comentarios con usuarios para poder consultar todo junto
+- [ ] Al consultar historia traer datos del autor
+- [ ] Al consultar historias traer ya los comentarios
+- [ ] Al consultar comments de las historias traer datos del autor
+- [ ] Página de Perfil de autor
 
 ## Prioridades para MVP
 - [ ] Permitir reordenar capítulos arrastrando y soltando
-- [ ] Relacionar historias y comentarios con usuarios para poder consultar todo junto
-- [ ] Al consultar historia traer datos del autor
-- [ ] Al consultar comments de las historias traer ddatos del autor
-- [ ] Al consultar historias traer ya los comentarios
-- [ ] Página de Perfil de autor
 - [ ] Añadir géneros (formato label)
 - [ ] Permitir agregar portada
 - [ ] Permitir agregar imagen de fondo (para el hero)
@@ -37,6 +27,17 @@
 - [x] Editar historia al hacer click en el título (Solo en Mis historias)
 - [x] Agregar endpoint de carga masiva
 - [x] Crear JSON con datos de prueba
+- [x] Agregar botón de Preview (icono de ojito)
+- [x] Resaltar historias propias en Explorar
+- [x] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
+- [x] Corregir likes (cambiar el nombre)
+- [x] Corregir comentarios
+- [x] Poner comentarios a la derecha en la página de la historia
+- [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
+- [x] Implementar publicación de historia y capítulo
+- [x] Guardar datos básicos de usuario en mi base cuando se registran
+- [x] Corregir errores de lint
+- [x] Agregar safe-guard para prevenir push con errores
 
 ## Sería bueno tener para la próxima versión
 - [ ] Seguir autores
