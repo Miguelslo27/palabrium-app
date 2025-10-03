@@ -246,8 +246,11 @@ src/components/   → 60%+ (componentes principales)
 ### ✅ Día 1: Setup Básico
 - [x] Instalar dependencias de Jest y RTL
 - [x] Crear configuración de Jest
-- [x] Configurar mocks básicos
+- [x] Configurar mocks básicos (CSS, archivos estáticos)
 - [x] Crear primer test unitario (smoke test)
+- [x] **BONUS**: Crear mocks críticos (Clerk, MongoDB, fetch)
+- [x] **BONUS**: Crear test utilities y fixtures
+- [x] **BONUS**: Primer test real (getClientUserId) ✨
 
 ### ⏳ Día 2-3: Tests Unitarios
 - [ ] Tests de hooks principales
