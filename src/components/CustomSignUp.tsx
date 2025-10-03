@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect } from 'react';
 import { OAuthStrategy } from '@clerk/types'
 import { useSignUp, useUser, useSignIn } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function CustomSignUp() {
   const { signIn } = useSignIn()
@@ -34,10 +35,10 @@ export default function CustomSignUp() {
       .then((res) => {
         console.log(res)
       })
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         // See https://clerk.com/docs/guides/development/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors)
+        console.log((err as { errors?: unknown[] }).errors)
         console.error(err, null, 2)
       })
   }
@@ -64,10 +65,10 @@ export default function CustomSignUp() {
       // and capture the OTP code
       setVerifying(true)
       setLoading(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       // See https://clerk.com/docs/guides/development/custom-flows/error-handling
       // for more info on error handling
-      setError(err);
+      setError(String(err));
       setLoading(false);
       console.error(JSON.stringify(err, null, 2))
     }
@@ -109,7 +110,7 @@ export default function CustomSignUp() {
         setLoading(false);
         console.error(JSON.stringify(signUpAttempt, null, 2))
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // See https://clerk.com/docs/guides/development/custom-flows/error-handling
       // for more info on error handling
       console.error('Error:', JSON.stringify(err, null, 2))
@@ -239,7 +240,7 @@ export default function CustomSignUp() {
         </button>
       </form>
       <p className="mt-6 text-blue-600 hover:text-blue-800">
-        <a href="/sign-in">Already have an account? Sign in</a>
+        <Link href="/sign-in">Already have an account? Sign in</Link>
       </p>
     </div>
   );

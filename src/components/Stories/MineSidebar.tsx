@@ -7,13 +7,13 @@ import ImportModal from '@/components/Stories/ImportModal';
 import { useRouter } from 'next/navigation';
 import SidebarShell from '@/components/Editor/Sidebar/SidebarShell';
 
-type Props = {
+interface Props {
   storiesCount: number;
-  onClear: () => Promise<void>;
   onImported?: () => void;
-};
+  onClear?: () => void;
+}
 
-export default function MineSidebar({ storiesCount, onClear, onImported }: Props) {
+export default function MineSidebar({ storiesCount, onImported, onClear }: Props) {
   const [openImport, setOpenImport] = useState(false);
   const router = useRouter();
   return (
@@ -29,13 +29,16 @@ export default function MineSidebar({ storiesCount, onClear, onImported }: Props
             <Button className="text-sm bg-white border border-gray-300 px-3 py-2 rounded text-gray-800 text-center">Create story</Button>
           </Link>
           <Button onClick={() => setOpenImport(true)} className="text-sm bg-white border border-gray-300 px-3 py-2 rounded text-gray-800 text-left">Import stories</Button>
+          {onClear && (
+            <Button onClick={onClear} className="text-sm bg-red-50 border border-red-300 px-3 py-2 rounded text-red-700 text-left hover:bg-red-100">Clear all stories</Button>
+          )}
           <ImportModal open={openImport} onClose={() => setOpenImport(false)} onImported={() => {
             setOpenImport(false);
             // notify parent (page) to refresh its data; fallback to router.refresh()
             try {
               if (typeof onImported === 'function') onImported();
               else router.refresh();
-            } catch (err) { /* ignore */ }
+            } catch { /* ignore */ }
           }} />
         </div>
       </div>

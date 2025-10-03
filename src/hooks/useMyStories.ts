@@ -37,7 +37,7 @@ export default function useMyStories(): UseMyStories {
         const data = await res.json();
         setStories(data);
       }
-    } catch (e) {
+    } catch {
       setStories([]);
     } finally {
       setLoading(false);
@@ -57,7 +57,7 @@ export default function useMyStories(): UseMyStories {
         return true;
       }
       return false;
-    } catch (e) {
+    } catch {
       return false;
     }
   }, []);
@@ -75,7 +75,7 @@ export default function useMyStories(): UseMyStories {
         return true;
       }
       return false;
-    } catch (e) {
+    } catch {
       return false;
     }
   }, []);

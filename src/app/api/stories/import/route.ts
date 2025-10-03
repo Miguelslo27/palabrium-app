@@ -10,6 +10,29 @@ import Chapter from '@/models/Chapter';
 const MAX_STORIES = 20;
 const MAX_CHAPTERS = 50;
 
+interface RawChapter {
+  title?: string;
+  content?: string;
+  order?: number;
+  published?: boolean;
+}
+
+interface RawStory {
+  title?: string;
+  description?: string;
+  pinned?: boolean;
+  published?: boolean;
+  chapters?: RawChapter[];
+}
+
+interface ImportResult {
+  index: number;
+  status: 'ok' | 'created' | 'failed';
+  id?: string;
+  error?: unknown;
+  planned?: { story: RawStory };
+}
+
 const ChapterSchema = z.object({
   title: z.string().min(1).max(200),
   content: z.string().min(1).max(100_000),
@@ -30,14 +53,13 @@ const PayloadSchema = z.union([
   z.object({ stories: z.array(StorySchema).max(MAX_STORIES) }).transform((v) => v.stories),
 ]);
 
-async function parseMultipartFile(req: NextRequest): Promise<any | null> {
+async function parseMultipartFile(req: NextRequest): Promise<unknown | null> {
   try {
     // Try formData first (works for browser file uploads)
-    // @ts-ignore - NextRequest.formData exists in runtime
-    const fd = await (req as any).formData();
+    const fd = await (req as { formData(): Promise<FormData> }).formData();
     const file = fd.get('file');
-    if (file && typeof (file as any).text === 'function') {
-      const text = await (file as any).text();
+    if (file && typeof (file as { text(): Promise<string> }).text === 'function') {
+      const text = await (file as { text(): Promise<string> }).text();
       return JSON.parse(text);
     }
 
@@ -45,7 +67,7 @@ async function parseMultipartFile(req: NextRequest): Promise<any | null> {
     const text = await req.text();
     if (!text) return null;
     return JSON.parse(text);
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -56,13 +78,13 @@ export async function POST(req: NextRequest) {
 
   const dryRun = !!(req.headers.get('x-dry-run') || req.nextUrl.searchParams.get('dryRun'));
 
-  let parsed: any = null;
+  let parsed: unknown = null;
   // Accept application/json body or a raw JSON file payload
   const contentType = req.headers.get('content-type') || '';
   if (contentType.includes('application/json')) {
     try {
       parsed = await req.json();
-    } catch (err) {
+    } catch {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
   } else {
@@ -72,9 +94,10 @@ export async function POST(req: NextRequest) {
   }
 
   // Normalize envelope or array
-  let storiesInput: any[];
+  let storiesInput: unknown[];
   if (Array.isArray(parsed)) storiesInput = parsed;
-  else if (parsed && Array.isArray(parsed.stories)) storiesInput = parsed.stories;
+  else if (parsed && typeof parsed === 'object' && 'stories' in parsed && Array.isArray((parsed as { stories: unknown[] }).stories))
+    storiesInput = (parsed as { stories: unknown[] }).stories;
   else return NextResponse.json({ error: 'Expected array or { stories: [...] } envelope' }, { status: 400 });
 
   // Validate with Zod
@@ -83,13 +106,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Validation failed', details: parsedResult.error.flatten() }, { status: 400 });
   }
 
-  const results: Array<any> = [];
+  const results: ImportResult[] = [];
 
   for (let i = 0; i < storiesInput.length; i++) {
-    const raw = storiesInput[i];
+    const raw = storiesInput[i] as RawStory;
     // sanitize chapter content before validating/creating
     if (raw && Array.isArray(raw.chapters)) {
-      raw.chapters = raw.chapters.map((c: any) => ({
+      raw.chapters = raw.chapters.map((c) => ({
         ...c,
         content: typeof c.content === 'string' ? sanitizeHtml(c.content, { allowedTags: sanitizeHtml.defaults.allowedTags.filter((t: string) => t !== 'script') }) : c.content,
       }));
@@ -125,7 +148,7 @@ export async function POST(req: NextRequest) {
       const storyDoc = created[0];
 
       if (Array.isArray(storyData.chapters) && storyData.chapters.length) {
-        const chaptersToCreate = storyData.chapters.map((c: any, idx: number) => ({
+        const chaptersToCreate = storyData.chapters.map((c, idx: number) => ({
           storyId: storyDoc._id,
           title: c.title,
           content: c.content,
@@ -140,10 +163,10 @@ export async function POST(req: NextRequest) {
       session.endSession();
 
       results.push({ index: i, status: 'created', id: String(storyDoc._id) });
-    } catch (err: any) {
+    } catch (err: unknown) {
       await session.abortTransaction();
       session.endSession();
-      results.push({ index: i, status: 'failed', error: String(err?.message || err) });
+      results.push({ index: i, status: 'failed', error: String((err as Error)?.message || err) });
     }
   }
 

@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect } from 'react';
 import { OAuthStrategy } from '@clerk/types'
 import { useUser, useSignIn } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function CustomSignIn() {
   const { isLoaded, signIn, setActive } = useSignIn()
@@ -29,10 +30,10 @@ export default function CustomSignIn() {
       .then((res) => {
         console.log(res)
       })
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         // See https://clerk.com/docs/guides/development/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors)
+        console.log((err as { errors?: unknown[] }).errors)
         console.error(err, null, 2)
       })
   }
@@ -53,7 +54,7 @@ export default function CustomSignIn() {
       if (signInAttempt.status === 'complete') {
         await setActive({
           session: signInAttempt.createdSessionId,
-          navigate: async ({ session }: any) => {
+          navigate: async ({ session }: { session?: { currentTask?: unknown } }) => {
             if (session?.currentTask) {
               // Check for tasks and navigate to custom UI to help users resolve them
               // See https://clerk.com/docs/guides/development/custom-flows/overview#session-tasks
@@ -71,14 +72,15 @@ export default function CustomSignIn() {
         setError('Something went wrong. Try again.')
         console.error(JSON.stringify(signInAttempt, null, 2))
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // See https://clerk.com/docs/guides/development/custom-flows/error-handling
       // for more info on error handling
       setLoading(false);
       try {
-        setError(err.errors.flatMap((er: any) => er.message).join(', '))
-      } catch (_) {
-        setError(err?.message || 'Sign in failed')
+        const errorData = err as { errors?: Array<{ message: string }> };
+        setError(errorData.errors?.flatMap((er) => er.message).join(', ') || 'Unknown error')
+      } catch {
+        setError((err as Error)?.message || 'Sign in failed')
       }
       console.error(JSON.stringify(err, null, 2))
     }
@@ -158,7 +160,7 @@ export default function CustomSignIn() {
         </button>
       </form>
       <p className="mt-6 text-blue-600 hover:text-blue-800">
-        <a href="/sign-up">Don't have an account? Sign up</a>
+        <Link href="/sign-up">Don&apos;t have an account? Sign up</Link>
       </p>
     </div >
   );

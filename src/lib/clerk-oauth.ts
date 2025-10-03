@@ -10,7 +10,15 @@ export async function startOAuth(
   redirectUrl = '/',
   redirectUrlComplete = '/',
 ) {
-  const clerk: any = getClerkClient();
+  const clerk = getClerkClient() as {
+    load(): Promise<void>;
+    signUp?: { authenticateWithRedirect?: (args: unknown) => Promise<unknown> };
+    signIn?: { authenticateWithRedirect?: (args: unknown) => Promise<unknown> };
+    client?: {
+      signUp?: { authenticateWithRedirect?: (args: unknown) => Promise<unknown> };
+      signIn?: { authenticateWithRedirect?: (args: unknown) => Promise<unknown> };
+    }
+  };
   await clerk.load();
 
   const api = mode === 'signUp'

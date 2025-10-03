@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import mongoose from 'mongoose'
 import Chapter from '@/models/Chapter'
 import dbConnect from '@/lib/mongodb'
+import { ChapterUpdateBody } from '@/types/api'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect()
@@ -28,10 +29,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const story = await (await import('@/models/Story')).default.findById(existing.storyId)
   if (!story) return NextResponse.json({ error: 'Story not found' }, { status: 404 })
   if (String(story.authorId) !== String(userId)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  const body = await req.json()
+  const body: ChapterUpdateBody = await req.json()
   const { title, content, order, published } = body
   // Build update object only with provided fields to avoid overwriting audit fields accidentally
-  const update: any = {}
+  const update: ChapterUpdateBody = {}
   if (typeof title === 'string') update.title = title
   if (typeof content === 'string') update.content = content
   if (typeof order === 'number') update.order = order

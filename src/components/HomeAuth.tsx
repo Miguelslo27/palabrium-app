@@ -7,11 +7,11 @@ import Link from 'next/link';
 
 export default function HomeAuth() {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<unknown>(null);
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const clerk: any = getClerkClient();
+      const clerk = getClerkClient() as { load(): Promise<void>; user?: unknown };
       try {
         await clerk.load();
         // clerk.user may be undefined if not signed in

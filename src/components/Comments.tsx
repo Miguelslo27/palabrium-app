@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import getClientUserId from '@/lib/getClientUserId';
 
@@ -22,11 +22,7 @@ export default function Comments({ storyId }: CommentsProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchComments();
-  }, []);
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -34,12 +30,16 @@ export default function Comments({ storyId }: CommentsProps) {
       if (!res.ok) throw new Error('Failed to load comments');
       const data = await res.json();
       setComments(data);
-    } catch (e: any) {
-      setError(e?.message || 'Error loading comments');
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Error loading comments');
     } finally {
       setLoading(false);
     }
-  };
+  }, [storyId]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]); // Use fetchComments dependency
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,8 +61,8 @@ export default function Comments({ storyId }: CommentsProps) {
       }
       setNewComment('');
       await fetchComments();
-    } catch (e: any) {
-      setError(e?.message || 'Error posting comment');
+    } catch (e: unknown) {
+      setError((e as Error)?.message || 'Error posting comment');
     } finally {
       setLoading(false);
     }

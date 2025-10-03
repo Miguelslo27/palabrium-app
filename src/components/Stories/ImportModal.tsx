@@ -5,11 +5,11 @@ import Button from '@/components/Editor/Shared/Button';
 
 async function detectUserId(): Promise<string | null> {
   try {
-    const clerk: any = getClerkClient();
+    const clerk = getClerkClient() as { load(): Promise<void>; user?: { id?: string }; client?: { user?: { id?: string } } };
     await clerk.load();
     return clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-  } catch (err) {
-    if (typeof window !== 'undefined') return (window as any).__USER_ID__ || null;
+  } catch {
+    if (typeof window !== 'undefined') return (window as { __USER_ID__?: string }).__USER_ID__ || null;
     return null;
   }
 }
@@ -24,7 +24,7 @@ export default function ImportModal({ open, onClose, onImported }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [dryRun, setDryRun] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState<any | null>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -68,9 +68,11 @@ export default function ImportModal({ open, onClose, onImported }: Props) {
       setResult(json);
       // If import actually created items, notify parent so it can refresh lists
       try {
-        const created = Array.isArray(json.results) ? json.results.filter((r: any) => r.status === 'created').length : 0;
+        const created = Array.isArray((json as { results?: Array<{ status: string }> }).results)
+          ? (json as { results: Array<{ status: string }> }).results.filter((r) => r.status === 'created').length
+          : 0;
         if (created > 0 && typeof onImported === 'function') onImported();
-      } catch (err) {
+      } catch {
         // ignore
       }
     } catch (err) {

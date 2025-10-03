@@ -1,6 +1,7 @@
 import dbConnect from '../../../lib/mongodb';
 import Story from '../../../models/Story';
 import Chapter from '../../../models/Chapter';
+import { StoryFilter, PaginatedResponse, StoryCreateBody } from '@/types/api';
 
 export async function GET(req: Request) {
   await dbConnect();
@@ -18,7 +19,7 @@ export async function GET(req: Request) {
   limit = Math.min(limit, 50);
 
   // build filter (published + optional search)
-  const filter: any = { published: true };
+  const filter: StoryFilter = { published: true };
   if (q && q.trim()) {
     // simple text search on title/description
     const re = new RegExp(q.trim(), 'i');
@@ -28,7 +29,8 @@ export async function GET(req: Request) {
   try {
     const total = await Story.countDocuments(filter);
     const items = await Story.find(filter).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(limit);
-    return Response.json({ items, total, skip, limit });
+    const response: PaginatedResponse<typeof items[0]> = { items, total, skip, limit };
+    return Response.json(response);
   } catch (err) {
     console.error('Error fetching stories with pagination', err);
     return new Response('Error fetching stories', { status: 500 });
@@ -41,7 +43,7 @@ export async function POST(req: Request) {
   const userId = req.headers.get('x-user-id');
   if (!userId) return new Response('Unauthorized', { status: 401 });
 
-  const body = await req.json();
+  const body: StoryCreateBody = await req.json();
   const { title, description, chapters: initialChapters } = body;
 
   const story = new Story({
@@ -57,7 +59,7 @@ export async function POST(req: Request) {
 
     if (Array.isArray(initialChapters) && initialChapters.length > 0) {
       // Create Chapter documents and link to the story
-      const docs = initialChapters.map((c: any, idx: number) => ({
+      const docs = initialChapters.map((c, idx: number) => ({
         storyId: story._id,
         title: c.title || `Chapter ${idx + 1}`,
         content: c.content || '',

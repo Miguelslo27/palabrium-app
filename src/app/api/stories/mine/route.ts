@@ -1,5 +1,6 @@
 import dbConnect from '../../../../lib/mongodb';
 import Story from '../../../../models/Story';
+import { StoryFilter, PaginatedResponse, DeleteResult } from '@/types/api';
 
 export async function GET(req: Request) {
   const userId = req.headers.get('x-user-id');
@@ -18,10 +19,11 @@ export async function GET(req: Request) {
   limit = Math.min(limit, 50);
 
   try {
-    const filter = { authorId: userId } as any;
+    const filter: StoryFilter = { authorId: userId };
     const total = await Story.countDocuments(filter);
     const items = await Story.find(filter).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(limit);
-    return Response.json({ items, total, skip, limit });
+    const response: PaginatedResponse<typeof items[0]> = { items, total, skip, limit };
+    return Response.json(response);
   } catch (err) {
     console.error('Error fetching user stories with pagination', err);
     return new Response('Error fetching stories', { status: 500 });
@@ -35,7 +37,8 @@ export async function DELETE(req: Request) {
   await dbConnect();
   try {
     const result = await Story.deleteMany({ authorId: userId });
-    return Response.json({ deletedCount: result.deletedCount });
+    const response: DeleteResult = { deletedCount: result.deletedCount };
+    return Response.json(response);
   } catch (err) {
     console.error('Error deleting stories for user', userId, err);
     return new Response('Error deleting stories', { status: 500 });

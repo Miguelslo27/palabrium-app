@@ -24,7 +24,7 @@ export default clerkMiddleware(async (auth, req) => {
   // `auth` provided by clerkMiddleware exposes the authenticated userId directly
   // in the middleware environment. Use that if available to redirect away from
   // sign-in/sign-up pages for already authenticated users.
-  const userId = (auth as any).userId
+  const userId = (auth as { userId?: string }).userId
   try {
     const url = new URL(req.url)
     const pathname = url.pathname
@@ -32,7 +32,7 @@ export default clerkMiddleware(async (auth, req) => {
     if (userId && (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up'))) {
       return NextResponse.redirect(new URL('/', req.url))
     }
-  } catch (e) {
+  } catch {
     // malformed URL or other issue: ignore and let client handle it
   }
 })

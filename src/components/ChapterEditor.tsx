@@ -1,9 +1,21 @@
 "use client"
 import React, { useState } from 'react'
 
+interface Chapter {
+  title?: string;
+  content?: string;
+  published?: boolean;
+}
+
+interface ChapterSaveData {
+  title: string;
+  content: string;
+  published: boolean;
+}
+
 type Props = {
-  chapter?: any
-  onSave: (data: any) => Promise<void>
+  chapter?: Chapter
+  onSave: (data: ChapterSaveData) => Promise<void>
   onCancel?: () => void
   saving?: boolean
 }
