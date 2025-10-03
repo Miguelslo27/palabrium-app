@@ -14,23 +14,23 @@ describe('useStories', () => {
   let useStoriesModule: any;
   let mockDetectUserId: jest.Mock;
   let mockFetch: jest.Mock;
-  
+
   // Store original fetch
   const originalFetch = global.fetch;
 
   beforeEach(() => {
     // Reset modules
     jest.resetModules();
-    
+
     // Get mocked detectUserId
     const useChaptersModule = require('@/lib/useChapters');
     mockDetectUserId = useChaptersModule.detectUserId as jest.Mock;
     mockDetectUserId.mockResolvedValue('user-123');
-    
+
     // Setup fetch mock
     mockFetch = jest.fn();
     global.fetch = mockFetch;
-    
+
     // Import module after mocking
     useStoriesModule = require('@/lib/useStories');
   });
@@ -38,7 +38,7 @@ describe('useStories', () => {
   afterEach(() => {
     // Restore original fetch
     global.fetch = originalFetch;
-    
+
     jest.clearAllMocks();
   });
 
@@ -51,10 +51,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({ published: true }),
         });
-        
+
         // Act
         const result = await useStoriesModule.toggleStoryPublish('story-456', true);
-        
+
         // Assert
         expect(mockDetectUserId).toHaveBeenCalledTimes(1);
         expect(mockFetch).toHaveBeenCalledWith('/api/stories/story-456/publish', {
@@ -75,10 +75,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({ published: true }),
         });
-        
+
         // Act
         const result = await useStoriesModule.toggleStoryPublish('story-789', true);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledWith('/api/stories/story-789/publish', {
           method: 'PUT',
@@ -93,7 +93,7 @@ describe('useStories', () => {
       it('should throw error if publish fails', async () => {
         // Arrange
         mockFetch.mockResolvedValue({ ok: false });
-        
+
         // Act & Assert
         await expect(
           useStoriesModule.toggleStoryPublish('story-fail', true)
@@ -106,10 +106,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-with-dashes-123', true);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledWith(
           '/api/stories/story-with-dashes-123/publish',
@@ -126,10 +126,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({ published: false }),
         });
-        
+
         // Act
         const result = await useStoriesModule.toggleStoryPublish('story-unpublish', false);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledWith('/api/stories/story-unpublish/publish', {
           method: 'PUT',
@@ -149,10 +149,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({ published: false }),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-no-user', false);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledWith('/api/stories/story-no-user/publish', {
           method: 'PUT',
@@ -166,7 +166,7 @@ describe('useStories', () => {
       it('should throw error if unpublish fails', async () => {
         // Arrange
         mockFetch.mockResolvedValue({ ok: false });
-        
+
         // Act & Assert
         await expect(
           useStoriesModule.toggleStoryPublish('story-fail-unpublish', false)
@@ -182,10 +182,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-numeric-user', true);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledWith(
           expect.any(String),
@@ -204,10 +204,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-empty-user', true);
-        
+
         // Assert
         const headers = mockFetch.mock.calls[0][1].headers;
         expect(headers['x-user-id']).toBeUndefined();
@@ -220,10 +220,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-undefined-user', true);
-        
+
         // Assert
         const headers = mockFetch.mock.calls[0][1].headers;
         expect(headers['x-user-id']).toBeUndefined();
@@ -240,17 +240,17 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         const togglePromise = useStoriesModule.toggleStoryPublish('story-wait', true);
-        
+
         // Assert - fetch should not be called yet
         expect(mockFetch).not.toHaveBeenCalled();
-        
+
         // Resolve user ID
         resolveUserId!('delayed-user');
         await togglePromise;
-        
+
         // Assert - fetch should now be called with user ID
         expect(mockFetch).toHaveBeenCalledWith(
           expect.any(String),
@@ -267,7 +267,7 @@ describe('useStories', () => {
       it('should handle network errors', async () => {
         // Arrange
         mockFetch.mockRejectedValue(new Error('Network error'));
-        
+
         // Act & Assert
         await expect(
           useStoriesModule.toggleStoryPublish('story-network-error', true)
@@ -280,7 +280,7 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
         });
-        
+
         // Act & Assert
         await expect(
           useStoriesModule.toggleStoryPublish('story-bad-json', true)
@@ -294,7 +294,7 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act & Assert - Should propagate the error
         await expect(
           useStoriesModule.toggleStoryPublish('story-auth-error', true)
@@ -308,7 +308,7 @@ describe('useStories', () => {
           status: 403,
           statusText: 'Forbidden',
         });
-        
+
         // Act & Assert
         await expect(
           useStoriesModule.toggleStoryPublish('story-forbidden', true)
@@ -322,7 +322,7 @@ describe('useStories', () => {
           status: 500,
           statusText: 'Internal Server Error',
         });
-        
+
         // Act & Assert
         await expect(
           useStoriesModule.toggleStoryPublish('story-server-error', true)
@@ -337,14 +337,14 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act - Toggle multiple times rapidly
         await Promise.all([
           useStoriesModule.toggleStoryPublish('story-1', true),
           useStoriesModule.toggleStoryPublish('story-1', false),
           useStoriesModule.toggleStoryPublish('story-1', true),
         ]);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledTimes(3);
         expect(mockDetectUserId).toHaveBeenCalledTimes(3);
@@ -356,14 +356,14 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await Promise.all([
           useStoriesModule.toggleStoryPublish('story-1', true),
           useStoriesModule.toggleStoryPublish('story-2', true),
           useStoriesModule.toggleStoryPublish('story-3', false),
         ]);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledTimes(3);
         expect(mockFetch).toHaveBeenCalledWith('/api/stories/story-1/publish', expect.any(Object));
@@ -383,11 +383,11 @@ describe('useStories', () => {
             ok: true,
             json: jest.fn().mockResolvedValue({ published: false }),
           });
-        
+
         // Act
         const publishResult = await useStoriesModule.toggleStoryPublish(storyId, true);
         const unpublishResult = await useStoriesModule.toggleStoryPublish(storyId, false);
-        
+
         // Assert
         expect(publishResult.published).toBe(true);
         expect(unpublishResult.published).toBe(false);
@@ -408,10 +408,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue(mockResponseData),
         });
-        
+
         // Act
         const result = await useStoriesModule.toggleStoryPublish('story-123', true);
-        
+
         // Assert
         expect(result).toEqual(mockResponseData);
       });
@@ -422,10 +422,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         const result = await useStoriesModule.toggleStoryPublish('story-empty', true);
-        
+
         // Assert
         expect(result).toEqual({});
       });
@@ -441,10 +441,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue(responseWithExtras),
         });
-        
+
         // Act
         const result = await useStoriesModule.toggleStoryPublish('story-extras', true);
-        
+
         // Assert
         expect(result).toEqual(responseWithExtras);
       });
@@ -457,10 +457,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-headers', true);
-        
+
         // Assert
         const headers = mockFetch.mock.calls[0][1].headers;
         expect(headers['Content-Type']).toBe('application/json');
@@ -472,10 +472,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-method', true);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledWith(
           expect.any(String),
@@ -491,10 +491,10 @@ describe('useStories', () => {
           ok: true,
           json: jest.fn().mockResolvedValue({}),
         });
-        
+
         // Act
         await useStoriesModule.toggleStoryPublish('story-serialize', true);
-        
+
         // Assert
         expect(mockFetch).toHaveBeenCalledWith(
           expect.any(String),
