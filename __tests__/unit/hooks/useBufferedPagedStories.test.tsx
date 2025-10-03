@@ -158,7 +158,7 @@ describe('useBufferedPagedStories', () => {
       // Arrange
       const batch1 = createMockStories(1, 50);
       const batch2 = createMockStories(51, 50);
-      
+
       (global.fetch as jest.Mock)
         .mockResolvedValueOnce({
           ok: true,
@@ -280,7 +280,7 @@ describe('useBufferedPagedStories', () => {
       // Arrange
       const batch1 = createMockStories(1, 50);
       const batch2 = createMockStories(51, 50);
-      
+
       (global.fetch as jest.Mock)
         .mockResolvedValueOnce({
           ok: true,
@@ -659,11 +659,11 @@ describe('useBufferedPagedStories', () => {
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
-      
+
       await waitFor(() => {
         expect(result.current.itemsForPage.length).toBeGreaterThan(0);
       });
-      
+
       // After refresh, should have new data
       expect(result.current.itemsForPage[0]._id).toContain('story');
       expect(result.current.total).toBeGreaterThan(0);
