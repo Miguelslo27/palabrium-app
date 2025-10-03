@@ -9,7 +9,8 @@
 - [x] Poner comentarios a la derecha en la página de la historia
 - [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
 - [x] Implementar publicación de historia y capítulo
-- [ ] Guardar datos básicos de usuario en mi base cuando se registran
+- [x] Guardar datos básicos de usuario en mi base cuando se registran
+- [ ] Corregir errores de lint
 
 ## Prioridades para MVP
 - [ ] Permitir reordenar capítulos arrastrando y soltando
@@ -49,3 +50,9 @@
 - [ ] Diseño signup/signin
 - [ ] Diseño Mis historias
 - [ ] Diseño Explorar
+
+## Ideas y preguntas del público objetivo:
+- Te felicito por el proyecto, luce ambicioso. La siguiente pregunta es sin ánimos de odio, es solo para reflexionar: ¿Cuál será tu diferenciador?, ¿por qué alguien preferiría tu plataforma y no una establecida?
+- ¿Cómo piensas manejar la abundancia de textos basura que inundará tu plataforma? Con textos basura me refiero a los que abundan en wattpap y aquí en reddit, esos que tienen mala ortografía, mala sintaxis, mal formato, totalmente incoherentes que llenarán tarde o temprano tu sitio y lo volverán inmanejable…  
+- Creo que una sección bien elaborada de exploración y recomendaciones puede dar mucho juego. Por ejemplo, un sistema para recomendar historias en base a las que hayas leído, totalmente personalizado, con un trabajo previo de los autores para poner palabras claves en sus historias. Recomendaciones en base a géneros literarios, «estados de ánimo», tipos de protagonistas, etc. Ayuda a los lectores a encontrar lo que buscan y a los autores a visibilizar sus obras y ser leídos por su público objetivo. Por otro lado, un sistema competitivo que premie a los lectores en tanto más lean sería un buen incentivo, con recompensas como medallas, logros y objetos únicos que pueden aparecer en el perfil de cada usuario. Por último, otra sugerencia sería crear un visualizador de estadísticas de todas las historias, novelas o cuentos que un usuario haya leído, un historial visual que permita al lector saber que leía hace tres años, por ejemplo. Básicamente una versión de last.fm (que es de música) pero para lectores y la literatura.
+
