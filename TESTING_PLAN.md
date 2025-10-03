@@ -253,8 +253,9 @@ src/components/   → 60%+ (componentes principales)
 - [x] **BONUS**: Primer test real (getClientUserId) ✨
 
 ### ⏳ Día 2-3: Tests Unitarios
+- [x] Tests de utilidades (chapterProgress - 100% coverage ✨)
+- [x] Tests de getClientUserId (91.66% coverage ✨)
 - [ ] Tests de hooks principales
-- [ ] Tests de utilidades
 - [ ] Alcanzar 50%+ coverage en src/lib y src/hooks
 
 ### ⏳ Día 4-5: Tests de Integración
