@@ -25,17 +25,35 @@ interface ClerkWebhookEvent {
   data: ClerkUserData;
 }
 
-async function handleUserCreated(userData: ClerkUserData) {
-  // Extract email from different possible sources
+// Utility function to extract email from Clerk user data
+function extractEmail(userData: ClerkUserData): string {
   let email = '';
-  if (userData.email_addresses && userData.email_addresses.length > 0) {
+
+  // Try to find the email address with the matching primary_email_address_id
+  if (userData.primary_email_address_id && userData.email_addresses && userData.email_addresses.length > 0) {
+    const primaryEmailObj = userData.email_addresses.find(
+      (e) => e.id === userData.primary_email_address_id
+    );
+    if (primaryEmailObj && primaryEmailObj.email_address) {
+      email = primaryEmailObj.email_address;
+    }
+  }
+
+  // Fallback: use the first email address if primary not found
+  if (!email && userData.email_addresses && userData.email_addresses.length > 0) {
     email = userData.email_addresses[0].email_address || '';
   }
 
-  // If there is no email, generate a temporary one for Clerk tests
-  if (!email && userData.primary_email_address_id) {
+  // If there is still no email, generate a temporary one for Clerk tests
+  if (!email) {
     email = `${userData.id}@clerk-test.com`;
   }
+
+  return email;
+}
+
+async function handleUserCreated(userData: ClerkUserData) {
+  const email = extractEmail(userData);
 
   const user = new User({
     clerkId: userData.id,
@@ -51,11 +69,7 @@ async function handleUserCreated(userData: ClerkUserData) {
 }
 
 async function handleUserUpdated(userData: ClerkUserData) {
-  // Extract email from different possible sources
-  let email = '';
-  if (userData.email_addresses && userData.email_addresses.length > 0) {
-    email = userData.email_addresses[0].email_address || '';
-  }
+  const email = extractEmail(userData);
 
   const user = await User.findOneAndUpdate(
     { clerkId: userData.id },
@@ -64,8 +78,7 @@ async function handleUserUpdated(userData: ClerkUserData) {
       firstName: userData.first_name || '',
       lastName: userData.last_name || '',
       username: userData.username || '',
-      imageUrl: userData.image_url || userData.profile_image_url || '',
-      updatedAt: new Date()
+      imageUrl: userData.image_url || userData.profile_image_url || ''
     },
     { new: true, upsert: true }
   );
