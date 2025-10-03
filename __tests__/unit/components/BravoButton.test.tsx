@@ -22,7 +22,7 @@ describe('BravoButton', () => {
     mockFetchSuccess({ bravos: 42, braved: true });
 
     // Mock alert
-    jest.spyOn(window, 'alert').mockImplementation(() => {});
+    jest.spyOn(window, 'alert').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -171,7 +171,7 @@ describe('BravoButton', () => {
     it('should update bravo count after successful toggle', async () => {
       const user = userEvent.setup();
       mockGetClientUserId.mockResolvedValue('user123');
-      
+
       // Mock two different responses: initial and after click
       render(
         <BravoButton

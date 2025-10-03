@@ -23,7 +23,9 @@
 - [ ] Instrucción pendiente...
 
 ### Git/Deployment
-- [ ] Instrucción pendiente...
+- **NUNCA** ejecutar `git add`, `git commit` o `git push`
+- El usuario maneja personalmente todos los comandos de Git
+- Solo proporcionar sugerencias de commit messages cuando se solicite
 
 ---
 
@@ -71,7 +73,9 @@
 
 **Fecha**: 2025-10-03  
 **Por**: Mike  
-**Cambios**: Creación inicial del archivo
+**Cambios**: 
+- Creación inicial del archivo
+- Agregada instrucción sobre gestión de Git (solo Mike ejecuta comandos git)
 
 ---
 
