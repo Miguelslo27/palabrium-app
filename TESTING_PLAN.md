@@ -243,7 +243,7 @@ src/components/   → 60%+ (componentes principales)
 
 ## 🚀 Plan de Ejecución
 
-### ✅ Día 1: Setup Básico
+### ✅ Día 1: Setup Básico (COMPLETADO)
 - [x] Instalar dependencias de Jest y RTL
 - [x] Crear configuración de Jest
 - [x] Configurar mocks básicos (CSS, archivos estáticos)
@@ -252,26 +252,59 @@ src/components/   → 60%+ (componentes principales)
 - [x] **BONUS**: Crear test utilities y fixtures
 - [x] **BONUS**: Primer test real (getClientUserId) ✨
 
-### ⏳ Día 2-3: Tests Unitarios
-- [x] Tests de utilidades (chapterProgress - 100% coverage ✨)
-- [x] Tests de getClientUserId (91.66% coverage ✨)
-- [ ] Tests de hooks principales
-- [ ] Alcanzar 50%+ coverage en src/lib y src/hooks
+### ✅ Día 2-3: Tests Unitarios (PARCIALMENTE COMPLETADO - 70%)
+- [x] Tests de utilidades - **98.48% coverage** ✨
+  - [x] chapterProgress.test.ts (100%)
+  - [x] getClientUserId.test.ts (91.66%)
+  - [x] clerk.test.ts (100%)
+  - [x] clerk-client.test.ts (100%)
+  - [x] clerk-oauth.test.ts (100%)
+  - [x] mongodb.test.ts (100%)
+  - [x] useChapters.test.ts (98%)
+  - [x] useStories.test.ts (100%)
+- [x] Tests de hooks principales - **98.98% coverage** ✨
+  - [x] useBufferedPagedStories.test.tsx (99.09%, 23 tests)
+  - [x] useMyStories.test.tsx (98.27%, 21 tests)
+  - [x] useMyStoriesPaged.test.tsx (100%)
+- [x] Tests de componentes básicos - **PARCIAL**
+  - [x] Button.test.tsx (100%)
+  - [x] Icons.test.tsx (100%, 4 iconos)
+  - [x] Navbar.test.tsx (100%)
+  - [x] StoryCard.test.tsx (89.28%, 30 tests)
+- [ ] Tests de componentes críticos - **EN PROGRESO**
+  - [ ] BravoButton.test.tsx (0%)
+  - [ ] Comments.test.tsx (0%)
+  - [ ] ChapterEditor.test.tsx (0%)
+  - [ ] StoryFormClient.test.tsx (0%)
 
-### ⏳ Día 4-5: Tests de Integración
-- [ ] Setup de mongodb-memory-server
-- [ ] Tests de API routes críticos
-- [ ] Tests de componentes con estado
+**Estado actual:** 326 tests pasando, 21.61% coverage global
 
-### ⏳ Día 6-7: E2E con Playwright
+### ⏳ Día 4: Componentes Críticos (EN PROGRESO)
+- [x] BravoButton.test.tsx - **100% coverage** (21 tests) ✨
+- [ ] Comments.test.tsx - Sistema de comentarios
+- [ ] ChapterEditor.test.tsx - Editor de capítulos
+- [ ] StoryFormClient.test.tsx - Formulario de stories
+- [ ] **META**: Alcanzar 35-40% coverage global
+
+**Progreso actual:** 23.58% coverage global (↑1.97%)
+
+### ⏳ Día 5-6: Tests de Integración
+- [ ] Instalar mongodb-memory-server
+- [ ] Tests de API routes críticos (stories, chapters)
+- [ ] Tests de autenticación y autorización
+- [ ] **META**: 80%+ coverage en API routes
+
+### ⏳ Día 7-8: E2E con Playwright
 - [ ] Instalar y configurar Playwright
 - [ ] Crear Page Objects
-- [ ] Implementar flujos críticos
+- [ ] Implementar flujos críticos (auth, story lifecycle)
+- [ ] **META**: Flujos críticos cubiertos
 
-### ⏳ Día 8: Integración y CI
-- [ ] Actualizar pre-push hook
-- [ ] Configurar coverage reports
-- [ ] Documentación de testing
+### ⏳ Día 9: Integración y CI
+- [ ] Actualizar pre-push hook con tests
+- [ ] Configurar coverage reports automáticos
+- [ ] Documentación de testing completa
+- [ ] **META**: Pipeline de CI completo
 
 ---
 
@@ -320,11 +353,26 @@ src/components/   → 60%+ (componentes principales)
 
 ## 🔄 Estado Actual
 
-**Última actualización**: 2025-10-03
+**Última actualización**: 2025-10-03 (Actualizado)
 
-**Fase actual**: Preparación - Documentación del plan
+**Fase actual**: Día 4 - Tests de Componentes Críticos
 
-**Próximo paso**: Iniciar Fase 1 - Instalación de dependencias Jest + RTL
+**Próximo paso**: Implementar tests de BravoButton, Comments, ChapterEditor y StoryFormClient
+
+**Progreso:**
+- ✅ Setup completo (Jest, RTL, mocks, utilities)
+- ✅ Tests unitarios de lib/ (98.48% coverage)
+- ✅ Tests unitarios de hooks/ (98.98% coverage)
+- ✅ Tests básicos de componentes (Button, Icons, Navbar, StoryCard)
+- 🔄 Tests de componentes críticos (EN PROGRESO)
+- ⏳ Tests de integración (pendiente)
+- ⏳ E2E con Playwright (pendiente)
+
+**Estadísticas:**
+- **347 tests** pasando (+21 desde última actualización)
+- **23.58%** coverage global (objetivo: 50%+)
+- **0 errores** de linting
+- **17 test suites** ejecutándose
 
 ---
 

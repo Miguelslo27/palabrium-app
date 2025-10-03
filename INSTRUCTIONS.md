@@ -83,6 +83,15 @@
 - Usar `pnpm add -D` para devDependencies (testing, build tools, tipos)
 - Usar `pnpm add` para dependencies (runtime, librerías de producción)
 
+### 🛠️ Comandos NPM
+- **SIEMPRE** usar `pnpm` en lugar de `npm` para ejecutar cualquier comando
+- Usar `pnpm run [script]` o simplemente `pnpm [script]` para ejecutar scripts del package.json
+- Ejemplos:
+  - `pnpm dev` - Iniciar servidor de desarrollo
+  - `pnpm build` - Construir el proyecto
+  - `pnpm lint` - Ejecutar linter
+  - `pnpm test` - Ejecutar tests
+
 ### 🎯 Flujo de Trabajo
 - Avanzar paso por paso en implementaciones complejas
 - Validar cada paso antes de continuar al siguiente
