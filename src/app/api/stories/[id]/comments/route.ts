@@ -1,13 +1,13 @@
 import dbConnect from '@/lib/mongodb';
 import Comment from '@/models/Comment';
 import clerkClient from '@/lib/clerk';
-import { CommentRequestBody, UserInfo, EnrichedComment } from '@/types/api';
+import { CommentRequestBody, UserInfo, EnrichedComment, RawCommentLean } from '@/types/api';
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
   const { id } = await params;
   // use lean() for plain objects
-  const comments = await Comment.find({ storyId: id }).sort({ createdAt: -1 }).lean();
+  const comments = await Comment.find({ storyId: id }).sort({ createdAt: -1 }).lean<RawCommentLean[]>();
 
   // collect unique author ids
   const authorIds = Array.from(new Set(comments.map((c) => c.authorId)));
@@ -24,13 +24,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
   }
 
-  const enriched: EnrichedComment[] = comments.map((c: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-    _id: c._id.toString(),
-    storyId: c.storyId,
+  const enriched: EnrichedComment[] = comments.map((c) => ({
+    _id: String(c._id),
+    storyId: String(c.storyId),
     authorId: c.authorId,
     content: c.content,
     createdAt: c.createdAt,
-    updatedAt: c.updatedAt,
+    updatedAt: c.updatedAt || c.createdAt,
     authorName: userMap[c.authorId]?.name || null,
     authorImage: userMap[c.authorId]?.image || null,
   }));

@@ -58,6 +58,17 @@ export interface UserInfo {
   image: string | null;
 }
 
+// Raw comment from MongoDB with lean() - matches Mongoose document structure
+export interface RawCommentLean {
+  _id: unknown; // Mongoose ObjectId
+  storyId: unknown; // Mongoose ObjectId  
+  authorId: string;
+  content: string;
+  createdAt: Date;
+  updatedAt?: Date;
+  __v?: number;
+}
+
 export interface EnrichedComment {
   _id: string;
   storyId: string;
