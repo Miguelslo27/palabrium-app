@@ -10,7 +10,8 @@
 - [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
 - [x] Implementar publicación de historia y capítulo
 - [x] Guardar datos básicos de usuario en mi base cuando se registran
-- [-] Corregir errores de lint
+- [x] Corregir errores de lint
+- [-] Agregar safe-guard para prevenir push con errores
 
 ## Prioridades para MVP
 - [ ] Permitir reordenar capítulos arrastrando y soltando
