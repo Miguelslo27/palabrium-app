@@ -14,24 +14,24 @@ describe('mongodb', () => {
   let dbConnectModule: any;
   let mongoose: any;
   let mockConnect: jest.Mock;
-  
+
   // Store original env
   const originalEnv = process.env.MONGODB_URI;
 
   beforeEach(() => {
     // Clear module cache to test fresh imports
     jest.resetModules();
-    
+
     // Clear global mongoose cache
     const globalWithMongoose = global as typeof globalThis & {
       mongoose?: { conn: any; promise: any };
     };
     delete globalWithMongoose.mongoose;
-    
+
     // Get mocked mongoose
     mongoose = require('mongoose');
     mockConnect = mongoose.connect as jest.Mock;
-    
+
     // Setup default successful connection
     mockConnect.mockResolvedValue(mongoose);
   });
@@ -43,7 +43,7 @@ describe('mongodb', () => {
     } else {
       delete process.env.MONGODB_URI;
     }
-    
+
     jest.clearAllMocks();
   });
 
@@ -51,7 +51,7 @@ describe('mongodb', () => {
     it('should throw error if MONGODB_URI is not defined', () => {
       // Arrange
       delete process.env.MONGODB_URI;
-      
+
       // Act & Assert
       expect(() => {
         require('@/lib/mongodb');
@@ -61,7 +61,7 @@ describe('mongodb', () => {
     it('should throw error if MONGODB_URI is empty string', () => {
       // Arrange
       process.env.MONGODB_URI = '';
-      
+
       // Act & Assert
       expect(() => {
         require('@/lib/mongodb');
@@ -71,7 +71,7 @@ describe('mongodb', () => {
     it('should not throw error if MONGODB_URI is defined', () => {
       // Arrange
       process.env.MONGODB_URI = 'mongodb://localhost:27017/test';
-      
+
       // Act & Assert
       expect(() => {
         require('@/lib/mongodb');
@@ -89,10 +89,10 @@ describe('mongodb', () => {
       it('should connect to MongoDB with correct URI', async () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledWith(
           'mongodb://localhost:27017/test',
@@ -103,10 +103,10 @@ describe('mongodb', () => {
       it('should connect to MongoDB only once', async () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledTimes(1);
       });
@@ -114,10 +114,10 @@ describe('mongodb', () => {
       it('should return mongoose instance', async () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         const result = await dbConnectModule.default();
-        
+
         // Assert
         expect(result).toBe(mongoose);
       });
@@ -128,10 +128,10 @@ describe('mongodb', () => {
         const globalWithMongoose = global as typeof globalThis & {
           mongoose: { conn: any; promise: any };
         };
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(globalWithMongoose.mongoose.conn).toBe(mongoose);
         expect(globalWithMongoose.mongoose.promise).toBeDefined();
@@ -142,12 +142,12 @@ describe('mongodb', () => {
       it('should reuse cached connection on subsequent calls', async () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act - Call multiple times
         const result1 = await dbConnectModule.default();
         const result2 = await dbConnectModule.default();
         const result3 = await dbConnectModule.default();
-        
+
         // Assert - Should only connect once
         expect(mockConnect).toHaveBeenCalledTimes(1);
         expect(result1).toBe(result2);
@@ -158,12 +158,12 @@ describe('mongodb', () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
         await dbConnectModule.default(); // First connection
-        
+
         // Act - Second call should be instant (from cache)
         const start = Date.now();
         const result = await dbConnectModule.default();
         const duration = Date.now() - start;
-        
+
         // Assert
         expect(result).toBe(mongoose);
         expect(duration).toBeLessThan(10); // Should be instant from cache
@@ -172,7 +172,7 @@ describe('mongodb', () => {
       it('should handle concurrent connection attempts', async () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act - Multiple concurrent calls
         const promises = [
           dbConnectModule.default(),
@@ -180,7 +180,7 @@ describe('mongodb', () => {
           dbConnectModule.default(),
         ];
         const results = await Promise.all(promises);
-        
+
         // Assert - Should only connect once despite concurrent calls
         expect(mockConnect).toHaveBeenCalledTimes(1);
         expect(results[0]).toBe(results[1]);
@@ -194,7 +194,7 @@ describe('mongodb', () => {
         const connectionError = new Error('Connection refused');
         mockConnect.mockRejectedValue(connectionError);
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act & Assert
         await expect(dbConnectModule.default()).rejects.toThrow('Connection refused');
       });
@@ -204,13 +204,13 @@ describe('mongodb', () => {
         const connectionError = new Error('Network error');
         mockConnect.mockRejectedValueOnce(connectionError).mockResolvedValueOnce(mongoose);
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act - First call fails
         await expect(dbConnectModule.default()).rejects.toThrow('Network error');
-        
+
         // Second call should retry (promise was cleared)
         const result = await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledTimes(2);
         expect(result).toBe(mongoose);
@@ -224,14 +224,14 @@ describe('mongodb', () => {
         const globalWithMongoose = global as typeof globalThis & {
           mongoose?: { conn: any; promise: any };
         };
-        
+
         // Act
         try {
           await dbConnectModule.default();
         } catch (e) {
           // Expected to throw
         }
-        
+
         // Assert - Promise should be cleared, conn should remain null
         expect(globalWithMongoose.mongoose!.conn).toBeNull();
         expect(globalWithMongoose.mongoose!.promise).toBeNull();
@@ -242,7 +242,7 @@ describe('mongodb', () => {
         const customError = new Error('Custom connection error');
         mockConnect.mockRejectedValue(customError);
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act & Assert
         await expect(dbConnectModule.default()).rejects.toBe(customError);
       });
@@ -252,10 +252,10 @@ describe('mongodb', () => {
       it('should use bufferCommands: false option', async () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledWith(
           expect.any(String),
@@ -266,10 +266,10 @@ describe('mongodb', () => {
       it('should only pass bufferCommands option', async () => {
         // Arrange
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         const callOptions = mockConnect.mock.calls[0][1];
         expect(Object.keys(callOptions)).toEqual(['bufferCommands']);
@@ -283,10 +283,10 @@ describe('mongodb', () => {
           mongoose?: { conn: any; promise: any };
         };
         delete globalWithMongoose.mongoose;
-        
+
         // Act
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Assert
         expect(globalWithMongoose.mongoose).toBeDefined();
         expect(globalWithMongoose.mongoose!.conn).toBeNull();
@@ -300,10 +300,10 @@ describe('mongodb', () => {
           mongoose: { conn: any; promise: any };
         };
         globalWithMongoose.mongoose = existingCache;
-        
+
         // Act
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Assert - Should use existing cache, not create new one
         expect(globalWithMongoose.mongoose).toBe(existingCache);
       });
@@ -314,10 +314,10 @@ describe('mongodb', () => {
         // Arrange
         process.env.MONGODB_URI = 'mongodb://localhost:27017/testdb';
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledWith(
           'mongodb://localhost:27017/testdb',
@@ -335,10 +335,10 @@ describe('mongodb', () => {
         mockConnect = mongoose.connect as jest.Mock;
         mockConnect.mockResolvedValue(mongoose);
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledWith(atlasUri, expect.any(Object));
       });
@@ -353,10 +353,10 @@ describe('mongodb', () => {
         mockConnect = mongoose.connect as jest.Mock;
         mockConnect.mockResolvedValue(mongoose);
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledWith(authUri, expect.any(Object));
       });
@@ -371,10 +371,10 @@ describe('mongodb', () => {
         mockConnect = mongoose.connect as jest.Mock;
         mockConnect.mockResolvedValue(mongoose);
         dbConnectModule = require('@/lib/mongodb');
-        
+
         // Act
         await dbConnectModule.default();
-        
+
         // Assert
         expect(mockConnect).toHaveBeenCalledWith(replicaUri, expect.any(Object));
       });
@@ -386,7 +386,7 @@ describe('mongodb', () => {
       // Arrange
       process.env.MONGODB_URI = 'mongodb://localhost:27017/test';
       dbConnectModule = require('@/lib/mongodb');
-      
+
       // Assert
       expect(dbConnectModule.default).toBeDefined();
       expect(typeof dbConnectModule.default).toBe('function');
@@ -397,7 +397,7 @@ describe('mongodb', () => {
     it('should handle multiple serverless function invocations', async () => {
       // Arrange
       process.env.MONGODB_URI = 'mongodb://localhost:27017/test';
-      
+
       // Act - Simulate first serverless invocation
       jest.resetModules();
       mongoose = require('mongoose');
@@ -405,7 +405,7 @@ describe('mongodb', () => {
       firstConnect.mockResolvedValue(mongoose);
       let module1 = require('@/lib/mongodb');
       const result1 = await module1.default();
-      
+
       // Second invocation (module cache cleared but global cache persists)
       jest.resetModules();
       mongoose = require('mongoose');
@@ -413,7 +413,7 @@ describe('mongodb', () => {
       secondConnect.mockResolvedValue(mongoose);
       let module2 = require('@/lib/mongodb');
       const result2 = await module2.default();
-      
+
       // Assert - First call should connect, second should use cache
       expect(firstConnect).toHaveBeenCalledTimes(1);
       expect(result1).toBeDefined();
@@ -424,12 +424,12 @@ describe('mongodb', () => {
       // Arrange
       process.env.MONGODB_URI = 'mongodb://localhost:27017/test';
       dbConnectModule = require('@/lib/mongodb');
-      
+
       // Act - Multiple calls simulating serverless requests
       for (let i = 0; i < 10; i++) {
         await dbConnectModule.default();
       }
-      
+
       // Assert - Should only create one connection despite multiple calls
       expect(mockConnect).toHaveBeenCalledTimes(1);
     });
@@ -442,10 +442,10 @@ describe('mongodb', () => {
       mockConnect.mockResolvedValue(differentMongoose);
       process.env.MONGODB_URI = 'mongodb://localhost:27017/test';
       dbConnectModule = require('@/lib/mongodb');
-      
+
       // Act
       const result = await dbConnectModule.default();
-      
+
       // Assert
       expect(result).toBe(differentMongoose);
     });
@@ -460,10 +460,10 @@ describe('mongodb', () => {
       mockConnect = mongoose.connect as jest.Mock;
       mockConnect.mockResolvedValue(mongoose);
       dbConnectModule = require('@/lib/mongodb');
-      
+
       // Act
       await dbConnectModule.default();
-      
+
       // Assert
       expect(mockConnect).toHaveBeenCalledWith(longUri, expect.any(Object));
     });
@@ -478,10 +478,10 @@ describe('mongodb', () => {
       mockConnect = mongoose.connect as jest.Mock;
       mockConnect.mockResolvedValue(mongoose);
       dbConnectModule = require('@/lib/mongodb');
-      
+
       // Act
       await dbConnectModule.default();
-      
+
       // Assert
       expect(mockConnect).toHaveBeenCalledWith(specialUri, expect.any(Object));
     });
