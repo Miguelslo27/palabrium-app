@@ -15,15 +15,15 @@ describe('clerk-client', () => {
   beforeEach(() => {
     // Clear the module cache to reset singleton
     jest.resetModules();
-    
+
     // Setup console.error spy
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     // Mock @clerk/clerk-js before requiring the module
     MockedClerk = jest.fn().mockImplementation(() => ({
       load: jest.fn(),
     }));
-    
+
     jest.doMock('@clerk/clerk-js', () => ({
       Clerk: MockedClerk,
     }));
@@ -32,10 +32,10 @@ describe('clerk-client', () => {
   afterEach(() => {
     // Restore console.error
     consoleErrorSpy.mockRestore();
-    
+
     // Restore original env
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = originalEnv;
-    
+
     // Clear all mocks
     jest.clearAllMocks();
   });
@@ -45,11 +45,11 @@ describe('clerk-client', () => {
       // Arrange
       const publishableKey = 'pk_test_1234567890';
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = publishableKey;
-      
+
       // Act
       clerkClientModule = require('@/lib/clerk-client');
       clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(MockedClerk).toHaveBeenCalledWith(publishableKey, { load: true });
       expect(MockedClerk).toHaveBeenCalledTimes(1);
@@ -59,12 +59,12 @@ describe('clerk-client', () => {
       // Arrange
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_singleton';
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       const instance1 = clerkClientModule.getClerkClient();
       const instance2 = clerkClientModule.getClerkClient();
       const instance3 = clerkClientModule.getClerkClient();
-      
+
       // Assert - Clerk constructor should only be called once
       expect(MockedClerk).toHaveBeenCalledTimes(1);
       expect(instance1).toBe(instance2);
@@ -75,10 +75,10 @@ describe('clerk-client', () => {
       // Arrange
       delete process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(MockedClerk).toHaveBeenCalledWith('', { load: true });
     });
@@ -87,10 +87,10 @@ describe('clerk-client', () => {
       // Arrange
       delete process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set. Clerk client may not initialize correctly.'
@@ -101,10 +101,10 @@ describe('clerk-client', () => {
       // Arrange
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_valid';
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
@@ -113,10 +113,10 @@ describe('clerk-client', () => {
       // Arrange
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_load';
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(MockedClerk).toHaveBeenCalledWith(
         expect.any(String),
@@ -128,10 +128,10 @@ describe('clerk-client', () => {
       // Arrange
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = '';
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(MockedClerk).toHaveBeenCalledWith('', { load: true });
       expect(consoleErrorSpy).toHaveBeenCalled();
@@ -143,7 +143,7 @@ describe('clerk-client', () => {
       // Arrange
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_export';
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act & Assert
       expect(clerkClientModule.default).toBe(clerkClientModule.getClerkClient);
     });
@@ -155,10 +155,10 @@ describe('clerk-client', () => {
       const prodKey = 'pk_live_abcdefghijklmnopqrstuvwxyz123456789';
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = prodKey;
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       const client = clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(client).toBeDefined();
       expect(MockedClerk).toHaveBeenCalledWith(prodKey, { load: true });
@@ -170,10 +170,10 @@ describe('clerk-client', () => {
       const testKey = 'pk_test_Y2FzdWFsLW1hcm1vdC04NS5jbGVyay5hY2NvdW50cy5kZXYk';
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = testKey;
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       const client = clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(client).toBeDefined();
       expect(MockedClerk).toHaveBeenCalledWith(testKey, { load: true });
@@ -184,10 +184,10 @@ describe('clerk-client', () => {
       const keyWithSpaces = '  pk_test_key_with_spaces  ';
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = keyWithSpaces;
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       clerkClientModule.getClerkClient();
-      
+
       // Assert - Should use the key as-is (not trimmed)
       expect(MockedClerk).toHaveBeenCalledWith(keyWithSpaces, { load: true });
     });
@@ -198,10 +198,10 @@ describe('clerk-client', () => {
       // Arrange
       delete process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(MockedClerk).toHaveBeenCalledWith('', { load: true });
       expect(consoleErrorSpy).toHaveBeenCalled();
@@ -212,10 +212,10 @@ describe('clerk-client', () => {
       const invalidKey = 'not-a-valid-clerk-key';
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = invalidKey;
       clerkClientModule = require('@/lib/clerk-client');
-      
+
       // Act
       const client = clerkClientModule.getClerkClient();
-      
+
       // Assert
       expect(client).toBeDefined();
       expect(MockedClerk).toHaveBeenCalledWith(invalidKey, { load: true });
