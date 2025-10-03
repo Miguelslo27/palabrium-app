@@ -63,6 +63,12 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
     return url.toString();
   }, [endpoint, filters]);
 
+  // Use ref for headersProvider to avoid recreating fetchBatch on every render
+  const headersProviderRef = useRef(headersProvider);
+  useEffect(() => {
+    headersProviderRef.current = headersProvider;
+  }, [headersProvider]);
+
   const fetchBatch = useCallback(async (skip: number) => {
     if (fetchedSkipsRef.current.has(skip)) return; // already fetched
     fetchedSkipsRef.current.add(skip);
@@ -75,8 +81,8 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
       const url = buildUrl(skip, effectiveBatch);
       let headers: Record<string, string> | undefined = undefined;
       try {
-        if (headersProvider) {
-          const h = await headersProvider();
+        if (headersProviderRef.current) {
+          const h = await headersProviderRef.current();
           headers = h;
         }
       } catch {
@@ -100,7 +106,7 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
       fetchedSkipsRef.current.delete(skip);
       console.error('Error fetching batch', err);
     }
-  }, [effectiveBatch, buildUrl, headersProvider]);
+  }, [effectiveBatch, buildUrl]);
 
   const fetchInitial = useCallback(async () => {
     setIsLoading(true);
@@ -164,13 +170,21 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
 
   // reset buffer when filters change
   useEffect(() => {
+    bufferRef.current.clear();
+    fetchedSkipsRef.current.clear();
+    setPage(1);
+    // Don't include fetchInitial as dependency to avoid infinite loop
+    // Instead, directly call fetchBatch(0) which is stable
     (async () => {
-      bufferRef.current.clear();
-      fetchedSkipsRef.current.clear();
-      setPage(1);
-      await fetchInitial();
+      setIsLoading(true);
+      try {
+        await fetchBatch(0);
+      } finally {
+        setIsLoading(false);
+      }
     })();
-  }, [filtersJson, fetchInitial]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersJson]);
 
   // ensure page stays in bounds when total/pageSize changes
   useEffect(() => {

@@ -3,10 +3,29 @@
 import Link from 'next/link';
 import Image from 'next/image'
 import { useUser, useClerk } from '@clerk/nextjs'
+import { useState, useEffect } from 'react'
 
 export default function Navbar() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const { signOut } = useClerk()
+  const [mounted, setMounted] = useState(false)
+
+  // Ensure component only renders after hydration
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Render nothing on server and during initial hydration
+  if (!mounted || !isLoaded) {
+    return (
+      <header className="w-full flex justify-between items-center p-4 bg-gray-800 text-white shadow">
+        <Link href="/" className="text-2xl font-bold hover:underline">Palabrium</Link>
+        <nav className="flex space-x-4 items-center">
+          <div className="w-32 h-4 bg-gray-700 animate-pulse rounded"></div>
+        </nav>
+      </header>
+    );
+  }
 
   return (
     <header className="w-full flex justify-between items-center p-4 bg-gray-800 text-white shadow">
