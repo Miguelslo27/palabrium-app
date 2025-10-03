@@ -62,7 +62,7 @@ describe('StoryCard', () => {
   describe('Grid view (default)', () => {
     it('should render story title as link', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       const titleLink = screen.getByRole('link', { name: mockStory.title });
       expect(titleLink).toBeInTheDocument();
       expect(titleLink).toHaveAttribute('href', `/story/${mockStory._id}`);
@@ -70,33 +70,33 @@ describe('StoryCard', () => {
 
     it('should render story description', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       expect(screen.getByText(mockStory.description)).toBeInTheDocument();
     });
 
     it('should display chapter count', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       expect(screen.getByText('2 chapters')).toBeInTheDocument();
     });
 
     it('should display singular chapter text when count is 1', () => {
       const singleChapterStory = { ...mockStory, chapterCount: 1, chapters: [mockStory.chapters[0]] };
       render(<StoryCard story={singleChapterStory} />);
-      
+
       expect(screen.getByText('1 chapter')).toBeInTheDocument();
     });
 
     it('should display creation date', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       // Date format depends on locale, just check "Created" text exists
       expect(screen.getByText(/Created/i)).toBeInTheDocument();
     });
 
     it('should render BravoButton with correct props', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       const bravoButton = screen.getByTestId('bravo-button');
       expect(bravoButton).toHaveAttribute('data-story-id', mockStory._id);
       expect(bravoButton).toHaveAttribute('data-bravos', '2');
@@ -104,7 +104,7 @@ describe('StoryCard', () => {
 
     it('should show published indicator (green border)', () => {
       const { container } = render(<StoryCard story={mockStory} />);
-      
+
       const card = container.firstChild as HTMLElement;
       expect(card).toHaveClass('border-green-400');
     });
@@ -112,7 +112,7 @@ describe('StoryCard', () => {
     it('should show unpublished indicator (yellow border)', () => {
       const unpublishedStory = { ...mockStory, published: false };
       const { container } = render(<StoryCard story={unpublishedStory} />);
-      
+
       const card = container.firstChild as HTMLElement;
       expect(card).toHaveClass('border-yellow-400');
     });
@@ -121,7 +121,7 @@ describe('StoryCard', () => {
   describe('List view', () => {
     it('should render in list layout when view="list"', () => {
       const { container } = render(<StoryCard story={mockStory} view="list" />);
-      
+
       const card = container.firstChild as HTMLElement;
       expect(card).toHaveClass('flex');
       expect(screen.getByText(mockStory.title)).toBeInTheDocument();
@@ -129,7 +129,7 @@ describe('StoryCard', () => {
 
     it('should display all story information in list view', () => {
       render(<StoryCard story={mockStory} view="list" />);
-      
+
       expect(screen.getByText(mockStory.title)).toBeInTheDocument();
       expect(screen.getByText(mockStory.description)).toBeInTheDocument();
       expect(screen.getByText('2 chapters')).toBeInTheDocument();
@@ -140,14 +140,14 @@ describe('StoryCard', () => {
     it('should show delete button when showDelete is true', () => {
       const onDelete = jest.fn();
       render(<StoryCard story={mockStory} showDelete onDelete={onDelete} />);
-      
+
       const deleteButton = screen.getByRole('button', { name: /delete story/i });
       expect(deleteButton).toBeInTheDocument();
     });
 
     it('should not show delete button by default', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       const deleteButton = screen.queryByRole('button', { name: /delete story/i });
       expect(deleteButton).not.toBeInTheDocument();
     });
@@ -155,19 +155,19 @@ describe('StoryCard', () => {
     it('should call onDelete with story ID when delete button clicked', async () => {
       const onDelete = jest.fn();
       const user = userEvent.setup();
-      
+
       render(<StoryCard story={mockStory} showDelete onDelete={onDelete} />);
-      
+
       const deleteButton = screen.getByRole('button', { name: /delete story/i });
       await user.click(deleteButton);
-      
+
       expect(onDelete).toHaveBeenCalledWith(mockStory._id);
     });
 
     it('should show preview link when showDelete is true', () => {
       const onDelete = jest.fn();
       render(<StoryCard story={mockStory} showDelete onDelete={onDelete} />);
-      
+
       const previewLink = screen.getByRole('link', { name: /preview story/i });
       expect(previewLink).toBeInTheDocument();
       expect(previewLink).toHaveAttribute('href', `/story/${mockStory._id}`);
@@ -177,7 +177,7 @@ describe('StoryCard', () => {
     it('should link to edit page when showDelete is true', () => {
       const onDelete = jest.fn();
       render(<StoryCard story={mockStory} showDelete onDelete={onDelete} />);
-      
+
       const titleLink = screen.getByRole('link', { name: mockStory.title });
       expect(titleLink).toHaveAttribute('href', `/story/${mockStory._id}/edit`);
     });
@@ -186,26 +186,26 @@ describe('StoryCard', () => {
   describe('"Yours" badge', () => {
     it('should show "Yours" badge when isMine is true', () => {
       render(<StoryCard story={mockStory} isMine />);
-      
+
       expect(screen.getByText('Yours')).toBeInTheDocument();
     });
 
     it('should not show "Yours" badge by default', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       expect(screen.queryByText('Yours')).not.toBeInTheDocument();
     });
 
     it('should hide "Yours" badge when showYoursBadge is false', () => {
       render(<StoryCard story={mockStory} isMine showYoursBadge={false} />);
-      
+
       expect(screen.queryByText('Yours')).not.toBeInTheDocument();
     });
 
     it('should show "Yours" badge in both grid and list views', () => {
       const { rerender } = render(<StoryCard story={mockStory} isMine view="grid" />);
       expect(screen.getByText('Yours')).toBeInTheDocument();
-      
+
       rerender(<StoryCard story={mockStory} isMine view="list" />);
       expect(screen.getByText('Yours')).toBeInTheDocument();
     });
@@ -215,9 +215,9 @@ describe('StoryCard', () => {
     it('should initialize braved state from getClientUserId', async () => {
       const storyWithBravos = { ...mockStory, bravos: ['user123', 'user456'] };
       mockGetClientUserId.mockResolvedValue('user123');
-      
+
       render(<StoryCard story={storyWithBravos} />);
-      
+
       await waitFor(() => {
         expect(mockGetClientUserId).toHaveBeenCalled();
       });
@@ -225,10 +225,10 @@ describe('StoryCard', () => {
 
     it('should update bravo count when BravoButton toggles', async () => {
       render(<StoryCard story={mockStory} />);
-      
+
       const bravoButton = screen.getByTestId('bravo-button');
       await userEvent.click(bravoButton);
-      
+
       // After toggle, count should update
       await waitFor(() => {
         expect(bravoButton).toHaveAttribute('data-bravos', '3');
@@ -237,13 +237,13 @@ describe('StoryCard', () => {
 
     it('should handle null user ID for bravo state', async () => {
       mockGetClientUserId.mockResolvedValue(null);
-      
+
       render(<StoryCard story={mockStory} />);
-      
+
       await waitFor(() => {
         expect(mockGetClientUserId).toHaveBeenCalled();
       });
-      
+
       // Should still render without errors
       expect(screen.getByTestId('bravo-button')).toBeInTheDocument();
     });
@@ -253,14 +253,14 @@ describe('StoryCard', () => {
     it('should handle story without chapters array', () => {
       const noChaptersStory = { ...mockStory, chapters: [], chapterCount: undefined };
       render(<StoryCard story={noChaptersStory} />);
-      
+
       expect(screen.getByText('0 chapters')).toBeInTheDocument();
     });
 
     it('should handle story without bravos array', () => {
       const noBravosStory = { ...mockStory, bravos: undefined };
       render(<StoryCard story={noBravosStory} />);
-      
+
       const bravoButton = screen.getByTestId('bravo-button');
       expect(bravoButton).toHaveAttribute('data-bravos', '0');
     });
@@ -268,7 +268,7 @@ describe('StoryCard', () => {
     it('should handle story without createdAt', () => {
       const noDateStory = { ...mockStory, createdAt: undefined };
       render(<StoryCard story={noDateStory} />);
-      
+
       expect(screen.getByText(/Unknown/i)).toBeInTheDocument();
     });
 
@@ -279,7 +279,7 @@ describe('StoryCard', () => {
         chapters: [mockStory.chapters[0]], // Only 1 in array but count is 5
       };
       render(<StoryCard story={storyWithCount} />);
-      
+
       expect(screen.getByText('5 chapters')).toBeInTheDocument();
     });
 
@@ -287,12 +287,12 @@ describe('StoryCard', () => {
       mockGetClientUserId.mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve('user123'), 100))
       );
-      
+
       const { unmount } = render(<StoryCard story={mockStory} />);
-      
+
       // Unmount before promise resolves
       unmount();
-      
+
       // Wait a bit and ensure no errors
       await new Promise(resolve => setTimeout(resolve, 150));
     });
@@ -302,7 +302,7 @@ describe('StoryCard', () => {
     it('should have accessible delete button', () => {
       const onDelete = jest.fn();
       render(<StoryCard story={mockStory} showDelete onDelete={onDelete} />);
-      
+
       const deleteButton = screen.getByRole('button', { name: /delete story/i });
       expect(deleteButton).toHaveAccessibleName();
       expect(deleteButton).toHaveAttribute('aria-label', 'Delete story');
@@ -311,7 +311,7 @@ describe('StoryCard', () => {
     it('should have accessible preview link', () => {
       const onDelete = jest.fn();
       render(<StoryCard story={mockStory} showDelete onDelete={onDelete} />);
-      
+
       const previewLink = screen.getByRole('link', { name: /preview story/i });
       expect(previewLink).toHaveAccessibleName();
       expect(previewLink).toHaveAttribute('aria-label', 'Preview story');
@@ -319,7 +319,7 @@ describe('StoryCard', () => {
 
     it('should have proper link structure for screen readers', () => {
       render(<StoryCard story={mockStory} />);
-      
+
       const titleLink = screen.getByRole('link', { name: mockStory.title });
       expect(titleLink).toBeInTheDocument();
     });

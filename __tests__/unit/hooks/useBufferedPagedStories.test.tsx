@@ -239,7 +239,7 @@ describe('useBufferedPagedStories', () => {
       });
 
       // Act
-      const { result, rerender } = renderHook(() =>
+      const { result } = renderHook(() =>
         useBufferedPagedStories({ requestedPageSize: 10 })
       );
 
@@ -647,8 +647,6 @@ describe('useBufferedPagedStories', () => {
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
-
-      const firstItem = result.current.itemsForPage[0];
 
       // Refresh
       await act(async () => {
