@@ -231,18 +231,18 @@ jest.mock('@/lib/mongodb', () => ({
 
 ## 📈 Cobertura Detallada
 
-| Archivo | Statements | Branches | Functions | Lines | Uncovered |
-|---------|------------|----------|-----------|-------|-----------|
-| **API Routes** |
-| `chapters/[id]/route.ts` | 90.9% | 68.42% | 100% | 96% | 22, 54 |
-| `stories/route.ts` | 95.83% | 89.28% | 100% | 95.34% | 35-36 |
-| `stories/[id]/route.ts` | **100%** | 85.71% | **100%** | **100%** | 12-13 (branches) |
-| `stories/[id]/chapters/route.ts` | 96.77% | 90% | **100%** | 96.42% | 21 |
-| `stories/[id]/comments/route.ts` | **100%** | 80% | **100%** | **100%** | 19-20, 34-35 (branches) |
-| **Models** |
-| `Chapter.ts` | **100%** | **100%** | **100%** | **100%** | - |
-| `Comment.ts` | **100%** | **100%** | **100%** | **100%** | - |
-| `Story.ts` | **100%** | **100%** | **100%** | **100%** | - |
+| Archivo                          | Statements | Branches | Functions | Lines    | Uncovered               |
+| -------------------------------- | ---------- | -------- | --------- | -------- | ----------------------- |
+| **API Routes**                   |
+| `chapters/[id]/route.ts`         | 90.9%      | 68.42%   | 100%      | 96%      | 22, 54                  |
+| `stories/route.ts`               | 95.83%     | 89.28%   | 100%      | 95.34%   | 35-36                   |
+| `stories/[id]/route.ts`          | **100%**   | 85.71%   | **100%**  | **100%** | 12-13 (branches)        |
+| `stories/[id]/chapters/route.ts` | 96.77%     | 90%      | **100%**  | 96.42%   | 21                      |
+| `stories/[id]/comments/route.ts` | **100%**   | 80%      | **100%**  | **100%** | 19-20, 34-35 (branches) |
+| **Models**                       |
+| `Chapter.ts`                     | **100%**   | **100%** | **100%**  | **100%** | -                       |
+| `Comment.ts`                     | **100%**   | **100%** | **100%**  | **100%** | -                       |
+| `Story.ts`                       | **100%**   | **100%** | **100%**  | **100%** | -                       |
 
 **Promedio API Routes**: 96.66% statements, 82.68% branches, 100% functions
 

@@ -22,9 +22,9 @@ jest.mock('@/lib/clerk', () => ({
 
 import { GET, POST } from '@/app/api/stories/[id]/comments/route';
 import clerkClient from '@/lib/clerk';
-import { 
-  connectDB, 
-  disconnectDB, 
+import {
+  connectDB,
+  disconnectDB,
   clearDB,
   createMockRequest,
   MOCK_USERS,
@@ -103,12 +103,12 @@ describe('/api/stories/[id]/comments - Integration Tests', () => {
       // Assert
       expect(response.status).toBe(200);
       expect(data).toHaveLength(2);
-      
+
       // Comments should be sorted by createdAt descending (most recent first)
       expect(data[0].content).toBe('I loved it!');
       expect(data[0].authorName).toBe('Charlie Brown');
       expect(data[0].authorImage).toBe('https://example.com/charlie.jpg');
-      
+
       expect(data[1].content).toBe('Great story!');
       expect(data[1].authorName).toBe('Bob Smith');
       expect(data[1].authorImage).toBe('https://example.com/bob.jpg');
@@ -117,14 +117,14 @@ describe('/api/stories/[id]/comments - Integration Tests', () => {
     it('should handle comments sorted by createdAt descending', async () => {
       // Arrange
       const story = await createTestStory(MOCK_USERS.ALICE, { published: true });
-      
+
       const comment1 = await createTestComment(story._id.toString(), MOCK_USERS.BOB, {
         content: 'First comment',
       });
-      
+
       // Wait to ensure different timestamps
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       const comment2 = await createTestComment(story._id.toString(), MOCK_USERS.CHARLIE, {
         content: 'Second comment',
       });
@@ -342,7 +342,7 @@ describe('/api/stories/[id]/comments - Integration Tests', () => {
     it('should allow any authenticated user to comment on any published story', async () => {
       // Arrange - Alice's story
       const story = await createTestStory(MOCK_USERS.ALICE, { published: true });
-      
+
       // Act - Bob comments on Alice's story
       const req = createMockRequest(`http://localhost:3000/api/stories/${story._id}/comments`, {
         method: 'POST',
@@ -366,7 +366,7 @@ describe('/api/stories/[id]/comments - Integration Tests', () => {
       // Arrange
       const story = await createTestStory(MOCK_USERS.ALICE, { published: true });
       const longContent = 'A'.repeat(1000); // 1000 characters
-      
+
       const req = createMockRequest(`http://localhost:3000/api/stories/${story._id}/comments`, {
         method: 'POST',
         userId: MOCK_USERS.BOB,
@@ -390,7 +390,7 @@ describe('/api/stories/[id]/comments - Integration Tests', () => {
       // Arrange
       const story = await createTestStory(MOCK_USERS.ALICE, { published: true });
       const beforeCreate = new Date();
-      
+
       const req = createMockRequest(`http://localhost:3000/api/stories/${story._id}/comments`, {
         method: 'POST',
         userId: MOCK_USERS.BOB,
@@ -416,7 +416,7 @@ describe('/api/stories/[id]/comments - Integration Tests', () => {
     it('should allow multiple comments from same user', async () => {
       // Arrange
       const story = await createTestStory(MOCK_USERS.ALICE, { published: true });
-      
+
       // Act - Bob creates multiple comments
       const req1 = createMockRequest(`http://localhost:3000/api/stories/${story._id}/comments`, {
         method: 'POST',

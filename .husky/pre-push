@@ -14,6 +14,16 @@ fi
 echo "✅ Lint passed!"
 echo ""
 
+# Run tests
+echo "🧪 Running tests..."
+pnpm test:all
+if [ $? -ne 0 ]; then
+  echo "❌ Tests failed. Please fix the errors before pushing."
+  exit 1
+fi
+echo "✅ Tests passed!"
+echo ""
+
 # Run build
 echo "🏗️  Building project..."
 pnpm build
