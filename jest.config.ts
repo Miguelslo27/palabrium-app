@@ -64,11 +64,12 @@ const config: Config = {
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
     '<rootDir>/e2e/',
+    '<rootDir>/__tests__/integration/', // Exclude integration tests (use jest.integration.config.ts)
   ],
 
-  // Transform node_modules that use ESM - updated pattern to handle pnpm structure
+  // Transform node_modules that use ESM - updated pattern to handle pnpm structure and bson/mongodb
   transformIgnorePatterns: [
-    '/node_modules/(?!.*\\.mjs$)',
+    'node_modules/(?!.*(bson|mongodb)/)',
   ],
 
   // Transform files with ts-jest
