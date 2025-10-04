@@ -71,7 +71,8 @@ try {
   console.log('\n✨ All tests completed successfully with combined coverage!');
   process.exit(0);
 
-} catch {
+} catch (error) {
   console.error('\n❌ Tests failed!');
+  console.error(error);
   process.exit(1);
 }

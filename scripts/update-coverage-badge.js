@@ -12,11 +12,10 @@ const coveragePath = path.join(__dirname, '../coverage/coverage-final.json');
 const readmePath = path.join(__dirname, '../README.md');
 
 // Read coverage data
-let coverage = {};
-if (fs.existsSync(coveragePath)) {
-  const coverageData = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
-  coverage = coverageData;
-} else {
+let coverage;
+try {
+  coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+} catch {
   console.warn('⚠️  Coverage file not found. Run tests with --coverage first.');
   process.exit(0);
 }
