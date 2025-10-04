@@ -53,7 +53,7 @@ const config: Config = {
     '^.+\\.(css|sass|scss)$': '<rootDir>/__tests__/mocks/styleMock.ts',
 
     // Handle image imports
-    '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$/i': '<rootDir>/__tests__/mocks/fileMock.ts',
+    '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$': '<rootDir>/__tests__/mocks/fileMock.ts',
 
     // Handle module aliases
     '^@/(.*)$': '<rootDir>/src/$1',

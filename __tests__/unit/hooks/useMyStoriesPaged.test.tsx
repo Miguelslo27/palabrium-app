@@ -16,10 +16,6 @@ jest.mock('@/hooks/useBufferedPagedStories');
 
 const mockGetClientUserId = getClientUserId as jest.MockedFunction<typeof getClientUserId>;
 
-// Mock window.alert
-const mockAlert = jest.fn();
-global.alert = mockAlert;
-
 // Import the mocked module
 const useBufferedPagedStories = require('@/hooks/useBufferedPagedStories').default as jest.Mock;
 
@@ -47,12 +43,16 @@ const mockStories: Story[] = [
 
 describe('useMyStoriesPaged', () => {
   let mockRefresh: jest.Mock;
+  let mockAlert: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetClientUserId.mockResolvedValue('user123');
     global.fetch = jest.fn();
     mockRefresh = jest.fn();
+
+    // Spy on window.alert
+    mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => { });
 
     // Default mock implementation for useBufferedPagedStories
     useBufferedPagedStories.mockReturnValue({
