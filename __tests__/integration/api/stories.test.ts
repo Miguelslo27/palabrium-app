@@ -11,9 +11,9 @@ jest.mock('@/lib/mongodb', () => ({
 }));
 
 import { GET, POST } from '@/app/api/stories/route';
-import { 
-  connectDB, 
-  disconnectDB, 
+import {
+  connectDB,
+  disconnectDB,
   clearDB,
   createMockRequest,
   MOCK_USERS,
@@ -57,7 +57,7 @@ describe('/api/stories - Integration Tests', () => {
       // Arrange
       await createTestStory(MOCK_USERS.ALICE, { title: 'Published Story', published: true });
       await createTestStory(MOCK_USERS.ALICE, { title: 'Draft Story', published: false });
-      
+
       const req = createMockRequest('http://localhost:3000/api/stories');
 
       // Act
@@ -122,15 +122,15 @@ describe('/api/stories - Integration Tests', () => {
 
     it('should search stories by title', async () => {
       // Arrange
-      await createTestStory(MOCK_USERS.ALICE, { 
+      await createTestStory(MOCK_USERS.ALICE, {
         title: 'Fantasy Adventure',
-        published: true 
+        published: true
       });
-      await createTestStory(MOCK_USERS.BOB, { 
+      await createTestStory(MOCK_USERS.BOB, {
         title: 'Science Fiction Story',
-        published: true 
+        published: true
       });
-      
+
       const req = createMockRequest('http://localhost:3000/api/stories?q=Fantasy');
 
       // Act
@@ -145,17 +145,17 @@ describe('/api/stories - Integration Tests', () => {
 
     it('should search stories by description', async () => {
       // Arrange
-      await createTestStory(MOCK_USERS.ALICE, { 
+      await createTestStory(MOCK_USERS.ALICE, {
         title: 'Test Story',
         description: 'An epic adventure in space',
-        published: true 
+        published: true
       });
-      await createTestStory(MOCK_USERS.BOB, { 
+      await createTestStory(MOCK_USERS.BOB, {
         title: 'Another Story',
         description: 'A mystery on Earth',
-        published: true 
+        published: true
       });
-      
+
       const req = createMockRequest('http://localhost:3000/api/stories?q=space');
 
       // Act
@@ -170,19 +170,19 @@ describe('/api/stories - Integration Tests', () => {
 
     it('should return stories sorted by createdAt descending', async () => {
       // Arrange
-      const story1 = await createTestStory(MOCK_USERS.ALICE, { 
+      const story1 = await createTestStory(MOCK_USERS.ALICE, {
         title: 'First Story',
-        published: true 
+        published: true
       });
-      
+
       // Wait a bit to ensure different timestamps
       await new Promise(resolve => setTimeout(resolve, 10));
-      
-      const story2 = await createTestStory(MOCK_USERS.ALICE, { 
+
+      const story2 = await createTestStory(MOCK_USERS.ALICE, {
         title: 'Second Story',
-        published: true 
+        published: true
       });
-      
+
       const req = createMockRequest('http://localhost:3000/api/stories');
 
       // Act
@@ -265,7 +265,7 @@ describe('/api/stories - Integration Tests', () => {
 
       // Assert
       expect(response.status).toBe(200);
-      
+
       const Story = (await import('@/models/Story')).default;
       const story = await Story.findById(data.id);
       expect(story?.published).toBe(true);
@@ -292,7 +292,7 @@ describe('/api/stories - Integration Tests', () => {
 
       // Assert
       expect(response.status).toBe(200);
-      
+
       // Verify chapters were created
       const Chapter = (await import('@/models/Chapter')).default;
       const chapters = await Chapter.find({ storyId: data.id }).sort({ order: 1 });
@@ -341,7 +341,7 @@ describe('/api/stories - Integration Tests', () => {
 
       // Assert
       expect(response.status).toBe(200);
-      
+
       const Story = (await import('@/models/Story')).default;
       const story = await Story.findById(data.id);
       expect(story?.title).toBe('Minimal Story');

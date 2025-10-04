@@ -92,7 +92,7 @@ export async function createStoryWithChapters(
   storyData: Partial<any> = {}
 ) {
   const story = await createTestStory(userId, storyData);
-  
+
   const chapters = [];
   for (let i = 0; i < chapterCount; i++) {
     const chapter = await createTestChapter(story._id.toString(), {
@@ -114,10 +114,10 @@ export async function createStoryWithComments(
   commentCount: number = 3
 ) {
   const story = await createTestStory(authorId, { published: true });
-  
+
   const comments = [];
   const commentUsers = [MOCK_USERS.ALICE, MOCK_USERS.BOB, MOCK_USERS.CHARLIE];
-  
+
   for (let i = 0; i < commentCount; i++) {
     const userId = commentUsers[i % commentUsers.length];
     const comment = await createTestComment(story._id.toString(), userId, {

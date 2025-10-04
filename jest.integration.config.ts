@@ -4,7 +4,7 @@ const config: Config = {
   clearMocks: true,
   testEnvironment: 'node', // Node environment for integration tests
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  
+
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
@@ -30,7 +30,7 @@ const config: Config = {
 
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
   verbose: true,
-  
+
   // Increase timeout for database operations
   testTimeout: 30000,
 };

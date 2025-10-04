@@ -41,9 +41,9 @@ export function createMockRequest(
   options: RequestInit & { userId?: string } = {}
 ): Request {
   const { userId, ...requestOptions } = options;
-  
+
   const headers = userId ? getUserHeaders(userId) : getUnauthenticatedHeaders();
-  
+
   // Merge custom headers if provided
   if (requestOptions.headers) {
     const customHeaders = new Headers(requestOptions.headers);
