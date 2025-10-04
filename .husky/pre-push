@@ -14,14 +14,14 @@ fi
 echo "✅ Lint passed!"
 echo ""
 
-# Run tests
-echo "🧪 Running tests..."
-pnpm test:all
+# Run tests with coverage
+echo "🧪 Running all tests with coverage..."
+pnpm test:coverage:all
 if [ $? -ne 0 ]; then
   echo "❌ Tests failed. Please fix the errors before pushing."
   exit 1
 fi
-echo "✅ Tests passed!"
+echo "✅ All tests passed with coverage updated!"
 echo ""
 
 # Run build

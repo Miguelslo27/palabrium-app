@@ -1,3 +1,13 @@
+# Palabrium
+
+[![Tests](https://img.shields.io/badge/tests-502%20passing-brightgreen)](https://github.com/Miguelslo27/palabrium-app)
+[![Coverage](https://img.shields.io/badge/coverage-40%25-yellow)](https://github.com/Miguelslo27/palabrium-app)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+A storytelling platform built with Next.js 15, React 19, and MongoDB.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -22,11 +32,41 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Available Scripts
 
+### Development
 - `pnpm dev` - Start development server with Turbopack
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
+
+### Code Quality
 - `pnpm lint` - Run ESLint
 - `pnpm validate` - Run linting + build (useful before pushing)
+
+### Testing
+- `pnpm test` - Run unit tests (434 tests)
+- `pnpm test:watch` - Run unit tests in watch mode
+- `pnpm test:coverage` - Run unit tests with coverage report
+- `pnpm test:coverage:all` - **Run ALL tests (unit + integration) with combined coverage**
+- `pnpm test:integration` - Run integration tests (68 tests)
+- `pnpm test:all` - Run all tests (unit + integration, no coverage)
+
+**Coverage Reports:**
+```bash
+# Complete coverage (unit + integration) - RECOMMENDED
+pnpm test:coverage:all
+
+# Unit tests only coverage
+pnpm test:coverage
+
+# Integration tests only coverage
+pnpm test:integration --coverage
+
+# Manually update coverage badge from existing data
+pnpm update:badges
+```
+
+Coverage reports are generated in the `coverage/` directory. Open `coverage/lcov-report/index.html` in your browser to see detailed coverage.
+
+**Note:** The coverage badge in README.md is automatically updated when you run `pnpm test:coverage:all` or `pnpm test:coverage`.
 
 ## Git Hooks
 
@@ -35,7 +75,10 @@ This project uses [Husky](https://typicode.github.io/husky/) to enforce code qua
 ### Pre-push Hook
 Before every `git push`, the following checks run automatically:
 1. **Linting** - Ensures code style consistency
-2. **Build** - Verifies the project compiles without errors
+2. **Tests with Coverage** - Runs all unit and integration tests (502 tests) + updates coverage badge
+3. **Build** - Verifies the project compiles without errors
+
+The coverage badge is automatically updated before each push, ensuring it always reflects the current state of the codebase.
 
 If any check fails, the push is **blocked** until you fix the issues.
 
@@ -50,6 +93,44 @@ git push --no-verify
 ```
 
 ⚠️ **Warning**: Bypassing checks is discouraged. Always fix the issues instead.
+
+## Testing Infrastructure
+
+This project has comprehensive test coverage with automated badge updates:
+
+### Test Suites
+- **Unit Tests**: 434 tests covering components, hooks, and utilities
+- **Integration Tests**: 68 tests for API routes with MongoDB Memory Server
+- **Total**: 502 tests with ~83% overall coverage
+
+### Coverage Goals
+- ✅ API Routes: 96%+ coverage (target: 80%)
+- ✅ Libraries: 98%+ coverage
+- ✅ Hooks: 98%+ coverage
+- 🎯 Components: 30%+ coverage (improving)
+
+### Automated Badge Updates
+The coverage badge at the top of this README updates automatically in two scenarios:
+
+1. **During pre-push**: Coverage is calculated and badge updated automatically before each push
+2. **Manual run**: Execute `pnpm test:coverage:all` to update coverage from all tests
+
+```bash
+# Complete coverage (recommended)
+pnpm test:coverage:all
+
+# Or just update badge from existing coverage
+pnpm update:badges
+```
+
+The badge reflects **combined coverage** from both unit and integration tests, giving you a complete picture of your test coverage.
+
+The badge color changes based on coverage:
+- 🟢 Green (80%+): Excellent coverage
+- 🟡 Yellow (40-79%): Good coverage, room for improvement  
+- 🔴 Red (<40%): Needs more tests
+
+For more details, see [TESTING_PLAN.md](TESTING_PLAN.md) and [INTEGRATION_TESTS_SUMMARY.md](INTEGRATION_TESTS_SUMMARY.md).
 
 ## Learn More
 
