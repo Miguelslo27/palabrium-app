@@ -66,9 +66,19 @@ const config: Config = {
     '<rootDir>/e2e/',
   ],
 
+  // Transform node_modules that use ESM - updated pattern to handle pnpm structure
+  transformIgnorePatterns: [
+    '/node_modules/(?!.*\\.mjs$)',
+  ],
+
   // Transform files with ts-jest
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react-jsx',
+      },
+    }],
+    '^.+\\.mjs$': ['ts-jest', {
       tsconfig: {
         jsx: 'react-jsx',
       },
