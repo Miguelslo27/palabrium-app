@@ -1,25 +1,17 @@
 # Lista de tareas pendientes
 
 ## En progreso
-- [x] Agregar botón de Preview (icono de ojito)
-- [x] Resaltar historias propias en Explorar
-- [x] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
-- [x] Corregir likes (cambiar el nombre)
-- [x] Corregir comentarios
-- [x] Poner comentarios a la derecha en la página de la historia
-- [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
-- [x] Implementar publicación de historia y capítulo
-- [x] Guardar datos básicos de usuario en mi base cuando se registran
-- [x] Corregir errores de lint
-- [-] Agregar safe-guard para prevenir push con errores
-
-## Prioridades para MVP
-- [ ] Permitir reordenar capítulos arrastrando y soltando
+- [-] Configurar suites de prueba y comenzar a agregar tests hasta alcanzar el 80/90% de cobertura
 - [ ] Relacionar historias y comentarios con usuarios para poder consultar todo junto
 - [ ] Al consultar historia traer datos del autor
-- [ ] Al consultar comments de las historias traer ddatos del autor
 - [ ] Al consultar historias traer ya los comentarios
+- [ ] Al consultar comments de las historias traer datos del autor
 - [ ] Página de Perfil de autor
+
+## Prioridades para MVP
+- [ ] Configurar lista de usuarios por invitación para el MVP usando Clerk
+- [ ] Permitir que los usuarios invitados puedan repartir invitaciones (3 por usuario)
+- [ ] Permitir reordenar capítulos arrastrando y soltando
 - [ ] Añadir géneros (formato label)
 - [ ] Permitir agregar portada
 - [ ] Permitir agregar imagen de fondo (para el hero)
@@ -37,6 +29,17 @@
 - [x] Editar historia al hacer click en el título (Solo en Mis historias)
 - [x] Agregar endpoint de carga masiva
 - [x] Crear JSON con datos de prueba
+- [x] Agregar botón de Preview (icono de ojito)
+- [x] Resaltar historias propias en Explorar
+- [x] Implementar bien Clerk siguiendo esta guía https://clerk.com/docs/nextjs/getting-started/quickstart
+- [x] Corregir likes (cambiar el nombre)
+- [x] Corregir comentarios
+- [x] Poner comentarios a la derecha en la página de la historia
+- [x] Agregar botón de editar historia en la página, si esta pertenece al usuario loggeado
+- [x] Implementar publicación de historia y capítulo
+- [x] Guardar datos básicos de usuario en mi base cuando se registran
+- [x] Corregir errores de lint
+- [x] Agregar safe-guard para prevenir push con errores
 
 ## Sería bueno tener para la próxima versión
 - [ ] Seguir autores
@@ -53,7 +56,55 @@
 - [ ] Diseño Explorar
 
 ## Ideas y preguntas del público objetivo:
-- Te felicito por el proyecto, luce ambicioso. La siguiente pregunta es sin ánimos de odio, es solo para reflexionar: ¿Cuál será tu diferenciador?, ¿por qué alguien preferiría tu plataforma y no una establecida?
-- ¿Cómo piensas manejar la abundancia de textos basura que inundará tu plataforma? Con textos basura me refiero a los que abundan en wattpap y aquí en reddit, esos que tienen mala ortografía, mala sintaxis, mal formato, totalmente incoherentes que llenarán tarde o temprano tu sitio y lo volverán inmanejable…  
-- Creo que una sección bien elaborada de exploración y recomendaciones puede dar mucho juego. Por ejemplo, un sistema para recomendar historias en base a las que hayas leído, totalmente personalizado, con un trabajo previo de los autores para poner palabras claves en sus historias. Recomendaciones en base a géneros literarios, «estados de ánimo», tipos de protagonistas, etc. Ayuda a los lectores a encontrar lo que buscan y a los autores a visibilizar sus obras y ser leídos por su público objetivo. Por otro lado, un sistema competitivo que premie a los lectores en tanto más lean sería un buen incentivo, con recompensas como medallas, logros y objetos únicos que pueden aparecer en el perfil de cada usuario. Por último, otra sugerencia sería crear un visualizador de estadísticas de todas las historias, novelas o cuentos que un usuario haya leído, un historial visual que permita al lector saber que leía hace tres años, por ejemplo. Básicamente una versión de last.fm (que es de música) pero para lectores y la literatura.
+- [x] Te felicito por el proyecto, luce ambicioso. La siguiente pregunta es sin ánimos de odio, es solo para reflexionar: ¿Cuál será tu diferenciador?, ¿por qué alguien preferiría tu plataforma y no una establecida?
+- [x] ¿Cómo piensas manejar la abundancia de textos basura que inundará tu plataforma? Con textos basura me refiero a los que abundan en Wattpad y aquí en reddit, esos que tienen mala ortografía, mala sintaxis, mal formato, totalmente incoherentes que llenarán tarde o temprano tu sitio y lo volverán inmanejable…  
+- [x] Creo que una sección bien elaborada de exploración y recomendaciones puede dar mucho juego. Por ejemplo, un sistema para recomendar historias en base a las que hayas leído, totalmente personalizado, con un trabajo previo de los autores para poner palabras claves en sus historias. Recomendaciones en base a géneros literarios, «estados de ánimo», tipos de protagonistas, etc. Ayuda a los lectores a encontrar lo que buscan y a los autores a visibilizar sus obras y ser leídos por su público objetivo. Por otro lado, un sistema competitivo que premie a los lectores en tanto más lean sería un buen incentivo, con recompensas como medallas, logros y objetos únicos que pueden aparecer en el perfil de cada usuario. Por último, otra sugerencia sería crear un visualizador de estadísticas de todas las historias, novelas o cuentos que un usuario haya leído, un historial visual que permita al lector saber que leía hace tres años, por ejemplo. Básicamente una versión de last.fm (que es de música) pero para lectores y la literatura.
+- [ ] pon un sistema de tagging por los usuarios, libre para cualquier usuario, y que pueda buscar y ordenar los escritos por tags y por puntaje upvote - downvote por cada tag independiente, de modo que si un escrito esta en puntos 0 en tag "x" a lo mejor esta en puntos 10 en tag "y", al permitir a los usuarios en general agregar y manejar las tags que les interesan, van a tener más capacidad de filtrar contenido basura de forma independiente
+- [ ] Algo que pensé que no tienen otras plataformas es como poder digamos "personalizar los textos". No sé si me hago entender pero de forma que hagan más... "Artísticas" las lecturas. Tipo, pensé en que si en mi escrito quisiera una hoja totalmente en negro con texto en blanco pero las siguientes paginas en blanco con su correspondiente texto negro. O que pudieras cambiar el color o la fuente del texto dentro del mismo escrito sin meter imágenes. También otra cosa que podrías añadir que tiene Wattpad por ejemplo es los comentarios en ciertos párrafos, para fomentar la interacción.
+- [ ] El enfoque principal debe estar en que las personas lean y descubran los textos publicados, facilitar que encuentren lo que buscan con un solo clic, que según sus etiquetas reciban la recomendación de un texto aleatorio
+- [ ] Es un proyecto muy interesante! Justo con un amigo y socio estamos pensando desarrollar algo similar, pero buscando la forma de monetizarlo y que cada autor pueda obtener algún beneficio (en cuanto al desarrollo en si no buscamos hacernos ricos sino vivir dignamente de nuestro trabajo) de hecho ya hay dominio contratado! escritores.top. la idea se enfoca en las siguientes aristas:
+      - Sistema para asistir a la escritura (construccion de personajes, linea de tiempo formateo, etc)
+      - Catalogo de producciones - micrositio y enlaces a redes sociales
+      - Monetización con micropagos
+- [ ] Podrías ofrecer alguna recompensa monetaria, libre, para que los autores se sientan apoyados por terceros.
+
+## Suggestions (Basadas en feedback de usuarios)
+
+### Control de calidad y moderación
+- [ ] Implementar sistema de reporte de contenido de baja calidad
+- [ ] Agregar sistema de verificación de calidad (ortografía y sintaxis) automático antes de publicar
+- [ ] Sistema de moderación comunitaria (usuarios pueden marcar contenido problemático)
+- [ ] Implementar badges de "Verificado" o "Calidad" para autores con buen historial
+- [ ] Filtros de búsqueda para excluir historias mal valoradas o reportadas
+
+### Sistema de recomendaciones personalizado
+- [ ] Motor de recomendaciones basado en historial de lectura del usuario
+- [ ] Permitir a autores agregar palabras clave/tags personalizados a sus historias
+- [ ] Filtros avanzados por: géneros literarios, estados de ánimo, tipos de protagonistas
+- [ ] Sistema de descubrimiento inteligente que conecte autores con su público objetivo
+- [ ] Algoritmo que aprenda de las preferencias del usuario
+
+### Gamificación y engagement de lectores
+- [ ] Sistema de logros y medallas para lectores activos
+- [ ] Recompensas por cantidad de historias leídas
+- [ ] Insignias y objetos coleccionables únicos para el perfil
+- [ ] Desafíos de lectura (mensual, anual, por género, etc.)
+- [ ] Rankings y tablas de clasificación de lectores más activos
+- [ ] Sistema de niveles/experiencia para lectores
+
+### Historial y estadísticas de lectura
+- [ ] Visualizador de estadísticas completo de todas las lecturas del usuario
+- [ ] Historial visual de lecturas (estilo last.fm)
+- [ ] Timeline de lecturas para ver qué leía el usuario en fechas específicas
+- [ ] Gráficas de géneros más leídos, autores favoritos, tiempo de lectura
+- [ ] Exportar estadísticas de lectura
+- [ ] Comparar estadísticas con otros usuarios
+
+### Diferenciadores clave de la plataforma
+- [ ] Definir y documentar propuesta de valor única
+- [ ] Crear experiencia de lectura superior (tipografía, diseño, modo nocturno avanzado)
+- [ ] Herramientas exclusivas para escritores (análisis de texto, sugerencias, etc.)
+- [ ] Comunidad enfocada en calidad sobre cantidad
+- [ ] Sistema de monetización justo para autores
+- [ ] Integración con redes sociales de forma nativa y mejorada
 
