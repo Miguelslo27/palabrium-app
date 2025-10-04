@@ -1,0 +1,48 @@
+import type { Config } from 'jest';
+
+const config: Config = {
+  clearMocks: true,
+  testEnvironment: 'node', // Node environment for integration tests
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+
+  testPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/.next/',
+    '<rootDir>/e2e/',
+    '<rootDir>/__tests__/unit/', // Exclude unit tests
+  ],
+
+  testMatch: [
+    '**/__tests__/integration/**/*.{test,spec}.{ts,tsx}',
+  ],
+
+  // Transform all files including .mjs from bson/mongodb
+  transformIgnorePatterns: [
+    'node_modules/(?!.*(bson|mongodb)/)',
+  ],
+
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react',
+      },
+    }],
+    '^.+\\.mjs$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react',
+      },
+    }],
+  },
+
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
+  verbose: true,
+
+  // Increase timeout for database operations
+  testTimeout: 30000,
+};
+
+export default config;

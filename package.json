@@ -11,9 +11,12 @@
         "validate": "pnpm lint && pnpm build",
         "test": "jest",
         "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage",
+        "test:coverage": "jest --coverage && node scripts/update-coverage-badge.js",
+        "test:coverage:all": "node scripts/test-all-with-coverage.js",
         "test:unit": "jest --testPathPattern=__tests__/unit",
-        "test:integration": "jest --testPathPattern=__tests__/integration"
+        "test:integration": "jest --config jest.integration.config.ts",
+        "test:all": "pnpm test && pnpm test:integration",
+        "update:badges": "node scripts/update-coverage-badge.js"
     },
     "dependencies": {
         "@clerk/backend": "^2.15.0",

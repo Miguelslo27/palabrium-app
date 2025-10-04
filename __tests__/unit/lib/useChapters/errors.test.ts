@@ -11,14 +11,12 @@ import { setupModuleAndMocks, restoreMocks } from './shared/helpers';
 
 describe('useChapters - Error Scenarios', () => {
   let useChaptersModule: any;
-  let mockClerk: any;
   let mockFetch: jest.Mock;
   let mockGetClerkClient: jest.Mock;
 
   beforeEach(() => {
     const setup = setupModuleAndMocks();
     useChaptersModule = setup.useChaptersModule;
-    mockClerk = setup.mockClerk;
     mockFetch = setup.mockFetch;
     mockGetClerkClient = setup.mockGetClerkClient;
   });
