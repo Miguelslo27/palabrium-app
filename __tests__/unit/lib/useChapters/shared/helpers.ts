@@ -8,9 +8,9 @@ export const originalFetch = global.fetch;
 export const originalWindow = global.window;
 
 /**
- * Setup mocks before each test
+ * Setup mocks and return the module and mocks
  */
-export const setupMocks = () => {
+export const setupModuleAndMocks = () => {
   // Reset modules
   jest.resetModules();
 
@@ -30,7 +30,10 @@ export const setupMocks = () => {
   const mockFetch = jest.fn();
   global.fetch = mockFetch;
 
-  return { mockClerk, mockGetClerkClient, mockFetch };
+  // Import module after mocking
+  const useChaptersModule = require('@/lib/useChapters');
+
+  return { useChaptersModule, mockClerk, mockGetClerkClient, mockFetch };
 };
 
 /**
