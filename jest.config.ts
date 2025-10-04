@@ -68,9 +68,9 @@ const config: Config = {
 
   // Transform files with ts-jest
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
+    '^.+\\.(js|jsx|ts|tsx)$': ['ts-jest', {
       tsconfig: {
-        jsx: 'react',
+        jsx: 'react-jsx',
       },
     }],
   },
@@ -80,8 +80,8 @@ const config: Config = {
 
   // Test match patterns
   testMatch: [
-    '**/__tests__/**/*.(test|spec).(ts|tsx|js)',
-    '**/*.(test|spec).(ts|tsx|js)',
+    '**/__tests__/**/*.{test,spec}.{ts,tsx,js}',
+    '**/*.{test,spec}.{ts,tsx,js}',
   ],
 
   // Indicates whether each individual test should be reported during the run

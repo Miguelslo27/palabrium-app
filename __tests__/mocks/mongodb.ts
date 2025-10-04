@@ -19,7 +19,7 @@ export const mockStory = {
   chapterCount: 0,
   createdAt: new Date('2025-01-01'),
   updatedAt: new Date('2025-01-01'),
-  save: jest.fn().mockResolvedValue(this),
+  save: jest.fn(function (this: any) { return Promise.resolve(this); }),
   toObject: jest.fn(function (this: any) { return { ...this }; }),
 };
 
@@ -33,7 +33,7 @@ export const mockChapter = {
   published: false,
   createdAt: new Date('2025-01-01'),
   updatedAt: new Date('2025-01-01'),
-  save: jest.fn().mockResolvedValue(this),
+  save: jest.fn(function (this: any) { return Promise.resolve(this); }),
   toObject: jest.fn(function (this: any) { return { ...this }; }),
 };
 
@@ -45,7 +45,7 @@ export const mockComment = {
   content: 'Great story!',
   createdAt: new Date('2025-01-01'),
   updatedAt: new Date('2025-01-01'),
-  save: jest.fn().mockResolvedValue(this),
+  save: jest.fn(function (this: any) { return Promise.resolve(this); }),
   toObject: jest.fn(function (this: any) { return { ...this }; }),
 };
 
@@ -55,7 +55,7 @@ export const mockMongoUser = {
   clerkId: 'user_test123',
   createdAt: new Date('2025-01-01'),
   updatedAt: new Date('2025-01-01'),
-  save: jest.fn().mockResolvedValue(this),
+  save: jest.fn(function (this: any) { return Promise.resolve(this); }),
   toObject: jest.fn(function (this: any) { return { ...this }; }),
 };
 

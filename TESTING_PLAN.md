@@ -26,7 +26,8 @@ jest-environment-jsdom
 @testing-library/user-event
 
 # Utilidades
-@testing-library/react-hooks (para hooks personalizados)
+# Para hooks personalizados, usar `renderHook` de @testing-library/react (ya incluido arriba)
+# Nota: @testing-library/react-hooks está deprecado en favor de renderHook incluido en @testing-library/react
 ```
 
 ### 1.2 Archivos de Configuración
