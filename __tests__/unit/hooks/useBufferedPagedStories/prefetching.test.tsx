@@ -4,7 +4,7 @@
  * Tests for intelligent prefetching behavior
  */
 
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, waitFor, act } from '../../../setup/test-utils';
 import useBufferedPagedStories from '@/hooks/useBufferedPagedStories';
 import { setupMocks, restoreMocks } from './shared/helpers';
 import { createMockStories } from './shared/fixtures';

@@ -1,8 +1,10 @@
+import { useCallback } from 'react';
+import { useUser } from '@/contexts/UserContext';
 import useBufferedPagedStories from '@/hooks/useBufferedPagedStories';
-import getClientUserId from '@/lib/getClientUserId';
 
 export default function useMyStoriesPaged(opts: { requestedPageSize?: number } = {}) {
   const { requestedPageSize = 10 } = opts;
+  const { userId } = useUser();
 
   // Provide headersProvider so the hook can send x-user-id to the protected endpoint
   const hook = useBufferedPagedStories({
@@ -10,11 +12,10 @@ export default function useMyStoriesPaged(opts: { requestedPageSize?: number } =
     requestedPageSize,
     batchSize: 50,
     prefetchThreshold: 1,
-    headersProvider: async () => {
-      const id = await getClientUserId();
-      if (id) return { 'x-user-id': String(id) } as Record<string, string>;
+    headersProvider: useCallback(async () => {
+      if (userId) return { 'x-user-id': String(userId) } as Record<string, string>;
       return {} as Record<string, string>;
-    },
+    }, [userId]),
   });
 
   return {
@@ -23,7 +24,6 @@ export default function useMyStoriesPaged(opts: { requestedPageSize?: number } =
     unauthorized: hook.unauthorized || false,
     refresh: hook.refresh,
     deleteStory: async (id: string) => {
-      const userId = await getClientUserId();
       if (!userId) {
         alert('You must be signed in to delete a story');
         return false;
@@ -40,7 +40,6 @@ export default function useMyStoriesPaged(opts: { requestedPageSize?: number } =
       return false;
     },
     deleteAll: async () => {
-      const userId = await getClientUserId();
       if (!userId) {
         alert('You must be signed in to perform this action');
         return false;

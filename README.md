@@ -1,7 +1,7 @@
 # Palabrium
 
 [![Tests](https://img.shields.io/badge/tests-502%20passing-brightgreen)](https://github.com/Miguelslo27/palabrium-app)
-[![Coverage](https://img.shields.io/badge/coverage-40%25-yellow)](https://github.com/Miguelslo27/palabrium-app)
+[![Coverage](https://img.shields.io/badge/coverage-42%25-yellow)](https://github.com/Miguelslo27/palabrium-app)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 A storytelling platform built with Next.js 15, React 19, and MongoDB.

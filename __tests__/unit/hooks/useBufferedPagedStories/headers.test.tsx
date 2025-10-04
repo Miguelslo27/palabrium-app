@@ -4,7 +4,7 @@
  * Tests for custom header provider functionality
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '../../../setup/test-utils';
 import useBufferedPagedStories from '@/hooks/useBufferedPagedStories';
 import { setupMocks, mockSuccessfulFetch, restoreMocks } from './shared/helpers';
 import { createMockStories } from './shared/fixtures';

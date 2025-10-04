@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import getClientUserId from '@/lib/getClientUserId';
+import { useUser } from '@/contexts/UserContext';
 
 import type { Story } from '@/types/story';
 import IconExternal from '@/components/Editor/Shared/IconExternal';
@@ -17,6 +17,7 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid', isMine = false, showYoursBadge = true }: StoryCardProps) {
+  const { userId } = useUser();
   const chapterCount = typeof story.chapterCount === 'number' ? story.chapterCount : (story.chapters?.length || 0);
   const createdDate = story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Unknown';
   const [bravosCount, setBravosCount] = useState<number>(story.bravos?.length ?? 0);
@@ -26,16 +27,11 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
   const leftBorderClass = story?.published ? 'border-l-4 border-green-400' : 'border-l-4 border-yellow-400';
 
   useEffect(() => {
-    let mounted = true;
-    getClientUserId().then((id) => {
-      if (!mounted) return;
-      // only initialize braved if it hasn't been set yet
-      if (typeof braved === 'undefined') {
-        setBraved(id ? (story.bravos ?? []).includes(id) : false);
-      }
-    });
-    return () => { mounted = false; };
-  }, [story.bravos, braved]); // Added braved dependency
+    // only initialize braved if it hasn't been set yet
+    if (typeof braved === 'undefined') {
+      setBraved(userId ? (story.bravos ?? []).includes(userId) : false);
+    }
+  }, [userId, story.bravos, braved]);
 
   if (view === 'list') {
     return (

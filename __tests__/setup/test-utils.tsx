@@ -5,14 +5,19 @@
 
 import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
+import { UserProvider } from '@/contexts/UserContext';
 
-// Mock ClerkProvider wrapper
+// Test provider wrapper that includes all necessary providers
 interface TestProviderProps {
   children: React.ReactNode;
 }
 
 const TestProviders: React.FC<TestProviderProps> = ({ children }) => {
-  return <>{children}</>;
+  return (
+    <UserProvider>
+      {children}
+    </UserProvider>
+  );
 };
 
 // Custom render function that includes providers

@@ -4,7 +4,7 @@
  * This hook manages fetching, deleting, and refreshing user's stories.
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '../../setup/test-utils';
 import useMyStories from '@/hooks/useMyStories';
 import getClientUserId from '@/lib/getClientUserId';
 import type { Story } from '@/types/story';

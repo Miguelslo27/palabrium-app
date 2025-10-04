@@ -5,7 +5,8 @@
  * with delete operations.
  */
 
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
+import { UserProvider } from '@/contexts/UserContext';
 import useMyStoriesPaged from '@/hooks/useMyStoriesPaged';
 import getClientUserId from '@/lib/getClientUserId';
 import type { Story } from '@/types/story';
@@ -40,6 +41,13 @@ const mockStories: Story[] = [
     createdAt: '2024-01-02',
   },
 ];
+
+// Helper function to render hook with UserProvider
+const renderHookWithProvider = (hookFn: () => ReturnType<typeof useMyStoriesPaged>) => {
+  return renderHook(hookFn, {
+    wrapper: UserProvider,
+  });
+};
 
 describe('useMyStoriesPaged', () => {
   let mockRefresh: jest.Mock;
@@ -76,7 +84,7 @@ describe('useMyStoriesPaged', () => {
   describe('initialization', () => {
     it('should initialize with default page size of 10', () => {
       // Act
-      renderHook(() => useMyStoriesPaged());
+      renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(useBufferedPagedStories).toHaveBeenCalledWith(
@@ -91,7 +99,7 @@ describe('useMyStoriesPaged', () => {
 
     it('should accept custom page size', () => {
       // Act
-      renderHook(() => useMyStoriesPaged({ requestedPageSize: 20 }));
+      renderHookWithProvider(() => useMyStoriesPaged({ requestedPageSize: 20 }));
 
       // Assert
       expect(useBufferedPagedStories).toHaveBeenCalledWith(
@@ -103,7 +111,7 @@ describe('useMyStoriesPaged', () => {
 
     it('should provide headersProvider function', () => {
       // Act
-      renderHook(() => useMyStoriesPaged());
+      renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       const callArgs = useBufferedPagedStories.mock.calls[0][0];
@@ -113,7 +121,7 @@ describe('useMyStoriesPaged', () => {
 
     it('should return stories from buffered hook', () => {
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.stories).toEqual(mockStories);
@@ -124,12 +132,20 @@ describe('useMyStoriesPaged', () => {
 
   describe('headersProvider', () => {
     it('should provide x-user-id header when user is authenticated', async () => {
-      // Arrange
+      // Arrange - Must set mock BEFORE rendering
+      mockGetClientUserId.mockReset();
       mockGetClientUserId.mockResolvedValue('user456');
 
       // Act
-      renderHook(() => useMyStoriesPaged());
-      const headersProvider = useBufferedPagedStories.mock.calls[0][0].headersProvider;
+      renderHookWithProvider(() => useMyStoriesPaged());
+
+      // Wait for userId to be loaded in context
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const headersProvider = useBufferedPagedStories.mock.calls[useBufferedPagedStories.mock.calls.length - 1][0].headersProvider;
       const headers = await headersProvider();
 
       // Assert
@@ -141,7 +157,7 @@ describe('useMyStoriesPaged', () => {
       mockGetClientUserId.mockResolvedValue(null);
 
       // Act
-      renderHook(() => useMyStoriesPaged());
+      renderHookWithProvider(() => useMyStoriesPaged());
       const headersProvider = useBufferedPagedStories.mock.calls[0][0].headersProvider;
       const headers = await headersProvider();
 
@@ -167,7 +183,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.page).toBe(2);
@@ -190,7 +206,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.pageSize).toBe(25);
@@ -212,7 +228,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.total).toBe(100);
@@ -233,7 +249,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.isPrefetching).toBe(true);
@@ -243,7 +259,7 @@ describe('useMyStoriesPaged', () => {
   describe('refresh', () => {
     it('should call refresh from buffered hook', async () => {
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
       await result.current.refresh();
 
       // Assert
@@ -259,7 +275,16 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
+
+      // Wait for userId to be available
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+
+      // Give time for the context to update
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const success = await result.current.deleteStory('story1');
 
       // Assert
@@ -282,7 +307,14 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
+
+      // Wait for userId to be available
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const success = await result.current.deleteStory('story1');
 
       // Assert
@@ -295,7 +327,7 @@ describe('useMyStoriesPaged', () => {
       (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
       const success = await result.current.deleteStory('story1');
 
       // Assert
@@ -308,7 +340,7 @@ describe('useMyStoriesPaged', () => {
       mockGetClientUserId.mockResolvedValue(null);
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
       const success = await result.current.deleteStory('story1');
 
       // Assert
@@ -327,7 +359,14 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
+
+      // Wait for userId to be available
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const success = await result.current.deleteAll();
 
       // Assert
@@ -350,7 +389,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
       const success = await result.current.deleteAll();
 
       // Assert
@@ -363,7 +402,7 @@ describe('useMyStoriesPaged', () => {
       (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
       const success = await result.current.deleteAll();
 
       // Assert
@@ -376,7 +415,7 @@ describe('useMyStoriesPaged', () => {
       mockGetClientUserId.mockResolvedValue(null);
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
       const success = await result.current.deleteAll();
 
       // Assert
@@ -403,7 +442,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.loading).toBe(true);
@@ -425,7 +464,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.unauthorized).toBe(true);
@@ -447,7 +486,7 @@ describe('useMyStoriesPaged', () => {
       });
 
       // Act
-      const { result } = renderHook(() => useMyStoriesPaged());
+      const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
       // Assert
       expect(result.current.unauthorized).toBe(false);

@@ -5,7 +5,8 @@
  * It can work in controlled or uncontrolled mode.
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { render } from '../../setup/test-utils';
 import userEvent from '@testing-library/user-event';
 import BravoButton from '@/components/BravoButton';
 import getClientUserId from '@/lib/getClientUserId';

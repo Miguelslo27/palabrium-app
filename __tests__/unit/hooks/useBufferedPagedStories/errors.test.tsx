@@ -4,7 +4,7 @@
  * Tests for various error scenarios and recovery
  */
 
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, waitFor, act } from '../../../setup/test-utils';
 import useBufferedPagedStories from '@/hooks/useBufferedPagedStories';
 import { setupMocks, mockNetworkError, mockFailedFetch, mockUnauthorizedFetch, mockSuccessfulFetch, restoreMocks } from './shared/helpers';
 import { createMockStories } from './shared/fixtures';

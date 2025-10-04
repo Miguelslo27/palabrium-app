@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import getClientUserId from '@/lib/getClientUserId';
+import { useUser } from '@/contexts/UserContext';
 
 interface BravoButtonProps {
   storyId: string;
@@ -12,19 +12,13 @@ interface BravoButtonProps {
 }
 
 export default function BravoButton({ storyId, initialBravos, userBravos, onToggle, braved: controlledBraved }: BravoButtonProps) {
+  const { userId } = useUser();
   const [bravos, setBravos] = useState(initialBravos);
-  const [userId, setUserId] = useState<string | null>(null);
   const [internalBraved, setInternalBraved] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-    getClientUserId().then((id) => {
-      if (!mounted) return;
-      setUserId(id);
-      setInternalBraved(id ? userBravos.includes(id) : false);
-    });
-    return () => { mounted = false; };
-  }, [userBravos]);
+    setInternalBraved(userId ? userBravos.includes(userId) : false);
+  }, [userId, userBravos]);
 
   const handleBravo = async () => {
     try {
