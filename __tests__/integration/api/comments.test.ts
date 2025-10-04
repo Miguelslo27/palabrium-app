@@ -118,14 +118,14 @@ describe('/api/stories/[id]/comments - Integration Tests', () => {
       // Arrange
       const story = await createTestStory(MOCK_USERS.ALICE, { published: true });
 
-      const comment1 = await createTestComment(story._id.toString(), MOCK_USERS.BOB, {
+      await createTestComment(story._id.toString(), MOCK_USERS.BOB, {
         content: 'First comment',
       });
 
       // Wait to ensure different timestamps
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      const comment2 = await createTestComment(story._id.toString(), MOCK_USERS.CHARLIE, {
+      await createTestComment(story._id.toString(), MOCK_USERS.CHARLIE, {
         content: 'Second comment',
       });
 

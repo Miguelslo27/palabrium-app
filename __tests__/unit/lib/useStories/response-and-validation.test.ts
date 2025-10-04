@@ -13,14 +13,12 @@ import { setupModuleAndMocks, restoreMocks } from './shared/helpers';
 
 describe('useStories - Response Data and Request Validation', () => {
   let useStoriesModule: any;
-  let mockDetectUserId: jest.Mock;
   let mockFetch: jest.Mock;
   const originalFetch = global.fetch;
 
   beforeEach(() => {
     const setup = setupModuleAndMocks();
     useStoriesModule = setup.useStoriesModule;
-    mockDetectUserId = setup.mockDetectUserId;
     mockFetch = setup.mockFetch;
   });
 

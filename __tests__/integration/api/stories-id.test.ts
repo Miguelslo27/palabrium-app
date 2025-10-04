@@ -59,7 +59,7 @@ describe('/api/stories/[id] - Integration Tests', () => {
 
     it('should return story with chapters', async () => {
       // Arrange
-      const { story, chapters } = await createStoryWithChapters(MOCK_USERS.BOB, 3);
+      const { story } = await createStoryWithChapters(MOCK_USERS.BOB, 3);
 
       const req = createMockRequest(`http://localhost:3000/api/stories/${story._id}`);
       const params = Promise.resolve({ id: story._id.toString() });
@@ -368,7 +368,7 @@ describe('/api/stories/[id] - Integration Tests', () => {
 
     it('should delete associated chapters when deleting story', async () => {
       // Arrange
-      const { story, chapters } = await createStoryWithChapters(MOCK_USERS.CHARLIE, 3);
+      const { story } = await createStoryWithChapters(MOCK_USERS.CHARLIE, 3);
 
       const req = createMockRequest(`http://localhost:3000/api/stories/${story._id}`, {
         method: 'DELETE',

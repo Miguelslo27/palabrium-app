@@ -170,7 +170,7 @@ describe('/api/stories - Integration Tests', () => {
 
     it('should return stories sorted by createdAt descending', async () => {
       // Arrange
-      const story1 = await createTestStory(MOCK_USERS.ALICE, {
+      await createTestStory(MOCK_USERS.ALICE, {
         title: 'First Story',
         published: true
       });
@@ -178,7 +178,7 @@ describe('/api/stories - Integration Tests', () => {
       // Wait a bit to ensure different timestamps
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      const story2 = await createTestStory(MOCK_USERS.ALICE, {
+      await createTestStory(MOCK_USERS.ALICE, {
         title: 'Second Story',
         published: true
       });

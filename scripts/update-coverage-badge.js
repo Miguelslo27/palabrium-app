@@ -25,7 +25,6 @@ if (fs.existsSync(coveragePath)) {
 let totalStatements = { covered: 0, total: 0 };
 let totalBranches = { covered: 0, total: 0 };
 let totalFunctions = { covered: 0, total: 0 };
-let totalLines = { covered: 0, total: 0 };
 
 Object.values(coverage).forEach(file => {
   if (file.s) { // statements
@@ -91,7 +90,7 @@ if (coverageBadgeRegex.test(readme)) {
 }
 
 // Update API routes coverage badge if it exists
-const apiCoverageBadgeRegex = /\[!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-API%20routes%20[^\)]+\)\]/;
+// const apiCoverageBadgeRegex = /\[!\[Coverage\]\(https:\/\/img\.shields\.io\/badge\/coverage-API%20routes%20[^\)]+\)\]/;
 // Keep API routes badge as is for now, or update manually
 
 // Write updated README

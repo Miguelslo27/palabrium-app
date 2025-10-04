@@ -8,7 +8,6 @@
 jest.mock('@/lib/clerk-client');
 
 import { setupModuleAndMocks, restoreMocks } from './shared/helpers';
-import { mockChapterData } from './shared/fixtures';
 
 describe('useChapters - CRUD Operations', () => {
   let useChaptersModule: any;
