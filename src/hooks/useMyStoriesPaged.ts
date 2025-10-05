@@ -4,11 +4,14 @@ import useBufferedPagedStories from '@/hooks/useBufferedPagedStories';
 
 export default function useMyStoriesPaged(opts: { requestedPageSize?: number } = {}) {
   const { requestedPageSize = 10 } = opts;
-  const { userId } = useUser();
+  const { userId, loading: userLoading } = useUser();
+
+  // Don't set endpoint until we know user status - this prevents initial fetch
+  const endpoint = userLoading ? '' : '/api/stories/mine';
 
   // Provide headersProvider so the hook can send x-user-id to the protected endpoint
   const hook = useBufferedPagedStories({
-    endpoint: '/api/stories/mine',
+    endpoint,
     requestedPageSize,
     batchSize: 50,
     prefetchThreshold: 1,
@@ -18,10 +21,14 @@ export default function useMyStoriesPaged(opts: { requestedPageSize?: number } =
     }, [userId]),
   });
 
+  // If user is loading, show loading state
+  // If user is not authenticated (after loading), show unauthorized
+  const isUnauthorized = !userLoading && !userId;
+
   return {
     stories: hook.itemsForPage,
-    loading: hook.isLoading,
-    unauthorized: hook.unauthorized || false,
+    loading: userLoading || hook.isLoading,
+    unauthorized: isUnauthorized,
     refresh: hook.refresh,
     deleteStory: async (id: string) => {
       if (!userId) {
