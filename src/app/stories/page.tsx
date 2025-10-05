@@ -10,19 +10,19 @@ export default async function StoriesPage({
 }) {
   const { userId } = await auth();
   const params = await searchParams;
-  
+
   const page = parseInt(params.page || '1');
   const limit = parseInt(params.limit || '10');
   const skip = (page - 1) * limit;
   const q = params.q || '';
-  
+
   const { stories, total } = await getStories({
     skip,
     limit,
     q,
     published: true, // Solo historias publicadas en explore
   });
-  
+
   return (
     <div className="h-screen flex flex-col bg-white">
       <Navbar />

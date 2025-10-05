@@ -46,7 +46,7 @@ export default function StoriesExploreClient({
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this story?')) return;
-    
+
     startTransition(async () => {
       try {
         await deleteStoryAction(id);
