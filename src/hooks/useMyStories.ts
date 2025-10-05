@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Story } from '@/types/story';
-import getClientUserId from '@/lib/getClientUserId';
+import { useUser } from '@/contexts/UserContext';
 
 type UseMyStories = {
   stories: Story[];
@@ -11,17 +11,21 @@ type UseMyStories = {
   deleteAll: () => Promise<boolean>;
 };
 
-// use shared helper getClientUserId
-
 export default function useMyStories(): UseMyStories {
+  const { userId, loading: userLoading } = useUser();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [unauthorized, setUnauthorized] = useState(false);
 
   const fetchStories = useCallback(async () => {
+    // Don't fetch until we know if user is authenticated
+    if (userLoading) {
+      return;
+    }
+
     setLoading(true);
     setUnauthorized(false);
-    const userId = await getClientUserId();
+
     if (!userId) {
       setStories([]);
       setUnauthorized(true);
@@ -42,10 +46,9 @@ export default function useMyStories(): UseMyStories {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId, userLoading]);
 
   const deleteStory = useCallback(async (id: string) => {
-    const userId = await getClientUserId();
     if (!userId) {
       alert('You must be signed in to delete a story');
       return false;
@@ -60,10 +63,9 @@ export default function useMyStories(): UseMyStories {
     } catch {
       return false;
     }
-  }, []);
+  }, [userId]);
 
   const deleteAll = useCallback(async () => {
-    const userId = await getClientUserId();
     if (!userId) {
       alert('You must be signed in to perform this action');
       return false;
@@ -78,7 +80,7 @@ export default function useMyStories(): UseMyStories {
     } catch {
       return false;
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     let mounted = true;

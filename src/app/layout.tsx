@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
+import { UserProvider } from '@/contexts/UserContext';
 
 import "./globals.css";
 
@@ -28,7 +29,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          {children}
+          <UserProvider>
+            {children}
+          </UserProvider>
         </body>
       </html>
     </ClerkProvider>

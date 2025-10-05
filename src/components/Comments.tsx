@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import getClientUserId from '@/lib/getClientUserId';
+import { useUser } from '@/contexts/UserContext';
 
 interface Comment {
   _id: string;
@@ -17,6 +17,7 @@ interface CommentsProps {
 }
 
 export default function Comments({ storyId }: CommentsProps) {
+  const { userId } = useUser();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,6 @@ export default function Comments({ storyId }: CommentsProps) {
     setLoading(true);
     setError(null);
     try {
-      const userId = await getClientUserId();
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (userId) headers['x-user-id'] = userId;
 

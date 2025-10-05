@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { useUser } from '@/contexts/UserContext';
 import ChapterList from './ChapterList';
 import ChapterReader from './ChapterReader';
 import { chapterProgress } from '@/lib/chapterProgress';
-import getClientUserId from '@/lib/getClientUserId';
 
 type Chapter = { title: string; content: string; published?: boolean };
 
@@ -20,6 +20,7 @@ type Props = {
 };
 
 export default function ChapterViewer({ chapters, initialIndex = 0, title, authorId, authorName, createdAt, chapterCount, description }: Props) {
+  const { isAuthor: checkIsAuthor } = useUser();
   const [index, setIndex] = useState(Math.max(0, Math.min(initialIndex, chapters.length - 1)));
   const [viewerIsAuthor, setViewerIsAuthor] = useState(false);
   const [visibleChapters, setVisibleChapters] = useState<Chapter[]>(() => chapters.filter(c => Boolean(c.published)));
@@ -35,18 +36,13 @@ export default function ChapterViewer({ chapters, initialIndex = 0, title, autho
 
   // detect if current viewer is the author and compute visible chapters accordingly
   useEffect(() => {
-    let mounted = true;
-    getClientUserId().then((id) => {
-      if (!mounted) return;
-      const isAuthor = Boolean(id && authorId && id === authorId);
-      setViewerIsAuthor(isAuthor);
-      const visible = isAuthor ? chapters : chapters.filter(c => Boolean(c.published));
-      setVisibleChapters(visible);
-      // clamp index
-      setIndex(i => Math.max(0, Math.min(i, visible.length - 1)));
-    });
-    return () => { mounted = false; };
-  }, [authorId, chapters]);
+    const isAuthor = checkIsAuthor(authorId);
+    setViewerIsAuthor(isAuthor);
+    const visible = isAuthor ? chapters : chapters.filter(c => Boolean(c.published));
+    setVisibleChapters(visible);
+    // clamp index
+    setIndex(i => Math.max(0, Math.min(i, visible.length - 1)));
+  }, [checkIsAuthor, authorId, chapters]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

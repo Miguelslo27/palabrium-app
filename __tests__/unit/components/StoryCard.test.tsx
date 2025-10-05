@@ -5,7 +5,8 @@
  * delete functionality, and bravo button integration.
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { render } from '../../setup/test-utils';
 import userEvent from '@testing-library/user-event';
 import StoryCard from '@/components/Story/StoryCard';
 import getClientUserId from '@/lib/getClientUserId';

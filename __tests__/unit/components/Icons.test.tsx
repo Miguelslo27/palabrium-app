@@ -4,7 +4,7 @@
  * Simple SVG icon components with className customization.
  */
 
-import { render } from '@testing-library/react';
+import { render } from '../../setup/test-utils';
 import IconEye from '@/components/Editor/Shared/IconEye';
 import IconEyeOff from '@/components/Editor/Shared/IconEyeOff';
 import IconTrash from '@/components/Editor/Shared/IconTrash';

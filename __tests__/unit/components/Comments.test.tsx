@@ -5,7 +5,8 @@
  * It manages loading states, error handling, and user authentication.
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { render } from '../../setup/test-utils';
 import userEvent from '@testing-library/user-event';
 import Comments from '@/components/Comments';
 import getClientUserId from '@/lib/getClientUserId';

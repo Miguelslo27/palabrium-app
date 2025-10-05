@@ -4,27 +4,41 @@
  */
 
 import React from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import { render as rtlRender, RenderOptions, renderHook as rtlRenderHook, RenderHookOptions } from '@testing-library/react';
+import { UserProvider } from '@/contexts/UserContext';
 
-// Mock ClerkProvider wrapper
+// Test provider wrapper that includes all necessary providers
 interface TestProviderProps {
   children: React.ReactNode;
 }
 
 const TestProviders: React.FC<TestProviderProps> = ({ children }) => {
-  return <>{children}</>;
+  return (
+    <UserProvider>
+      {children}
+    </UserProvider>
+  );
 };
 
 // Custom render function that includes providers
-export function renderWithProviders(
+function renderWithProviders(
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
 ) {
-  return render(ui, { wrapper: TestProviders, ...options });
+  return rtlRender(ui, { wrapper: TestProviders, ...options });
 }
 
-// Re-export everything from React Testing Library
+// Custom renderHook function that includes providers
+function renderHookWithProviders<Result, Props>(
+  hook: (initialProps: Props) => Result,
+  options?: Omit<RenderHookOptions<Props>, 'wrapper'>
+) {
+  return rtlRenderHook(hook, { wrapper: TestProviders as any, ...options });
+}
+
+// Re-export everything from React Testing Library EXCEPT render and renderHook
 export * from '@testing-library/react';
 
-// Export custom render as default
-export { renderWithProviders as render };
+// Export custom functions with correct names (these will override the re-exported ones)
+export { renderWithProviders as render, renderHookWithProviders as renderHook };
+

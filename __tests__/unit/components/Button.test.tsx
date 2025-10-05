@@ -4,7 +4,8 @@
  * Simple presentational button component that spreads props and applies custom className.
  */
 
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { render } from '../../setup/test-utils';
 import userEvent from '@testing-library/user-event';
 import Button from '@/components/Editor/Shared/Button';
 

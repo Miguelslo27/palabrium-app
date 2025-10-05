@@ -4,7 +4,7 @@
  * Tests for page navigation, batch fetching, and page size changes
  */
 
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, waitFor, act } from '../../../setup/test-utils';
 import useBufferedPagedStories from '@/hooks/useBufferedPagedStories';
 import { setupMocks, mockSuccessfulFetch, restoreMocks } from './shared/helpers';
 import { createMockStories } from './shared/fixtures';

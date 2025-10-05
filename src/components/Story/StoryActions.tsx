@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import getClientUserId from '@/lib/getClientUserId';
+import { useUser } from '@/contexts/UserContext';
 import BravoButton from '@/components/BravoButton';
 import Link from 'next/link';
 
@@ -13,19 +13,15 @@ interface Props {
 }
 
 export default function StoryActions({ storyId, initialBravos, userBravos, authorId }: Props) {
+  const { userId, isAuthor: checkIsAuthor } = useUser();
   const [bravosCount, setBravosCount] = useState<number>(initialBravos);
   const [braved, setBraved] = useState<boolean | undefined>(undefined);
-  const [isAuthor, setIsAuthor] = useState<boolean>(false);
+
+  const isAuthor = checkIsAuthor(authorId);
 
   useEffect(() => {
-    let mounted = true;
-    getClientUserId().then((id) => {
-      if (!mounted) return;
-      setBraved(id ? userBravos.includes(id) : false);
-      setIsAuthor(Boolean(id && authorId && id === authorId));
-    });
-    return () => { mounted = false; };
-  }, [userBravos, authorId]);
+    setBraved(userId ? userBravos.includes(userId) : false);
+  }, [userId, userBravos]);
 
   return (
     <div className="flex items-center gap-3">
