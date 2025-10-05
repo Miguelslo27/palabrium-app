@@ -315,7 +315,8 @@ describe('useMyStoriesPaged', () => {
           headers: { 'x-user-id': 'user123' },
         })
       );
-      expect(mockRefresh).toHaveBeenCalledTimes(1);
+      // Refresh is called twice: once automatically when user loads, once after delete
+      expect(mockRefresh).toHaveBeenCalledTimes(2);
     });
 
     it('should handle delete failure', async () => {
@@ -338,7 +339,8 @@ describe('useMyStoriesPaged', () => {
 
       // Assert
       expect(success).toBe(false);
-      expect(mockRefresh).not.toHaveBeenCalled();
+      // Refresh is still called once automatically when user loads (even though delete failed)
+      expect(mockRefresh).toHaveBeenCalledTimes(1);
     });
 
     it('should handle network error during delete', async () => {
@@ -397,7 +399,8 @@ describe('useMyStoriesPaged', () => {
           headers: { 'x-user-id': 'user123' },
         })
       );
-      expect(mockRefresh).toHaveBeenCalledTimes(1);
+      // Refresh is called twice: once automatically when user loads, once after deleteAll
+      expect(mockRefresh).toHaveBeenCalledTimes(2);
     });
 
     it('should handle deleteAll failure', async () => {
