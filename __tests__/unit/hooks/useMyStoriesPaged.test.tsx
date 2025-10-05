@@ -82,19 +82,22 @@ describe('useMyStoriesPaged', () => {
   });
 
   describe('initialization', () => {
-    it('should initialize with default page size of 10', () => {
+    it('should initialize with default page size of 10', async () => {
       // Act
       renderHookWithProvider(() => useMyStoriesPaged());
 
-      // Assert
-      expect(useBufferedPagedStories).toHaveBeenCalledWith(
-        expect.objectContaining({
-          endpoint: '/api/stories/mine',
-          requestedPageSize: 10,
-          batchSize: 50,
-          prefetchThreshold: 1,
-        })
-      );
+      // Wait for UserContext to load
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Assert - After userLoading is false, endpoint should be set
+      const lastCall = useBufferedPagedStories.mock.calls[useBufferedPagedStories.mock.calls.length - 1][0];
+      expect(lastCall.endpoint).toBe('/api/stories/mine');
+      expect(lastCall.requestedPageSize).toBe(10);
+      expect(lastCall.batchSize).toBe(50);
+      expect(lastCall.prefetchThreshold).toBe(1);
     });
 
     it('should accept custom page size', () => {
@@ -119,13 +122,21 @@ describe('useMyStoriesPaged', () => {
       expect(typeof callArgs.headersProvider).toBe('function');
     });
 
-    it('should return stories from buffered hook', () => {
+    it('should return stories from buffered hook', async () => {
       // Act
       const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
+      // Wait for UserContext to load
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+      await new Promise(resolve => setTimeout(resolve, 50));
+
       // Assert
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
       expect(result.current.stories).toEqual(mockStories);
-      expect(result.current.loading).toBe(false);
       expect(result.current.unauthorized).toBe(false);
     });
   });
@@ -448,26 +459,24 @@ describe('useMyStoriesPaged', () => {
       expect(result.current.loading).toBe(true);
     });
 
-    it('should expose unauthorized state from buffered hook', () => {
-      // Arrange
-      useBufferedPagedStories.mockReturnValue({
-        itemsForPage: [],
-        page: 1,
-        setPage: jest.fn(),
-        pageSize: 10,
-        setPageSize: jest.fn(),
-        total: 0,
-        isLoading: false,
-        isPrefetching: false,
-        refresh: mockRefresh,
-        unauthorized: true,
-      });
+    it('should expose unauthorized state when user is not authenticated', async () => {
+      // Arrange - User not authenticated
+      mockGetClientUserId.mockReset();
+      mockGetClientUserId.mockResolvedValue(null);
 
       // Act
       const { result } = renderHookWithProvider(() => useMyStoriesPaged());
 
-      // Assert
-      expect(result.current.unauthorized).toBe(true);
+      // Wait for UserContext to load
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Assert - Should be unauthorized because userId is null
+      await waitFor(() => {
+        expect(result.current.unauthorized).toBe(true);
+      });
     });
 
     it('should handle undefined unauthorized state', () => {

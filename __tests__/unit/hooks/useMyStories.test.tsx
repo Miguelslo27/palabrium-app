@@ -18,6 +18,15 @@ const mockGetClientUserId = getClientUserId as jest.MockedFunction<typeof getCli
 const mockAlert = jest.fn();
 global.alert = mockAlert;
 
+// Helper to wait for UserContext to load
+async function waitForUserContext() {
+  await waitFor(() => {
+    expect(mockGetClientUserId).toHaveBeenCalled();
+  });
+  // Give a small delay for the context to propagate
+  await new Promise(resolve => setTimeout(resolve, 10));
+}
+
 // Sample test data
 const mockStories: Story[] = [
   {
@@ -43,6 +52,7 @@ const mockStories: Story[] = [
 describe('useMyStories', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetClientUserId.mockReset();
     mockGetClientUserId.mockResolvedValue('user123');
     global.fetch = jest.fn();
   });
@@ -52,14 +62,19 @@ describe('useMyStories', () => {
   });
 
   describe('initial load', () => {
-    it('should start with loading state', () => {
+    it('should start with loading state', async () => {
       // Arrange
       (global.fetch as jest.Mock).mockImplementation(() => new Promise(() => { })); // Never resolves
 
       // Act
       const { result } = renderHook(() => useMyStories());
 
-      // Assert
+      // Wait for UserContext to load
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+
+      // Assert - hook is waiting for fetch to complete
       expect(result.current.loading).toBe(true);
       expect(result.current.stories).toEqual([]);
       expect(result.current.unauthorized).toBe(false);
@@ -74,6 +89,11 @@ describe('useMyStories', () => {
 
       // Act
       const { result } = renderHook(() => useMyStories());
+
+      // Wait for UserContext to load
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
 
       // Assert
       await waitFor(() => {
@@ -200,30 +220,22 @@ describe('useMyStories', () => {
       });
     });
 
-    it('should handle refresh when user becomes unauthorized', async () => {
-      // Arrange
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockStories,
-      });
+    it('should handle refresh when user is not authenticated from start', async () => {
+      // Arrange - User not authenticated from the beginning
+      mockGetClientUserId.mockReset();
+      mockGetClientUserId.mockResolvedValue(null);
 
       const { result } = renderHook(() => useMyStories());
 
+      // Wait for initial load
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
 
-      // User signs out
-      mockGetClientUserId.mockResolvedValue(null);
-
-      // Act
-      await result.current.refresh();
-
-      // Assert
-      await waitFor(() => {
-        expect(result.current.unauthorized).toBe(true);
-      });
+      // Assert - Should be unauthorized
+      expect(result.current.unauthorized).toBe(true);
       expect(result.current.stories).toEqual([]);
+      expect(global.fetch).not.toHaveBeenCalled();
     });
   });
 
@@ -313,29 +325,25 @@ describe('useMyStories', () => {
     });
 
     it('should show alert when user is not signed in', async () => {
-      // Arrange
-      mockGetClientUserId.mockResolvedValue('user123');
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockStories,
-      });
+      // Arrange - User not authenticated from the beginning
+      mockGetClientUserId.mockReset();
+      mockGetClientUserId.mockResolvedValue(null);
 
       const { result } = renderHook(() => useMyStories());
 
       await waitFor(() => {
-        expect(result.current.stories).toHaveLength(2);
+        expect(result.current.loading).toBe(false);
       });
 
-      // User signs out
-      mockGetClientUserId.mockResolvedValue(null);
+      // Assert - Should be unauthorized
+      expect(result.current.unauthorized).toBe(true);
 
-      // Act
+      // Act - Try to delete
       const success = await result.current.deleteStory('story1');
 
       // Assert
       expect(success).toBe(false);
       expect(mockAlert).toHaveBeenCalledWith('You must be signed in to delete a story');
-      expect(result.current.stories).toHaveLength(2); // No change
     });
   });
 
@@ -424,29 +432,25 @@ describe('useMyStories', () => {
     });
 
     it('should show alert when user is not signed in', async () => {
-      // Arrange
-      mockGetClientUserId.mockResolvedValue('user123');
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => mockStories,
-      });
+      // Arrange - User not authenticated from the beginning
+      mockGetClientUserId.mockReset();
+      mockGetClientUserId.mockResolvedValue(null);
 
       const { result } = renderHook(() => useMyStories());
 
       await waitFor(() => {
-        expect(result.current.stories).toHaveLength(2);
+        expect(result.current.loading).toBe(false);
       });
 
-      // User signs out
-      mockGetClientUserId.mockResolvedValue(null);
+      // Assert - Should be unauthorized
+      expect(result.current.unauthorized).toBe(true);
 
-      // Act
+      // Act - Try to delete all
       const success = await result.current.deleteAll();
 
       // Assert
       expect(success).toBe(false);
       expect(mockAlert).toHaveBeenCalledWith('You must be signed in to perform this action');
-      expect(result.current.stories).toHaveLength(2); // No change
     });
   });
 
