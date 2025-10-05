@@ -37,6 +37,27 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 
+### Local Development with ngrok
+
+To test webhooks or share your local development server:
+
+```bash
+# Start the development server
+pnpm dev
+
+# In another terminal, start ngrok
+ngrok http 3000
+```
+
+This creates a public URL (e.g., `https://abc123.ngrok-free.app`) that tunnels to your local `localhost:3000`.
+
+**Common use cases:**
+- Testing Clerk webhooks locally
+- Sharing your local development with team members
+- Testing OAuth flows that require public URLs
+
+**Note**: The free ngrok tier provides a random URL each time. For a consistent URL, consider upgrading to a paid plan.
+
 ### Code Quality
 - `pnpm lint` - Run ESLint
 - `pnpm validate` - Run linting + build (useful before pushing)
