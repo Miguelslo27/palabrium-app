@@ -52,7 +52,7 @@ describe('useBufferedPagedStories - Headers Provider', () => {
     });
   });
 
-  it('should handle headersProvider errors gracefully', async () => {
+  it('should not fetch when headersProvider throws an error', async () => {
     // Arrange
     const mockHeadersProvider = jest.fn().mockRejectedValue(new Error('Auth error'));
 
@@ -65,16 +65,11 @@ describe('useBufferedPagedStories - Headers Provider', () => {
       })
     );
 
-    // Should not throw and should proceed with undefined headers
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
-    });
+    // Wait a bit to ensure no fetch happens
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        headers: undefined,
-      })
-    );
+    // Assert - fetch should NOT be called when headersProvider throws
+    expect(mockHeadersProvider).toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

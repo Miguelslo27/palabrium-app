@@ -165,11 +165,19 @@ describe('useMyStoriesPaged', () => {
 
     it('should provide empty headers when user is not authenticated', async () => {
       // Arrange
+      mockGetClientUserId.mockReset();
       mockGetClientUserId.mockResolvedValue(null);
 
       // Act
       renderHookWithProvider(() => useMyStoriesPaged());
-      const headersProvider = useBufferedPagedStories.mock.calls[0][0].headersProvider;
+
+      // Wait for UserContext to load
+      await waitFor(() => {
+        expect(mockGetClientUserId).toHaveBeenCalled();
+      });
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const headersProvider = useBufferedPagedStories.mock.calls[useBufferedPagedStories.mock.calls.length - 1][0].headersProvider;
       const headers = await headersProvider();
 
       // Assert

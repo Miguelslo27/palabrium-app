@@ -49,6 +49,7 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
   // buffer: map skip -> items
   const bufferRef = useRef<Map<number, Story[]>>(new Map());
   const fetchedSkipsRef = useRef<Set<number>>(new Set());
+  const inProgressFetchesRef = useRef<Map<number, Promise<void>>>(new Map());
   const abortRef = useRef<AbortController | null>(null);
 
   const buildUrl = useCallback((skip: number, limit: number) => {
@@ -70,48 +71,73 @@ export default function useBufferedPagedStories(opts: UseBufferedOptions = {}): 
   }, [headersProvider]);
 
   const fetchBatch = useCallback(async (skip: number) => {
-    if (fetchedSkipsRef.current.has(skip)) return; // already fetched
-    fetchedSkipsRef.current.add(skip);
-    if (abortRef.current) {
-      // keep existing controller for prior requests; do not abort them unless reset
+    // Check if already fetched successfully
+    if (fetchedSkipsRef.current.has(skip)) {
+      return;
     }
-    const controller = new AbortController();
-    abortRef.current = controller;
-    try {
-      const url = buildUrl(skip, effectiveBatch);
-      let headers: Record<string, string> | undefined = undefined;
+    
+    // Check if fetch is already in progress - if so, wait for it
+    const inProgressFetch = inProgressFetchesRef.current.get(skip);
+    if (inProgressFetch) {
+      return inProgressFetch;
+    }
+    
+    // Create and store the fetch promise to prevent duplicate fetches
+    const fetchPromise = (async () => {
+      if (abortRef.current) {
+        // keep existing controller for prior requests; do not abort them unless reset
+      }
+      const controller = new AbortController();
+      abortRef.current = controller;
       try {
-        if (headersProviderRef.current) {
-          const h = await headersProviderRef.current();
-          headers = h;
+        const url = buildUrl(skip, effectiveBatch);
+        let headers: Record<string, string> | undefined = undefined;
+        try {
+          if (headersProviderRef.current) {
+            const h = await headersProviderRef.current();
+            headers = h;
+          }
+        } catch (err) {
+          // If header provider throws, don't proceed with fetch
+          // This allows consumers to prevent fetching when not ready (e.g., user loading)
+          return;
         }
-      } catch {
-        // ignore header provider errors
+        
+        const res = await fetch(url, { signal: controller.signal, headers });
+        if (res.status === 401) {
+          // mark unauthorized and do not throw — allow consumer to handle
+          setUnauthorized(true);
+          return;
+        }
+        if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+        const json = await res.json();
+        const items: Story[] = json.items || json;
+        const t = typeof json.total === 'number' ? json.total : (items.length + skip);
+        bufferRef.current.set(skip, items);
+        setTotal(t);
+        
+        // Mark as fetched only on success
+        fetchedSkipsRef.current.add(skip);
+      } catch (err) {
+        console.error('Error fetching batch', err);
+        // on error, don't mark as fetched to allow retries
+      } finally {
+        // Always remove from in-progress map when done
+        inProgressFetchesRef.current.delete(skip);
       }
-      const res = await fetch(url, { signal: controller.signal, headers });
-      if (res.status === 401) {
-        // mark unauthorized and do not throw — allow consumer to handle
-        setUnauthorized(true);
-        fetchedSkipsRef.current.delete(skip);
-        return;
-      }
-      if (!res.ok) throw new Error('Fetch failed: ' + res.status);
-      const json = await res.json();
-      const items: Story[] = json.items || json;
-      const t = typeof json.total === 'number' ? json.total : (items.length + skip);
-      bufferRef.current.set(skip, items);
-      setTotal(t);
-    } catch (err) {
-      // on error, allow retries by removing from fetched set
-      fetchedSkipsRef.current.delete(skip);
-      console.error('Error fetching batch', err);
-    }
+    })();
+    
+    // Store the promise before awaiting it, so parallel calls can find it
+    inProgressFetchesRef.current.set(skip, fetchPromise);
+    
+    return fetchPromise;
   }, [effectiveBatch, buildUrl]);
 
   const fetchInitial = useCallback(async () => {
     setIsLoading(true);
     bufferRef.current.clear();
     fetchedSkipsRef.current.clear();
+    inProgressFetchesRef.current.clear();
     try {
       await fetchBatch(0);
     } finally {

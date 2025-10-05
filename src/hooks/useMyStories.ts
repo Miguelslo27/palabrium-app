@@ -25,7 +25,7 @@ export default function useMyStories(): UseMyStories {
 
     setLoading(true);
     setUnauthorized(false);
-    
+
     if (!userId) {
       setStories([]);
       setUnauthorized(true);

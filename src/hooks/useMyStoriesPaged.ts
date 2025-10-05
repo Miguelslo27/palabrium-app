@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import useBufferedPagedStories from '@/hooks/useBufferedPagedStories';
 
@@ -6,24 +6,34 @@ export default function useMyStoriesPaged(opts: { requestedPageSize?: number } =
   const { requestedPageSize = 10 } = opts;
   const { userId, loading: userLoading } = useUser();
 
-  // Don't set endpoint until we know user status - this prevents initial fetch
-  const endpoint = userLoading ? '' : '/api/stories/mine';
-
   // Provide headersProvider so the hook can send x-user-id to the protected endpoint
   const hook = useBufferedPagedStories({
-    endpoint,
+    endpoint: '/api/stories/mine', // Always set the endpoint to avoid re-renders
     requestedPageSize,
     batchSize: 50,
     prefetchThreshold: 1,
     headersProvider: useCallback(async () => {
+      // Don't provide headers if user is still loading - throw to prevent fetch
+      if (userLoading) {
+        throw new Error('User is still loading');
+      }
       if (userId) return { 'x-user-id': String(userId) } as Record<string, string>;
       return {} as Record<string, string>;
-    }, [userId]),
+    }, [userId, userLoading]),
   });
 
   // If user is loading, show loading state
   // If user is not authenticated (after loading), show unauthorized
   const isUnauthorized = !userLoading && !userId;
+
+  // When user finishes loading, refresh to retry the fetch
+  const hasUserLoadedRef = useRef(false);
+  useEffect(() => {
+    if (!userLoading && !hasUserLoadedRef.current) {
+      hasUserLoadedRef.current = true;
+      hook.refresh();
+    }
+  }, [userLoading, hook.refresh]);
 
   return {
     stories: hook.itemsForPage,
