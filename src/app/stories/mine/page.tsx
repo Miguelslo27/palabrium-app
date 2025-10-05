@@ -8,7 +8,7 @@ import MyStoriesClient from './MyStoriesClient';
 export default async function MyStoriesPage({
   searchParams,
 }: {
-  searchParams: { page?: string; limit?: string };
+  searchParams: Promise<{ page?: string; limit?: string }>;
 }) {
   const { userId } = await auth();
 
@@ -16,8 +16,9 @@ export default async function MyStoriesPage({
     redirect('/sign-in?redirect=/stories/mine');
   }
 
-  const page = parseInt(searchParams.page || '1');
-  const limit = parseInt(searchParams.limit || '10');
+  const params = await searchParams;
+  const page = parseInt(params.page || '1');
+  const limit = parseInt(params.limit || '10');
   const skip = (page - 1) * limit;
 
   const { stories, total } = await getMyStories(userId, { skip, limit });
