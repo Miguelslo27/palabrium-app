@@ -269,7 +269,7 @@ export async function deleteAllStories(userId: string): Promise<void> {
 export async function toggleBravo(
   storyId: string,
   userId: string
-): Promise<{ bravos: string[] }> {
+): Promise<{ bravos: number; braved: boolean }> {
   if (!userId) {
     throw new Error('User ID is required');
   }
@@ -284,18 +284,21 @@ export async function toggleBravo(
 
   // Check if user already gave bravo
   const bravoIndex = story.bravos.indexOf(userId);
+  let braved: boolean;
 
   if (bravoIndex > -1) {
     // Remove bravo
     story.bravos.splice(bravoIndex, 1);
+    braved = false;
   } else {
     // Add bravo
     story.bravos.push(userId);
+    braved = true;
   }
 
   await story.save();
 
-  return { bravos: story.bravos };
+  return { bravos: story.bravos.length, braved };
 }
 
 /**

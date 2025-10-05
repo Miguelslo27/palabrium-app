@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useUser } from '@/contexts/UserContext';
+import { useState } from 'react';
 import BravoButton from '@/components/BravoButton';
 import Link from 'next/link';
 
@@ -10,18 +9,13 @@ interface Props {
   initialBravos: number;
   userBravos: string[];
   authorId?: string | null;
+  userId?: string | null;
 }
 
-export default function StoryActions({ storyId, initialBravos, userBravos, authorId }: Props) {
-  const { userId, isAuthor: checkIsAuthor } = useUser();
+export default function StoryActions({ storyId, initialBravos, userBravos, authorId, userId = null }: Props) {
   const [bravosCount, setBravosCount] = useState<number>(initialBravos);
-  const [braved, setBraved] = useState<boolean | undefined>(undefined);
 
-  const isAuthor = checkIsAuthor(authorId);
-
-  useEffect(() => {
-    setBraved(userId ? userBravos.includes(userId) : false);
-  }, [userId, userBravos]);
+  const isAuthor = userId && authorId && userId === authorId;
 
   return (
     <div className="flex items-center gap-3">
@@ -34,8 +28,8 @@ export default function StoryActions({ storyId, initialBravos, userBravos, autho
         storyId={storyId}
         initialBravos={bravosCount}
         userBravos={userBravos}
-        braved={braved}
-        onToggle={(count, newBraved) => { setBravosCount(count); setBraved(newBraved); }}
+        userId={userId}
+        onToggle={(count) => { setBravosCount(count); }}
       />
     </div>
   );

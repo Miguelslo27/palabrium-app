@@ -1,60 +1,80 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@/contexts/UserContext';
+import { useOptimistic, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { toggleBravoAction } from '@/app/actions';
 
 interface BravoButtonProps {
   storyId: string;
   initialBravos: number;
   userBravos: string[];
+  userId: string | null;
   onToggle?: (bravos: number, braved: boolean) => void;
-  braved?: boolean;
 }
 
-export default function BravoButton({ storyId, initialBravos, userBravos, onToggle, braved: controlledBraved }: BravoButtonProps) {
-  const { userId } = useUser();
-  const [bravos, setBravos] = useState(initialBravos);
-  const [internalBraved, setInternalBraved] = useState(false);
+export default function BravoButton({ 
+  storyId, 
+  initialBravos, 
+  userBravos, 
+  userId,
+  onToggle 
+}: BravoButtonProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  
+  const isBraved = userId ? userBravos.includes(userId) : false;
+  
+  // Optimistic state for instant UI feedback
+  const [optimisticState, setOptimisticState] = useOptimistic(
+    { bravos: initialBravos, braved: isBraved },
+    (state, newBraved: boolean) => ({
+      bravos: newBraved ? state.bravos + 1 : state.bravos - 1,
+      braved: newBraved,
+    })
+  );
 
-  useEffect(() => {
-    setInternalBraved(userId ? userBravos.includes(userId) : false);
-  }, [userId, userBravos]);
+  const handleBravo = () => {
+    if (!userId) return;
 
-  const handleBravo = async () => {
-    try {
-      const headers: Record<string, string> = {};
-      if (userId) headers['x-user-id'] = userId;
-      const res = await fetch(`/api/stories/${storyId}/bravo`, {
-        method: 'POST',
-        headers,
-      });
-      if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        console.error('Bravo POST failed', res.status, text);
-        // minimal user feedback for dev/testing; replace with nicer UI later
-        // do not update UI if server returned error
-        alert(text || `Request failed: ${res.status}`);
-        return;
+    const newBraved = !optimisticState.braved;
+    
+    startTransition(async () => {
+      // Update UI optimistically INSIDE the transition
+      setOptimisticState(newBraved);
+      
+      try {
+        const result = await toggleBravoAction(storyId);
+        
+        // Call onToggle callback if provided
+        if (onToggle) {
+          onToggle(result.bravos, result.braved);
+        }
+        
+        // Refresh to get updated data from server
+        router.refresh();
+      } catch (error) {
+        console.error('Bravo toggle error', error);
+        alert('Error al enviar Bravo. Por favor intenta de nuevo.');
       }
-      const data = await res.json();
-      setBravos(data.bravos);
-      // if parent controls braved via prop, parent will update it via onToggle; otherwise update internal state
-      if (typeof controlledBraved === 'undefined') setInternalBraved(data.braved);
-      if (typeof onToggle === 'function') onToggle(data.bravos, data.braved);
-    } catch (err) {
-      console.error('Bravo toggle error', err);
-      alert('Error al enviar Bravo. Revisa la consola.');
-    }
+    });
   };
 
   return (
     <button
       onClick={handleBravo}
-      disabled={!userId}
-      className={`px-4 py-2 rounded ${((typeof controlledBraved !== 'undefined') ? controlledBraved : internalBraved) ? 'bg-yellow-500 text-white' : 'bg-gray-200'} ${!userId ? 'opacity-50 cursor-not-allowed' : ''}`}
+      disabled={!userId || isPending}
+      className={`px-4 py-2 rounded transition-colors ${
+        optimisticState.braved 
+          ? 'bg-yellow-500 text-white hover:bg-yellow-600' 
+          : 'bg-gray-200 hover:bg-gray-300'
+      } ${!userId || isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {!userId && <>Bravo</>}
-      {userId && (<>{((typeof controlledBraved !== 'undefined') ? controlledBraved : internalBraved) ? 'Bravos' : 'Bravo'} ({bravos})</>)}
+      {userId && (
+        <>
+          {optimisticState.braved ? 'Bravos' : 'Bravo'} ({optimisticState.bravos})
+        </>
+      )}
     </button>
   );
 }

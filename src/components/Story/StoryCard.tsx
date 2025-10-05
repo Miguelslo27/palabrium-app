@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { useUser } from '@/contexts/UserContext';
+import { useState } from 'react';
 
 import type { Story } from '@/types/story';
 import IconExternal from '@/components/Editor/Shared/IconExternal';
@@ -14,24 +13,16 @@ interface StoryCardProps {
   isMine?: boolean;
   showYoursBadge?: boolean;
   onDelete?: (id: string) => void;
+  userId?: string | null;
 }
 
-export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid', isMine = false, showYoursBadge = true }: StoryCardProps) {
-  const { userId } = useUser();
+export default function StoryCard({ story, showDelete = false, onDelete, view = 'grid', isMine = false, showYoursBadge = true, userId = null }: StoryCardProps) {
   const chapterCount = typeof story.chapterCount === 'number' ? story.chapterCount : (story.chapters?.length || 0);
   const createdDate = story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Unknown';
   const [bravosCount, setBravosCount] = useState<number>(story.bravos?.length ?? 0);
-  const [braved, setBraved] = useState<boolean | undefined>(undefined);
 
   // left border indicates published state: green = published, yellow = unpublished
   const leftBorderClass = story?.published ? 'border-l-4 border-green-400' : 'border-l-4 border-yellow-400';
-
-  useEffect(() => {
-    // only initialize braved if it hasn't been set yet
-    if (typeof braved === 'undefined') {
-      setBraved(userId ? (story.bravos ?? []).includes(userId) : false);
-    }
-  }, [userId, story.bravos, braved]);
 
   if (view === 'list') {
     return (
@@ -56,8 +47,8 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
                 storyId={story._id}
                 initialBravos={bravosCount}
                 userBravos={story.bravos ?? []}
-                onToggle={(count, newBraved) => { setBravosCount(count); setBraved(newBraved); }}
-                braved={braved}
+                userId={userId}
+                onToggle={(count) => { setBravosCount(count); }}
               />
             </div>
           </div>
@@ -123,8 +114,8 @@ export default function StoryCard({ story, showDelete = false, onDelete, view = 
             storyId={story._id}
             initialBravos={bravosCount}
             userBravos={story.bravos ?? []}
-            onToggle={(count, newBraved) => { setBravosCount(count); setBraved(newBraved); }}
-            braved={braved}
+            userId={userId}
+            onToggle={(count) => { setBravosCount(count); }}
           />
         </div>
       </div>
