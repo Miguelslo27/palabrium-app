@@ -213,19 +213,18 @@ describe('StoryCard', () => {
   });
 
   describe('Bravo integration', () => {
-    it('should initialize braved state from getClientUserId', async () => {
+    it('should render BravoButton with correct userId prop', async () => {
       const storyWithBravos = { ...mockStory, bravos: ['user123', 'user456'] };
-      mockGetClientUserId.mockResolvedValue('user123');
 
-      render(<StoryCard story={storyWithBravos} />);
+      render(<StoryCard story={storyWithBravos} userId="user123" />);
 
-      await waitFor(() => {
-        expect(mockGetClientUserId).toHaveBeenCalled();
-      });
+      const bravoButton = screen.getByTestId('bravo-button');
+      expect(bravoButton).toBeInTheDocument();
+      expect(bravoButton).toHaveAttribute('data-bravos', '2');
     });
 
     it('should update bravo count when BravoButton toggles', async () => {
-      render(<StoryCard story={mockStory} />);
+      render(<StoryCard story={mockStory} userId="user123" />);
 
       const bravoButton = screen.getByTestId('bravo-button');
       await userEvent.click(bravoButton);
@@ -236,17 +235,13 @@ describe('StoryCard', () => {
       });
     });
 
-    it('should handle null user ID for bravo state', async () => {
-      mockGetClientUserId.mockResolvedValue(null);
-
-      render(<StoryCard story={mockStory} />);
-
-      await waitFor(() => {
-        expect(mockGetClientUserId).toHaveBeenCalled();
-      });
+    it('should render BravoButton with null userId', async () => {
+      render(<StoryCard story={mockStory} userId={null} />);
 
       // Should still render without errors
-      expect(screen.getByTestId('bravo-button')).toBeInTheDocument();
+      const bravoButton = screen.getByTestId('bravo-button');
+      expect(bravoButton).toBeInTheDocument();
+      expect(bravoButton).toHaveAttribute('data-bravos', '2');
     });
   });
 
