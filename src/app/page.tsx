@@ -1,11 +1,15 @@
+import { auth } from '@clerk/nextjs/server';
 import Navbar from '@/components/Navbar';
-import HomeAuth from '@/components/HomeAuth';
+import Dashboard from '@/components/Dashboard';
+import HomeGuest from '@/components/HomeGuest';
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth();
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
-      <HomeAuth />
+      {userId ? <Dashboard /> : <HomeGuest />}
     </div>
   );
 }

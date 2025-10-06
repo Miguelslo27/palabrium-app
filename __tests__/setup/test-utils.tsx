@@ -1,23 +1,20 @@
 /**
  * Test utilities for rendering components with providers
  * This file provides custom render functions and test helpers
+ * 
+ * Note: UserProvider removed after RSC migration - now using Clerk directly
  */
 
 import React from 'react';
 import { render as rtlRender, RenderOptions, renderHook as rtlRenderHook, RenderHookOptions } from '@testing-library/react';
-import { UserProvider } from '@/contexts/UserContext';
 
-// Test provider wrapper that includes all necessary providers
+// Test provider wrapper - currently empty but kept for future providers if needed
 interface TestProviderProps {
   children: React.ReactNode;
 }
 
 const TestProviders: React.FC<TestProviderProps> = ({ children }) => {
-  return (
-    <UserProvider>
-      {children}
-    </UserProvider>
-  );
+  return <>{children}</>;
 };
 
 // Custom render function that includes providers

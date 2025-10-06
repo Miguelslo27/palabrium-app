@@ -23,6 +23,9 @@ jest.mock('next/navigation', () => ({
   redirect: jest.fn(),
 }));
 
+// Mock Server Actions (to avoid @clerk/backend ESM issues in tests)
+jest.mock('@/app/actions');
+
 // Mock environment variables
 process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_mock';
 process.env.CLERK_SECRET_KEY = 'sk_test_mock';

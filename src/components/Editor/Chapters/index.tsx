@@ -3,7 +3,7 @@ import IconTrash from '@/components/Editor/Shared/IconTrash';
 import IconEye from '@/components/Editor/Shared/IconEye';
 import IconEyeOff from '@/components/Editor/Shared/IconEyeOff';
 import Button from '@/components/Editor/Shared/Button';
-import { toggleChapterPublish } from '@/lib/useChapters';
+import { togglePublishChapterAction } from '@/app/actions';
 import ChapterControls from '@/components/Editor/Chapters/Controls';
 
 type Chapter = { title: string; content: string; _id?: string; published?: boolean; publishedAt?: string | null };
@@ -23,10 +23,20 @@ type Props = {
 function ChapterEditor({ chapter, index, updateChapter, removeChapter, chaptersLength, setChapterPublished, publishLoading, setPublishLoading }: { chapter: Chapter; index: number; updateChapter: (i: number, field: string, value: string) => void; removeChapter: (i: number) => void; chaptersLength: number; setChapterPublished?: (i: number, payload: PublishedPayload) => void; publishLoading?: boolean; setPublishLoading?: (b: boolean) => void; }) {
   const togglePublish = async (publish: boolean) => {
     if (!chapter._id) return;
+    // Only toggle if the desired state is different from current state
+    if (Boolean(chapter.published) === publish) return;
     try {
       setPublishLoading?.(true);
-      const data = await toggleChapterPublish(String(chapter._id), publish);
-      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: publish, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null });
+      const data = await togglePublishChapterAction(String(chapter._id));
+      if (typeof setChapterPublished === 'function') {
+        setChapterPublished(index, {
+          published: data.published || false,
+          publishedAt: data.publishedAt ? data.publishedAt.toISOString() : null,
+          unPublishedAt: data.unPublishedAt ? data.unPublishedAt.toISOString() : null,
+          publishedBy: data.publishedBy ?? null,
+          unPublishedBy: data.unPublishedBy ?? null
+        });
+      }
     } catch (err) {
       console.error('toggle publish chapter', err);
     } finally {

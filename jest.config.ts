@@ -67,9 +67,9 @@ const config: Config = {
     '<rootDir>/__tests__/integration/', // Exclude integration tests (use jest.integration.config.ts)
   ],
 
-  // Transform node_modules that use ESM - updated pattern to handle pnpm structure and bson/mongodb
+  // Transform node_modules that use ESM - updated pattern to handle pnpm structure and bson/mongodb/@clerk
   transformIgnorePatterns: [
-    'node_modules/(?!.*(bson|mongodb)/)',
+    'node_modules/(?!.*(bson|mongodb|@clerk)/)',
   ],
 
   // Transform files with ts-jest

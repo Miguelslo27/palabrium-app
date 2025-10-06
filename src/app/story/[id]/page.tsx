@@ -1,22 +1,18 @@
 import { notFound } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import Navbar from '@/components/Navbar';
-import Comments from '@/components/Comments';
-
+import CommentsServer from '@/components/CommentsServer';
+import { getStory } from '@/lib/data/stories';
 import StoriesShell from '@/components/Stories/StoriesShell';
 import ChapterViewer from '@/components/Story/ChapterViewer';
 import StoryHero from '@/components/Story/StoryHero';
 import StoryActions from '@/components/Story/StoryActions';
-import type { Story } from '@/types/story';
 import clerkClient from '@/lib/clerk';
 
-async function getStory(id: string): Promise<Story | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/stories/${id}`);
-  if (!res.ok) return null;
-  return res.json();
-}
-
-export default async function StoryPage({ params }: { params: { id: string } }) {
+export default async function StoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const { userId } = await auth();
+
   const story = await getStory(id);
   if (!story) notFound();
 
@@ -41,7 +37,7 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
         hero={(
           <StoryHero
             initialTitle={story.title}
-            actions={<StoryActions storyId={story._id} initialBravos={story.bravos?.length ?? 0} userBravos={story.bravos ?? []} authorId={story.authorId} />}
+            actions={<StoryActions storyId={story._id} initialBravos={story.bravos?.length ?? 0} userBravos={story.bravos ?? []} authorId={story.authorId} userId={userId} />}
           />
         )}
       >
@@ -55,12 +51,13 @@ export default async function StoryPage({ params }: { params: { id: string } }) 
               authorName={authorName || story.authorId || null}
               createdAt={story.createdAt || null}
               description={story.description || null}
+              userId={userId}
             />
           </div>
 
           <aside className="md:col-span-1">
             <div className="sticky top-0">
-              <Comments storyId={story._id} />
+              <CommentsServer storyId={story._id} />
             </div>
           </aside>
         </div>

@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from 'react';
-import getClerkClient from '@/lib/clerk-client';
-import { fetchChapters, createChapter, updateChapter, deleteChapter } from '@/lib/useChapters';
 
 interface Story {
   _id?: string;
@@ -43,15 +41,30 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
   const loadStoryAndChapters = useCallback(async () => {
     if (mode !== 'edit' || !storyId) return;
     try {
-      const sres = await fetch(`/api/stories/${storyId}`);
-      if (!sres.ok) throw new Error('Story not found');
-      const sdata = await sres.json();
+      const { getStoryWithChaptersAction, getChaptersAction } = await import('@/app/actions');
+
+      const sdata = await getStoryWithChaptersAction(storyId);
+      if (!sdata) throw new Error('Story not found');
+
       setTitle(sdata.title || '');
       setDescription(sdata.description || '');
-      setOrigStory(sdata || null);
-      const ch = await fetchChapters(storyId!);
-      setChapters(ch);
-      setExpandedIndex(ch.length > 0 ? 0 : null);
+      setOrigStory(sdata);
+
+      const ch = await getChaptersAction(storyId);
+      // Convert ChapterData[] to Chapter[]
+      const chapters: Chapter[] = ch.map(c => ({
+        _id: c._id.toString(),
+        title: c.title,
+        content: c.content,
+        order: c.order,
+        published: c.published,
+        publishedAt: c.publishedAt ? c.publishedAt.toISOString() : null,
+        unPublishedAt: c.unPublishedAt ? c.unPublishedAt.toISOString() : null,
+        publishedBy: c.publishedBy || null,
+        unPublishedBy: c.unPublishedBy || null
+      }));
+      setChapters(chapters);
+      setExpandedIndex(chapters.length > 0 ? 0 : null);
     } catch (err) {
       console.error('load', err);
     }
@@ -115,33 +128,35 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     setChapters(newChapters);
   };
 
-  async function detectUserId(): Promise<string | null> {
-    try {
-      const clerk = getClerkClient() as { load(): Promise<void>; user?: { id?: string }; client?: { user?: { id?: string } } };
-      await clerk.load();
-      return clerk?.user?.id || (clerk?.client && clerk.client.user && clerk.client.user.id) || null;
-    } catch {
-      if (typeof window !== 'undefined') return (window as { __USER_ID__?: string }).__USER_ID__ || null;
-      return null;
-    }
-  }
-
   async function create(payload: { title: string; description: string; chapters: Chapter[] }) {
     if (submitting) return;
     setSubmitting(true);
     try {
-      const userId = await detectUserId();
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (userId) headers['x-user-id'] = String(userId);
+      // Import the Server Action dynamically
+      const { createStoryAction } = await import('@/app/actions');
 
-      const res = await fetch('/api/stories', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
+      // Create the story first
+      const story = await createStoryAction({
+        title: payload.title,
+        description: payload.description,
       });
-      if (!res.ok) throw new Error('Failed creating story');
-      const data = await res.json();
-      return data;
+
+      // Then create all chapters
+      const { createChapterAction, updateChapterAction } = await import('@/app/actions');
+      for (const chapter of payload.chapters) {
+        const created = await createChapterAction({
+          storyId: story._id,
+          title: chapter.title,
+          content: chapter.content,
+          order: chapter.order || 0,
+        });
+        // If chapter should be published, update it
+        if (chapter.published) {
+          await updateChapterAction(created._id.toString(), { published: true });
+        }
+      }
+
+      return { id: story._id, ...story };
     } finally {
       setSubmitting(false);
     }
@@ -152,51 +167,66 @@ export default function useStoryForm({ mode = 'create', storyId }: UseStoryFormO
     if (!storyId) throw new Error('Missing story id');
     setSubmitting(true);
     try {
-      const userId = await detectUserId();
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (userId) headers['x-user-id'] = String(userId);
+      // Import Server Actions
+      const { updateStoryAction, createChapterAction, updateChapterAction, deleteChapterAction, getChaptersAction } = await import('@/app/actions');
 
       // Update metadata only if changed
       if (!origStory || origStory.title !== title || origStory.description !== description) {
-        const metaRes = await fetch(`/api/stories/${storyId}`, {
-          method: 'PUT',
-          headers,
-          body: JSON.stringify({ title, description }),
-        });
-        if (!metaRes.ok) throw new Error('Failed updating story');
+        await updateStoryAction(storyId, { title, description });
       }
 
-      const existing = await fetchChapters(storyId);
+      const existing = await getChaptersAction(storyId);
       const currentIds = new Set(chapters.filter(c => c._id).map(c => String(c._id)));
 
+      // Delete removed chapters
       for (const c of existing) {
         if (!currentIds.has(String(c._id))) {
-          await deleteChapter(String(c._id));
+          await deleteChapterAction(String(c._id), storyId);
         }
       }
 
+      // Update or create chapters
       for (let i = 0; i < chapters.length; i++) {
         const ch = chapters[i];
         const order = i;
         if (ch._id) {
-          const old = existing.find((e: Chapter) => String(e._id) === String(ch._id));
+          const old = existing.find((e) => String(e._id) === String(ch._id));
           const changed = !old || old.title !== ch.title || old.content !== ch.content || Boolean(old.published) !== Boolean(ch.published) || Number(old.order || 0) !== order;
           if (changed) {
-            await updateChapter(ch._id, { title: ch.title, content: ch.content, order, published: Boolean(ch.published) });
+            await updateChapterAction(ch._id, { title: ch.title, content: ch.content, order, published: Boolean(ch.published) });
           }
         } else {
-          const created = await createChapter(storyId, { title: ch.title, content: ch.content, order, published: Boolean(ch.published) });
-          setChapters((arr) => arr.map((a) => (a === ch ? created : a)));
+          const created = await createChapterAction({
+            storyId,
+            title: ch.title,
+            content: ch.content,
+            order
+          });
+          // Update the chapter with published state if needed
+          if (ch.published) {
+            await updateChapterAction(created._id.toString(), { published: true });
+          }
+          // Convert ChapterData to Chapter format
+          const createdChapter: Chapter = {
+            _id: created._id.toString(),
+            title: created.title,
+            content: created.content,
+            order: created.order,
+            published: ch.published,
+            publishedAt: created.publishedAt ? created.publishedAt.toISOString() : null,
+            unPublishedAt: created.unPublishedAt ? created.unPublishedAt.toISOString() : null,
+            publishedBy: created.publishedBy || null,
+            unPublishedBy: created.unPublishedBy || null
+          };
+          setChapters((arr) => arr.map((a) => (a === ch ? createdChapter : a)));
         }
       }
 
-      // After a successful edit, refresh original story snapshot so UI knows it's saved
+      // After a successful edit, refresh original story snapshot
       try {
-        const sres = await fetch(`/api/stories/${storyId}`);
-        if (sres.ok) {
-          const sdata = await sres.json();
-          setOrigStory(sdata || null);
-        }
+        const { getStoryWithChaptersAction } = await import('@/app/actions');
+        const sdata = await getStoryWithChaptersAction(storyId);
+        setOrigStory(sdata || null);
       } catch {
         // ignore
       }

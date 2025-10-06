@@ -8,8 +8,8 @@ import Sidebar from '@/components/Editor/Sidebar';
 import Chapters from '@/components/Editor/Chapters';
 import Button from '@/components/Editor/Shared/Button';
 import useStoryForm from '@/components/Editor/useStoryForm';
-import { toggleStoryPublish } from '@/lib/useStories';
 import IconExternal from '@/components/Editor/Shared/IconExternal';
+import { publishStoryAction, unpublishStoryAction } from '@/app/actions';
 
 type Props = {
   mode?: 'create' | 'edit';
@@ -46,8 +46,8 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
       const payloadChapters = chapters.map((c, i) => ({ title: c.title || '', content: c.content || '', order: i, published: Boolean(c.published) }));
       try {
         const data = await create({ title, description, chapters: payloadChapters });
-        if (onSaved) onSaved(data.id);
-        router.push(`/story/${data.id}`);
+        if (data && onSaved) onSaved(data.id);
+        if (data) router.push(`/story/${data.id}`);
       } catch (err) {
         console.error('create', err);
         alert('Error creating story');
@@ -78,7 +78,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                   onClick={async () => {
                     try {
                       setPublishLoading(true);
-                      const data = await toggleStoryPublish(String(storyId), false);
+                      const data = await unpublishStoryAction(String(storyId));
                       applyOrigStoryPatch({ published: false, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null });
                     } catch (err) {
                       console.error('unpublish', err);
@@ -99,7 +99,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
                   if (!storyId) return;
                   try {
                     setPublishLoading(true);
-                    const data = await toggleStoryPublish(String(storyId), true);
+                    const data = await publishStoryAction(String(storyId));
                     applyOrigStoryPatch({ published: true, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null });
                   } catch (err) {
                     console.error('publish', err);
