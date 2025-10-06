@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import Navbar from '@/components/Navbar';
-import Comments from '@/components/Comments';
+import CommentsServer from '@/components/CommentsServer';
 import { getStory } from '@/lib/data/stories';
 import StoriesShell from '@/components/Stories/StoriesShell';
 import ChapterViewer from '@/components/Story/ChapterViewer';
@@ -56,7 +56,7 @@ export default async function StoryPage({ params }: { params: Promise<{ id: stri
 
           <aside className="md:col-span-1">
             <div className="sticky top-0">
-              <Comments storyId={story._id} />
+              <CommentsServer storyId={story._id} />
             </div>
           </aside>
         </div>
