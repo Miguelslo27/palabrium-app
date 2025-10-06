@@ -12,7 +12,7 @@ import clerkClient from '@/lib/clerk';
 export default async function StoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { userId } = await auth();
-  
+
   const story = await getStory(id);
   if (!story) notFound();
 
