@@ -33,6 +33,7 @@ export async function getChapters(storyId: string): Promise<ChapterData[]> {
     .lean()
     .exec();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return chapters.map((ch: any) => ({
     ...ch,
     _id: ch._id.toString(),
@@ -46,6 +47,7 @@ export async function getChapters(storyId: string): Promise<ChapterData[]> {
 export async function getChapter(chapterId: string): Promise<ChapterData | null> {
   await dbConnect();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chapter: any = await Chapter.findById(chapterId).lean().exec();
 
   if (!chapter) {

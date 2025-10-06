@@ -56,10 +56,19 @@ export async function deleteStoryAction(storyId: string) {
     throw new Error('Unauthorized');
   }
 
-  await storiesData.deleteStory(storyId, userId);
+  console.log('Deleting story in action:', storyId, 'for user:', userId);
+
+  try {
+    await storiesData.deleteStory(storyId, userId);
+    console.log('Story deleted successfully');
+  } catch (error) {
+    console.error('Error in deleteStory data layer:', error);
+    throw error;
+  }
 
   revalidatePath('/stories/mine');
   revalidatePath('/stories');
+  revalidatePath('/');
 
   return { success: true };
 }
@@ -248,4 +257,46 @@ export async function deleteCommentAction(commentId: string, storyId: string) {
   revalidatePath(`/story/${storyId}`);
 
   return { success: true };
+}
+
+// ============================================================================
+// FETCH ACTIONS (for client components)
+// ============================================================================
+
+export async function getStoryWithChaptersAction(storyId: string) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error('Unauthorized');
+  }
+
+  const story = await storiesData.getStory(storyId);
+
+  if (!story) {
+    throw new Error('Story not found');
+  }
+
+  // Check if user is the author
+  if (story.authorId !== userId) {
+    throw new Error('Unauthorized: You can only edit your own stories');
+  }
+
+  return story;
+}
+
+export async function getChaptersAction(storyId: string) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error('Unauthorized');
+  }
+
+  // Verify user has access to the story
+  const story = await storiesData.getStory(storyId);
+  if (!story || story.authorId !== userId) {
+    throw new Error('Unauthorized');
+  }
+
+  const chapters = await chaptersData.getChapters(storyId);
+  return chapters;
 }

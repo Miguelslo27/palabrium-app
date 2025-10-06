@@ -1,4 +1,3 @@
-import { auth } from '@clerk/nextjs/server';
 import { getStories } from '@/lib/data/stories';
 import Navbar from '@/components/Navbar';
 import StoriesExploreClient from './StoriesExploreClient';
@@ -8,7 +7,6 @@ export default async function StoriesPage({
 }: {
   searchParams: Promise<{ page?: string; limit?: string; q?: string }>;
 }) {
-  const { userId } = await auth();
   const params = await searchParams;
 
   const page = parseInt(params.page || '1');
@@ -32,7 +30,6 @@ export default async function StoriesPage({
         page={page}
         limit={limit}
         initialQuery={q}
-        userId={userId || null}
       />
     </div>
   );

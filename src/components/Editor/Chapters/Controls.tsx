@@ -2,7 +2,7 @@ import React from 'react';
 import IconTrash from '@/components/Editor/Shared/IconTrash';
 import IconEye from '@/components/Editor/Shared/IconEye';
 import IconEyeOff from '@/components/Editor/Shared/IconEyeOff';
-import { toggleChapterPublish } from '@/lib/useChapters';
+import { togglePublishChapterAction } from '@/app/actions';
 
 type Chapter = { title: string; content: string; _id?: string; published?: boolean; publishedAt?: string | null };
 type PublishedPayload =
@@ -32,10 +32,20 @@ export default function ChapterControls({ chapter, index, chaptersLength, remove
 
   const togglePublish = async (publish: boolean) => {
     if (!chapter._id) return; // guard
+    // Only toggle if the desired state is different from current state
+    if (Boolean(chapter.published) === publish) return;
     try {
       setPublishLoading?.(true);
-      const data = await toggleChapterPublish(String(chapter._id), publish);
-      if (typeof setChapterPublished === 'function') setChapterPublished(index, { published: publish, publishedAt: data.publishedAt ?? null, unPublishedAt: data.unPublishedAt ?? null, publishedBy: data.publishedBy ?? null, unPublishedBy: data.unPublishedBy ?? null });
+      const data = await togglePublishChapterAction(String(chapter._id));
+      if (typeof setChapterPublished === 'function') {
+        setChapterPublished(index, {
+          published: data.published || false,
+          publishedAt: data.publishedAt ? data.publishedAt.toISOString() : null,
+          unPublishedAt: data.unPublishedAt ? data.unPublishedAt.toISOString() : null,
+          publishedBy: data.publishedBy ?? null,
+          unPublishedBy: data.unPublishedBy ?? null
+        });
+      }
     } catch (err) {
       console.error('toggle publish chapter', err);
     } finally {

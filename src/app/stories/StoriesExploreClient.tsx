@@ -26,8 +26,7 @@ export default function StoriesExploreClient({
   page,
   limit,
   initialQuery,
-  userId,
-}: StoriesExploreClientProps) {
+}: Omit<StoriesExploreClientProps, 'userId'>) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [query, setQuery] = useState(initialQuery);

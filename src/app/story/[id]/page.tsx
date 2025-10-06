@@ -51,6 +51,7 @@ export default async function StoryPage({ params }: { params: Promise<{ id: stri
               authorName={authorName || story.authorId || null}
               createdAt={story.createdAt || null}
               description={story.description || null}
+              userId={userId}
             />
           </div>
 

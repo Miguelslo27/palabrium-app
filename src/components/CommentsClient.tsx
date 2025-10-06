@@ -25,7 +25,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
   const [isPending, startTransition] = useTransition();
   const [newComment, setNewComment] = useState('');
   const [error, setError] = useState<string | null>(null);
-  
+
   // Optimistic state for comments
   const [optimisticComments, setOptimisticComments] = useState<Comment[]>(initialComments);
 
@@ -34,7 +34,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
     if (!userId || !newComment.trim()) return;
 
     const trimmedComment = newComment.trim();
-    
+
     // Create optimistic comment
     const optimisticComment: Comment = {
       _id: `temp-${Date.now()}`,
@@ -44,7 +44,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
       authorName: 'You',
       authorImage: null,
     };
-    
+
     // Add optimistic comment to UI
     setOptimisticComments([optimisticComment, ...optimisticComments]);
     setNewComment('');
@@ -53,7 +53,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
     startTransition(async () => {
       try {
         await addCommentAction(storyId, trimmedComment);
-        
+
         // Refresh to get real data from server
         router.refresh();
       } catch (error) {
@@ -77,7 +77,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
     startTransition(async () => {
       try {
         await deleteCommentAction(commentId, storyId);
-        
+
         // Refresh to get real data from server
         router.refresh();
       } catch (error) {
@@ -92,7 +92,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
   return (
     <div>
       <h3 className="text-xl font-semibold mb-4">Comments</h3>
-      
+
       {userId ? (
         <form onSubmit={handleSubmit} className="mb-4">
           <textarea
@@ -104,9 +104,9 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
             disabled={isPending}
           />
           <div className="mt-2 flex items-center gap-3">
-            <button 
-              type="submit" 
-              disabled={isPending || !newComment.trim()} 
+            <button
+              type="submit"
+              disabled={isPending || !newComment.trim()}
               className="bg-blue-500 disabled:opacity-50 text-white px-4 py-2 rounded"
             >
               {isPending ? 'Sending…' : 'Comment'}
@@ -119,7 +119,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
           Sign in to leave a comment
         </div>
       )}
-      
+
       <div className="space-y-4">
         {optimisticComments.length === 0 ? (
           <div className="text-sm text-gray-500">No comments yet. Be the first!</div>

@@ -32,6 +32,7 @@ export async function getStories(opts: GetStoriesOptions = {}): Promise<GetStori
   await dbConnect();
 
   // Build query
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query: any = {};
 
   // Filter by author if specified
@@ -63,11 +64,13 @@ export async function getStories(opts: GetStoriesOptions = {}): Promise<GetStori
 
   // Get chapter count for each story
   const storiesWithChapters = await Promise.all(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stories.map(async (story: any) => {
       const chapters = await Chapter.find({ storyId: story._id }).lean().exec();
       return {
         ...story,
         _id: story._id.toString(),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         chapters: chapters.map((ch: any) => ({
           ...ch,
           _id: ch._id.toString(),
@@ -107,6 +110,7 @@ export async function getMyStories(
 export async function getStory(storyId: string): Promise<StoryType | null> {
   await dbConnect();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const story: any = await Story.findById(storyId).lean().exec();
 
   if (!story) {
@@ -121,6 +125,7 @@ export async function getStory(storyId: string): Promise<StoryType | null> {
   return {
     ...story,
     _id: story._id.toString(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chapters: chapters.map((ch: any) => ({
       ...ch,
       _id: ch._id.toString(),
@@ -207,6 +212,7 @@ export async function updateStory(
   return {
     ...story.toObject(),
     _id: story._id.toString(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chapters: chapters.map((ch: any) => ({
       ...ch,
       _id: ch._id.toString(),

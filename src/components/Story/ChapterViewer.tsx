@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { useUser } from '@/contexts/UserContext';
 import ChapterList from './ChapterList';
 import ChapterReader from './ChapterReader';
 import { chapterProgress } from '@/lib/chapterProgress';
@@ -17,32 +16,26 @@ type Props = {
   createdAt?: string | null;
   chapterCount?: number | null;
   description?: string | null;
+  userId?: string | null;
 };
 
-export default function ChapterViewer({ chapters, initialIndex = 0, title, authorId, authorName, createdAt, chapterCount, description }: Props) {
-  const { isAuthor: checkIsAuthor } = useUser();
+export default function ChapterViewer({ chapters, initialIndex = 0, title, authorId, authorName, createdAt, chapterCount, description, userId = null }: Props) {
   const [index, setIndex] = useState(Math.max(0, Math.min(initialIndex, chapters.length - 1)));
-  const [viewerIsAuthor, setViewerIsAuthor] = useState(false);
-  const [visibleChapters, setVisibleChapters] = useState<Chapter[]>(() => chapters.filter(c => Boolean(c.published)));
+
+  // Check if viewer is the author
+  const viewerIsAuthor = !!(userId && authorId && userId === authorId);
+
+  // Filter chapters based on authorship
+  const visibleChapters = viewerIsAuthor ? chapters : chapters.filter(c => Boolean(c.published));
 
   const onSelect = useCallback((i: number) => setIndex(i), []);
-  const onNext = useCallback(() => setIndex(i => Math.min(i + 1, chapters.length - 1)), [chapters.length]);
+  const onNext = useCallback(() => setIndex(i => Math.min(i + 1, visibleChapters.length - 1)), [visibleChapters.length]);
   const onPrev = useCallback(() => setIndex(i => Math.max(i - 1, 0)), []);
 
   // publish progress when index changes
   useEffect(() => {
     chapterProgress.publish({ index, total: visibleChapters.length });
   }, [index, visibleChapters.length]);
-
-  // detect if current viewer is the author and compute visible chapters accordingly
-  useEffect(() => {
-    const isAuthor = checkIsAuthor(authorId);
-    setViewerIsAuthor(isAuthor);
-    const visible = isAuthor ? chapters : chapters.filter(c => Boolean(c.published));
-    setVisibleChapters(visible);
-    // clamp index
-    setIndex(i => Math.max(0, Math.min(i, visible.length - 1)));
-  }, [checkIsAuthor, authorId, chapters]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

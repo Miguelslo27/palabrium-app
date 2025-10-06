@@ -10,13 +10,13 @@ interface CommentsServerProps {
 export default async function CommentsServer({ storyId }: CommentsServerProps) {
   const { userId } = await auth();
   const comments = await getComments(storyId);
-  
+
   // Enrich comments with author info from Clerk
   const enrichedComments = await Promise.all(
     comments.map(async (comment) => {
       let authorName = 'Unknown';
       let authorImage: string | null = null;
-      
+
       try {
         if (comment.authorId && process.env.CLERK_SECRET_KEY) {
           const user = await clerkClient.users.getUser(comment.authorId);
@@ -26,7 +26,7 @@ export default async function CommentsServer({ storyId }: CommentsServerProps) {
       } catch {
         // Ignore errors, use defaults
       }
-      
+
       return {
         _id: comment._id,
         content: comment.content,
@@ -37,6 +37,6 @@ export default async function CommentsServer({ storyId }: CommentsServerProps) {
       };
     })
   );
-  
+
   return <CommentsClient storyId={storyId} initialComments={enrichedComments} userId={userId} />;
 }

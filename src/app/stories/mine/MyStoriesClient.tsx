@@ -34,11 +34,14 @@ export default function MyStoriesClient({
 
     startTransition(async () => {
       try {
-        await deleteStoryAction(id);
+        console.log('Deleting story:', id);
+        const result = await deleteStoryAction(id);
+        console.log('Delete result:', result);
         router.refresh();
       } catch (error) {
-        alert('Failed to delete story');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('Delete story error:', error);
+        alert(`Failed to delete story: ${errorMessage}`);
       }
     });
   };

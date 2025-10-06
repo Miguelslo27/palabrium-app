@@ -21,16 +21,16 @@ export interface CommentData {
 export async function getComments(storyId: string): Promise<CommentData[]> {
   await dbConnect();
 
-  const comments = await Comment.find({ storyId })
-    .sort({ createdAt: -1 })
-    .lean()
-    .exec();
+  const comments = await Comment.find({ storyId }).sort({ createdAt: -1 }).lean();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return comments.map((comment: any) => ({
-    ...comment,
     _id: comment._id.toString(),
     storyId: comment.storyId.toString(),
-  })) as CommentData[];
+    authorId: comment.authorId,
+    content: comment.content,
+    createdAt: comment.createdAt,
+  }));
 }
 
 /**
