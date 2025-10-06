@@ -37,7 +37,7 @@ try {
 
   // Run integration tests with coverage
   console.log('🔗 Running integration tests with coverage...');
-  execSync('pnpm jest --config jest.integration.config.ts --coverage', {
+  execSync('pnpm jest --config jest.integration.config.ts --coverage --passWithNoTests', {
     cwd: path.join(__dirname, '..'),
     stdio: 'inherit',
   });
@@ -49,17 +49,23 @@ try {
   if (fs.existsSync(integrationCoverage)) {
     fs.copyFileSync(integrationCoverage, integrationCoverageBackup);
     console.log('💾 Integration test coverage saved\n');
+  } else {
+    console.log('ℹ️  No integration test coverage found (no integration tests)\n');
   }
 
-  // Merge coverage data
-  console.log('🔄 Merging coverage data...');
-  const unitData = JSON.parse(fs.readFileSync(unitCoverageBackup, 'utf8'));
-  const integrationData = JSON.parse(fs.readFileSync(integrationCoverageBackup, 'utf8'));
+  // Merge coverage data (only if integration coverage exists)
+  if (fs.existsSync(integrationCoverageBackup)) {
+    console.log('🔄 Merging coverage data...');
+    const unitData = JSON.parse(fs.readFileSync(unitCoverageBackup, 'utf8'));
+    const integrationData = JSON.parse(fs.readFileSync(integrationCoverageBackup, 'utf8'));
 
-  // Combine coverage (integration takes precedence for overlapping files)
-  const mergedCoverage = { ...unitData, ...integrationData };
-  fs.writeFileSync(unitCoverage, JSON.stringify(mergedCoverage, null, 2));
-  console.log('✅ Coverage data merged\n');
+    // Combine coverage (integration takes precedence for overlapping files)
+    const mergedCoverage = { ...unitData, ...integrationData };
+    fs.writeFileSync(unitCoverage, JSON.stringify(mergedCoverage, null, 2));
+    console.log('✅ Coverage data merged\n');
+  } else {
+    console.log('ℹ️  Using only unit test coverage (no integration tests to merge)\n');
+  }
 
   // Update badges
   console.log('🎨 Updating coverage badges...');
