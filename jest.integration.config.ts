@@ -20,6 +20,8 @@ const config: Config = {
     '**/__tests__/integration/**/*.{test,spec}.{ts,tsx}',
   ],
 
+  passWithNoTests: true,
+
   // Transform all files including .mjs from bson/mongodb
   transformIgnorePatterns: [
     'node_modules/(?!.*(bson|mongodb)/)',
