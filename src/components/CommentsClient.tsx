@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { addCommentAction, deleteCommentAction } from '@/app/actions';
@@ -28,6 +28,10 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
 
   // Optimistic state for comments
   const [optimisticComments, setOptimisticComments] = useState<Comment[]>(initialComments);
+
+  useEffect(() => {
+    setOptimisticComments(initialComments);
+  }, [initialComments]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +77,11 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
     const previousComments = optimisticComments;
     setOptimisticComments(optimisticComments.filter(c => c._id !== commentId));
     setError(null);
+
+    // Skip server call for optimistic (temporary) comments
+    if (commentId.startsWith('temp-')) {
+      return;
+    }
 
     startTransition(async () => {
       try {
@@ -152,7 +161,7 @@ export default function CommentsClient({ storyId, initialComments, userId }: Com
                     <button
                       onClick={() => handleDelete(comment._id)}
                       className="text-xs text-red-600 hover:text-red-800"
-                      disabled={isPending}
+                      disabled={isPending || comment._id.startsWith('temp-')}
                     >
                       Delete
                     </button>
