@@ -13,6 +13,7 @@
 - [ ] Al consultar historias traer ya los comentarios
 - [ ] Al consultar comments de las historias traer datos del autor
 - [ ] Página de Perfil de autor
+- [ ] Poner ícono de "Eliminar" en comentarios
 
 ## Prioridades para MVP
 - [ ] Configurar lista de usuarios por invitación para el MVP usando Clerk
