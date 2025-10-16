@@ -7,7 +7,7 @@
   - [x] Reemplazar mutations por Server Actions (`src/app/actions.ts`)
   - [x] Eliminar hooks legacy `useChapters`/`useStories` y tests asociados
   - [x] Migrar formularios y hooks restantes a RSC/Server Actions (StoryForm, MyStories)
-  - [ ] Documentar cierre y actualizar guías internas
+  - [x] Documentar cierre y actualizar guías internas
 - [ ] Relacionar historias y comentarios con usuarios para poder consultar todo junto
 - [ ] Al consultar historia traer datos del autor
 - [ ] Al consultar historias traer ya los comentarios

@@ -1,5 +1,18 @@
 # Estado de Refactorización
 
+## 📌 Prioridades vigentes (post RSC)
+
+- **RSC + Clerk como fuente de verdad**: Eliminar cualquier resto de lógica cliente (`getClientUserId`, contextos custom) y validar que todos los formularios usen datos inyectados por Server Components. Referencia: `docs/AUTH_GUIDE.md`.
+- **Paginación y layout de historias**: Extraer lógica de `StoriesContent` y `StoriesShell` a hooks reutilizables (paginación, preferencias de vista) y cubrir `/stories/mine` con tests de integración.
+- **Interfaz del editor**: Completar la modularización de `StoryFormClient` (controles de publicación, sidebar, capítulos) aprovechando las Server Actions ya migradas.
+- **Observabilidad**: Incorporar métricas básicas (logs de server actions, trazas) que faciliten depurar cuando las acciones se ejecutan en el servidor.
+
+El resto de este documento se mantiene como **historial** del refactor previo basado en `UserContext`; consúltalo solo como referencia de la evolución del proyecto.
+
+## 🗃️ Histórico 2024 – Contexto Global de Usuario (archivado)
+
+> **Nota:** Estas secciones documentan el enfoque anterior con `UserContext`. No deben aplicarse al estado actual; se conservan a modo de registro.
+
 ## ✅ COMPLETADO - Prioridad 1: Contexto Global de Usuario
 
 ### Implementación

@@ -525,7 +525,7 @@ export default function HomeGuest() {
 ### 🔜 Próximos pasos tras la migración del editor (octubre 2025)
 
 1. **Listado “My Stories”**: retirar cualquier helper residual de paginación legacy y cubrir la ruta con pruebas de integración.
-2. **Documentación**: actualizar guías (`docs/USER_CONTEXT_GUIDE.md`, `REFACTORING_SUMMARY.md`) y este plan cuando se complete la migración para cerrar la tarea en `issues`.
+2. **Documentación**: actualizar guías (`docs/AUTH_GUIDE.md`, `REFACTORING_SUMMARY.md`) y este plan cuando se complete la migración para cerrar la tarea en `issues`.
 
 ---
 
