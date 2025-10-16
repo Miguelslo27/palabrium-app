@@ -6,7 +6,7 @@
   - [x] Consolidar capa de datos server-side (`src/lib/data/*`)
   - [x] Reemplazar mutations por Server Actions (`src/app/actions.ts`)
   - [x] Eliminar hooks legacy `useChapters`/`useStories` y tests asociados
-  - [ ] Migrar formularios y hooks restantes a RSC/Server Actions (StoryForm, MyStories)
+  - [x] Migrar formularios y hooks restantes a RSC/Server Actions (StoryForm, MyStories)
   - [ ] Documentar cierre y actualizar guías internas
 - [ ] Relacionar historias y comentarios con usuarios para poder consultar todo junto
 - [ ] Al consultar historia traer datos del autor

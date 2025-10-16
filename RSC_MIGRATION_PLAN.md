@@ -65,6 +65,7 @@ TOTAL:                            +700 líneas
 - Eliminados los módulos cliente `src/lib/useChapters.ts` y `src/lib/useStories.ts`, junto con su suite de tests.
 - Todas las mutaciones relevantes consumen `src/app/actions.ts`, evitando `fetch` manual a rutas inexistentes.
 - La migración puede avanzar a mover formularios (StoryForm, MyStories) a data fetching server-side y limpiar documentación relacionada.
+- El formulario de historias se hidrata ahora con datos provenientes del Server Component (`story/[id]/edit`), y `useStoryForm` opera únicamente con Server Actions.
 
 ---
 
@@ -521,11 +522,10 @@ export default function HomeGuest() {
 
 ---
 
-### 🔜 Próximos pasos tras la limpieza de hooks (octubre 2025)
+### 🔜 Próximos pasos tras la migración del editor (octubre 2025)
 
-1. **Editor (`useStoryForm`)**: mover lectura inicial de capítulos/historia a Server Components y reemplazar los imports dinámicos redundantes.
-2. **Listado “My Stories”**: retirar cualquier helper residual de paginación legacy y cubrir la nueva ruta con pruebas de integración.
-3. **Documentación**: actualizar guías (`docs/USER_CONTEXT_GUIDE.md`, `REFACTORING_SUMMARY.md`) y este plan cuando se complete la migración para cerrar la tarea en `issues`.
+1. **Listado “My Stories”**: retirar cualquier helper residual de paginación legacy y cubrir la ruta con pruebas de integración.
+2. **Documentación**: actualizar guías (`docs/USER_CONTEXT_GUIDE.md`, `REFACTORING_SUMMARY.md`) y este plan cuando se complete la migración para cerrar la tarea en `issues`.
 
 ---
 

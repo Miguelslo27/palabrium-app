@@ -3,8 +3,6 @@
  * Used in tests to avoid importing @clerk/backend which uses ESM
  */
 
-export const getStoryWithChaptersAction = jest.fn();
-export const getChaptersAction = jest.fn();
 export const deleteStoryAction = jest.fn();
 export const createStoryAction = jest.fn();
 export const updateStoryAction = jest.fn();
