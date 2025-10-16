@@ -7,10 +7,17 @@ import ChapterModel from '@/models/Chapter';
 const AUTHOR_ID = MOCK_USERS.ALICE;
 const OTHER_AUTHOR_ID = MOCK_USERS.BOB;
 
+const ENABLE_DB_TESTS = process.env.ENABLE_INTEGRATION_DB === 'true';
+
 describe('Stories data layer integration', () => {
-  let dbAvailable = true;
+  let dbAvailable = ENABLE_DB_TESTS;
 
   beforeAll(async () => {
+    if (!ENABLE_DB_TESTS) {
+      console.warn('Skipping stories data integration tests: ENABLE_INTEGRATION_DB is not set to "true".');
+      return;
+    }
+
     try {
       await connectDB();
     } catch (error) {

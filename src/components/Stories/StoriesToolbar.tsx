@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import StoryViewToggle from '@/components/Story/StoryViewToggle';
+import StoriesPaginationSummary from '@/components/Stories/StoriesPaginationSummary';
 
 type Props = {
   count: number;
@@ -29,15 +30,12 @@ export default function StoriesToolbar({
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="text-sm text-gray-600">
-        {typeof page !== 'undefined' && typeof total === 'number' ? (
-          (() => {
-            const start = (page - 1) * (pageSize || 10) + 1;
-            const end = Math.min(total, (page - 1) * (pageSize || 10) + (pageSize || 10));
-            return <>Showing {start}-{end} of {total}</>;
-          })()
-        ) : (
-          <>Showing {count} stories</>
-        )}
+        <StoriesPaginationSummary
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          count={count}
+        />
       </div>
       <div className="flex items-center gap-4">
         <StoryViewToggle view={view} onChange={onChangeView} />
