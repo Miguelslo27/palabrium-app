@@ -3,11 +3,17 @@
 ## En progreso
 - [x] Configurar suites de prueba y comenzar a agregar tests hasta alcanzar el 80/90% de cobertura
 - [-] Refactorizar el proyecto para user React Server Components
+  - [x] Consolidar capa de datos server-side (`src/lib/data/*`)
+  - [x] Reemplazar mutations por Server Actions (`src/app/actions.ts`)
+  - [x] Eliminar hooks legacy `useChapters`/`useStories` y tests asociados
+  - [x] Migrar formularios y hooks restantes a RSC/Server Actions (StoryForm, MyStories)
+  - [x] Documentar cierre y actualizar guías internas
 - [ ] Relacionar historias y comentarios con usuarios para poder consultar todo junto
 - [ ] Al consultar historia traer datos del autor
 - [ ] Al consultar historias traer ya los comentarios
 - [ ] Al consultar comments de las historias traer datos del autor
 - [ ] Página de Perfil de autor
+- [ ] Poner ícono de "Eliminar" en comentarios
 
 ## Prioridades para MVP
 - [ ] Configurar lista de usuarios por invitación para el MVP usando Clerk
@@ -68,6 +74,8 @@
       - Catalogo de producciones - micrositio y enlaces a redes sociales
       - Monetización con micropagos
 - [ ] Podrías ofrecer alguna recompensa monetaria, libre, para que los autores se sientan apoyados por terceros.
+- [ ] Mira, consejo de creador: El proceso de creación es el paso más fácil de todos. El mas importante es el de marketing. No te enfoques tanto en esto y aquello, concéntrate en difundir tu plataforma. Entre más simple sea, mejor. Recuerda que la mayoría de escritores, maduros sobretodo y son los que escriben -los jóvenes muchos son solo fuego fatuo, se cansan rspido y luego se apagan-, buscan exposición, no tanto tecnología, que poco la entienden. Suerte con el proyecto. 
+- [ ] Además de las que te han mencionado, es importante contar con funcionalidades de interacción social (comentarios, foros, seguimiento), descubrimiento de contenido (búsqueda, recomendaciones, etiquetas) y personalización (perfiles, bibliotecas). Es importante que para tu MVP hagas una investigación de tu target o user persona (si ya lo tienes identificado) y hagas una priorización de necesidades mediante matrices o enfoques, y es vital una correcta arquitectura de información. Soy UX researcher, puedo ayudar :)
 
 ## Suggestions (Basadas en feedback de usuarios)
 
@@ -108,4 +116,3 @@
 - [ ] Comunidad enfocada en calidad sobre cantidad
 - [ ] Sistema de monetización justo para autores
 - [ ] Integración con redes sociales de forma nativa y mejorada
-

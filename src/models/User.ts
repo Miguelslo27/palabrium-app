@@ -14,9 +14,6 @@ const UserSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-// Index for efficient lookups by clerkId
-UserSchema.index({ clerkId: 1 });
-
 // Virtual for full name
 UserSchema.virtual('fullName').get(function () {
   return `${this.firstName || ''} ${this.lastName || ''}`.trim();

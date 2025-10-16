@@ -11,13 +11,44 @@ import useStoryForm from '@/components/Editor/useStoryForm';
 import IconExternal from '@/components/Editor/Shared/IconExternal';
 import { publishStoryAction, unpublishStoryAction } from '@/app/actions';
 
+type ChapterState = {
+  _id?: string;
+  title: string;
+  content: string;
+  order?: number;
+  published?: boolean;
+  publishedAt?: string | null;
+  unPublishedAt?: string | null;
+  publishedBy?: string | null;
+  unPublishedBy?: string | null;
+};
+
+type StoryState = {
+  _id?: string;
+  title?: string;
+  description?: string;
+  published?: boolean;
+  publishedAt?: string | null;
+  unPublishedAt?: string | null;
+  publishedBy?: string | null;
+  unPublishedBy?: string | null;
+};
+
 type Props = {
   mode?: 'create' | 'edit';
   storyId?: string;
   onSaved?: (id: string) => void;
+  initialStory?: StoryState | null;
+  initialChapters?: ChapterState[];
 };
 
-export default function StoryFormClient({ mode = 'create', storyId, onSaved }: Props) {
+export default function StoryFormClient({
+  mode = 'create',
+  storyId,
+  onSaved,
+  initialStory = null,
+  initialChapters = [],
+}: Props) {
   const router = useRouter();
   const [publishLoading, setPublishLoading] = useState(false);
   const {
@@ -37,7 +68,7 @@ export default function StoryFormClient({ mode = 'create', storyId, onSaved }: P
     create,
     edit,
     applyOrigStoryPatch,
-  } = useStoryForm({ mode, storyId });
+  } = useStoryForm({ mode, storyId, initialStory, initialChapters });
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

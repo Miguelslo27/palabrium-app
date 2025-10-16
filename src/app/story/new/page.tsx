@@ -1,5 +1,3 @@
-"use client";
-
 import Navbar from '@/components/Navbar';
 import EditorLayout from '@/components/Editor/EditorLayout';
 import StoryFormClient from '@/components/Editor/StoryFormClient';
