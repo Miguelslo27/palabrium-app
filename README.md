@@ -1,169 +1,223 @@
-# Palabrium
+# 📚 Palabrium
 
-[![Tests](https://img.shields.io/badge/tests-502%20passing-brightgreen)](https://github.com/Miguelslo27/palabrium-app)
-[![Coverage](https://img.shields.io/badge/coverage-11%25-red)](https://github.com/Miguelslo27/palabrium-app)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+<div align="center">
 
-A storytelling platform built with Next.js 15, React 19, and MongoDB.
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+
+[![Tests](https://img.shields.io/badge/tests-502%20passing-brightgreen?style=flat-square)](https://github.com/Miguelslo27/palabrium-app)
+[![Coverage](https://img.shields.io/badge/coverage-83%25-yellow?style=flat-square)](https://github.com/Miguelslo27/palabrium-app)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+
+**A modern storytelling platform where writers create, share, and engage with readers.**
+
+[Features](#-features) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [Testing](#-testing)
+
+</div>
 
 ---
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## ✨ Features
 
-## Getting Started
+### 📝 Story Management
+- **Create & Publish Stories** — Write multi-chapter stories with a rich editor
+- **Draft Mode** — Save work-in-progress before publishing
+- **Chapter Organization** — Organize content into sequential chapters
 
-First, install dependencies:
+### 👥 User Engagement
+- **Bravo System** — Readers can applaud stories they enjoy
+- **Comments** — Threaded discussions on stories and chapters
+- **User Profiles** — Personalized author pages with story listings
+
+### 🔐 Authentication
+- **Clerk Integration** — Secure SSO authentication
+- **User Management** — Sign up, sign in, and profile management
+- **Webhook Sync** — Real-time user data synchronization
+
+### 🧪 Quality Assurance
+- **502 Automated Tests** — Unit + Integration test coverage
+- **Pre-push Validation** — Automated linting, testing, and build checks
+- **CI/CD Ready** — GitHub Actions compatible
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Technologies |
+|----------|--------------|
+| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS |
+| **Backend** | Next.js API Routes, MongoDB + Mongoose, Zod, Server Actions |
+| **Auth** | Clerk, Svix (webhooks), SSO Support |
+| **Testing** | Jest, React Testing Library, MongoDB Memory Server |
+| **DX** | Husky, ESLint, pnpm |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes (REST endpoints)
+│   ├── stories/           # Stories listing page
+│   ├── story/             # Individual story pages
+│   ├── sign-in/           # Auth pages
+│   └── sign-up/
+├── components/            # React components
+│   ├── Common/            # Shared UI components
+│   ├── Stories/           # Story list components
+│   ├── Story/             # Story detail components
+│   └── Editor/            # Rich text editor
+├── lib/                   # Utilities & helpers
+├── models/                # Mongoose schemas
+└── types/                 # TypeScript definitions
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm
+- MongoDB (local or Atlas)
+- Clerk account (for auth)
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/Miguelslo27/palabrium-app.git
+cd palabrium-app
+
+# Install dependencies
 pnpm install
-```
 
-Then, run the development server:
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your credentials
 
-```bash
+# Run development server
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# MongoDB
+MONGODB_URI=mongodb://localhost:27017/palabrium
 
-## Available Scripts
+# Clerk Auth
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+CLERK_WEBHOOK_SECRET=whsec_...
 
-### Development
-- `pnpm dev` - Start development server with Turbopack
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-
-### Local Development with ngrok
-
-To test webhooks or share your local development server:
-
-```bash
-# Start the development server
-pnpm dev
-
-# In another terminal, start ngrok
-ngrok http 3000
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-This creates a public URL (e.g., `https://abc123.ngrok-free.app`) that tunnels to your local `localhost:3000`.
+---
 
-**Common use cases:**
-- Testing Clerk webhooks locally
-- Sharing your local development with team members
-- Testing OAuth flows that require public URLs
+## 📜 Available Scripts
 
-**Note**: The free ngrok tier provides a random URL each time. For a consistent URL, consider upgrading to a paid plan.
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start development server (Turbopack) |
+| `pnpm build` | Production build |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Run ESLint |
+| `pnpm test` | Run unit tests (434 tests) |
+| `pnpm test:integration` | Run integration tests (68 tests) |
+| `pnpm test:coverage:all` | Run all tests with coverage |
+| `pnpm validate` | Lint + Build (pre-push check) |
 
-### Code Quality
-- `pnpm lint` - Run ESLint
-- `pnpm validate` - Run linting + build (useful before pushing)
+---
 
-### Testing
-- `pnpm test` - Run unit tests (434 tests)
-- `pnpm test:watch` - Run unit tests in watch mode
-- `pnpm test:coverage` - Run unit tests with coverage report
-- `pnpm test:coverage:all` - **Run ALL tests (unit + integration) with combined coverage**
-- `pnpm test:integration` - Run integration tests (68 tests)
-- `pnpm test:all` - Run all tests (unit + integration, no coverage)
+## 🧪 Testing
 
-**Coverage Reports:**
+This project has comprehensive test coverage:
+
+| Suite | Tests | Coverage |
+|-------|-------|----------|
+| Unit Tests | 434 | Components, hooks, utilities |
+| Integration Tests | 68 | API routes with MongoDB Memory Server |
+| **Total** | **502** | ~83% overall |
+
 ```bash
-# Complete coverage (unit + integration) - RECOMMENDED
+# Run all tests
+pnpm test:all
+
+# Run with coverage report
 pnpm test:coverage:all
 
-# Unit tests only coverage
-pnpm test:coverage
-
-# Integration tests only coverage
-pnpm test:integration --coverage
-
-# Manually update coverage badge from existing data
-pnpm update:badges
+# Watch mode for development
+pnpm test:watch
 ```
 
-Coverage reports are generated in the `coverage/` directory. Open `coverage/lcov-report/index.html` in your browser to see detailed coverage.
+### Pre-push Hooks
 
-**Note:** The coverage badge in README.md is automatically updated when you run `pnpm test:coverage:all` or `pnpm test:coverage`.
+Every `git push` automatically runs:
+1. ✅ ESLint validation
+2. ✅ All tests (502)
+3. ✅ Production build check
 
-## Git Hooks
+---
 
-This project uses [Husky](https://typicode.github.io/husky/) to enforce code quality:
+## 🏗 Architecture Highlights
 
-### Pre-push Hook
-Before every `git push`, the following checks run automatically:
-1. **Linting** - Ensures code style consistency
-2. **Tests with Coverage** - Runs all unit and integration tests (502 tests) + updates coverage badge
-3. **Build** - Verifies the project compiles without errors
+### React Server Components (RSC)
+The app leverages Next.js 15's RSC for optimal performance:
+- Server-side data fetching
+- Reduced client bundle size
+- SEO-friendly rendering
 
-The coverage badge is automatically updated before each push, ensuring it always reflects the current state of the codebase.
+### API Design
+RESTful API routes with:
+- Zod schema validation
+- Proper error handling
+- MongoDB transactions where needed
 
-If any check fails, the push is **blocked** until you fix the issues.
+### State Management
+- React Context for global UI state
+- Server state via React Query patterns
+- Form state with controlled components
 
-**Manual validation:**
-```bash
-pnpm validate
-```
+---
 
-**Bypass (emergency only):**
-```bash
-git push --no-verify
-```
+## 📚 Documentation
 
-⚠️ **Warning**: Bypassing checks is discouraged. Always fix the issues instead.
+- [Testing Plan](TESTING_PLAN.md) — Testing strategy & guidelines
+- [Integration Tests Summary](INTEGRATION_TESTS_SUMMARY.md) — API test coverage
+- [RSC Migration Plan](RSC_MIGRATION_PLAN.md) — Server Components architecture
+- [Refactoring Summary](REFACTORING_SUMMARY.md) — Code quality improvements
 
-## Testing Infrastructure
+---
 
-This project has comprehensive test coverage with automated badge updates:
+## 🤝 Contributing
 
-### Test Suites
-- **Unit Tests**: 434 tests covering components, hooks, and utilities
-- **Integration Tests**: 68 tests for API routes with MongoDB Memory Server
-- **Total**: 502 tests with ~83% overall coverage
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Coverage Goals
-- ✅ API Routes: 96%+ coverage (target: 80%)
-- ✅ Libraries: 98%+ coverage
-- ✅ Hooks: 98%+ coverage
-- 🎯 Components: 30%+ coverage (improving)
+---
 
-### Automated Badge Updates
-The coverage badge at the top of this README updates automatically in two scenarios:
+## 📄 License
 
-1. **During pre-push**: Coverage is calculated and badge updated automatically before each push
-2. **Manual run**: Execute `pnpm test:coverage:all` to update coverage from all tests
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
-```bash
-# Complete coverage (recommended)
-pnpm test:coverage:all
+---
 
-# Or just update badge from existing coverage
-pnpm update:badges
-```
+<div align="center">
 
-The badge reflects **combined coverage** from both unit and integration tests, giving you a complete picture of your test coverage.
+**Built with ❤️ using Next.js 15**
 
-The badge color changes based on coverage:
-- 🟢 Green (80%+): Excellent coverage
-- 🟡 Yellow (40-79%): Good coverage, room for improvement  
-- 🔴 Red (<40%): Needs more tests
+[⬆ Back to top](#-palabrium)
 
-For more details, see [TESTING_PLAN.md](TESTING_PLAN.md) and [INTEGRATION_TESTS_SUMMARY.md](INTEGRATION_TESTS_SUMMARY.md).
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</div>
