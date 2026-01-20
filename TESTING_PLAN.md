@@ -65,6 +65,21 @@ __tests__/
 
 ---
 
+### 1.5 Ejecución de tests de integración con MongoMemoryServer
+
+Para las suites que dependen de MongoDB en memoria (por ejemplo `__tests__/integration/stories/stories-data.test.ts`), es necesario permitir que el entorno cree sockets locales.  
+
+- **Local/CI con permisos**  
+  ```bash
+  ENABLE_INTEGRATION_DB=true pnpm test:integration
+  ```
+  Esto habilita `MongoMemoryServer` y ejecuta las pruebas completas sobre la capa de datos.
+
+- **Entornos con restricciones (sandbox/CI sin puertos libres)**  
+  Ejecuta `pnpm test:integration` sin la variable. Las pruebas se marcarán como “skipped” y mostrarán un warning informativo.
+
+---
+
 ## 🌐 Fase 2: Tests End-to-End (Playwright)
 
 ### 2.1 Dependencias a Instalar
